@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
 const { Command } = require('commander');
-const inquirer = require('inquirer');
 const readline = require('readline');
 const { AntigravityEngine } = require('../core/engine');
 const { CommandHandler } = require('./commands');
-const { ui } = require('./ui');
+const ui = require('./ui');
 const { logger } = require('../utils/logger');
 const packageJson = require('../../package.json');
 
@@ -20,19 +19,20 @@ async function interactiveMode() {
 
     try {
         // Initialize engine
-        ui.startSpinner('Initializing Antigravity...');
+        ui.showBanner();
+        ui.startSpinner('Initializing Antigravity Engine...', 'magenta');
         await engine.initialize();
-        ui.succeedSpinner('Initialized');
+        ui.stopSpinnerSuccess('Engine Ready');
 
-        // Show welcome
+        // Show connection info
         const provider = engine.getCurrentProvider();
-        ui.welcome(packageJson.version, provider.name, provider.model);
+        ui.info(`Connected to: ${provider.name} (${provider.model})`);
 
         // Create readline interface
         const rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
-            prompt: '',
+            prompt: 'AG> ',
         });
 
         // Main REPL loop
@@ -40,64 +40,67 @@ async function interactiveMode() {
             const trimmed = input.trim();
 
             if (!trimmed) {
-                ui.userPrompt();
+                rl.prompt();
                 return;
             }
 
             // Check if it's a command
             if (commandHandler.isCommand(trimmed)) {
-                const result = await commandHandler.executeCommand(trimmed);
-
-                if (result === 'exit') {
-                    rl.close();
-                    return;
+                try {
+                    const result = await commandHandler.executeCommand(trimmed);
+                    if (result === 'exit') {
+                        rl.close();
+                        process.exit(0);
+                    }
+                } catch (error) {
+                    ui.error(error.message);
                 }
 
-                ui.userPrompt();
+                rl.prompt();
                 return;
             }
 
             // Regular message - send to AI
             try {
-                ui.startSpinner('Thinking...');
+                ui.startSpinner('Thinking...', 'cyan');
 
                 const response = await engine.processRequest(trimmed);
 
-                ui.stopSpinner();
-                ui.aiResponse(response.content, response.provider, response.model);
+                ui.stopSpinnerSuccess('Response received');
+
+                // Show AI Header
+                console.log(ui.formatAIHeader(response.provider, response.model));
+
+                // Render Markdown content
+                ui.renderMarkdown(response.content);
+
             } catch (error) {
-                ui.failSpinner('Error');
+                ui.stopSpinnerFail('Request Failed');
                 ui.error(error.message);
                 logger.error('Request failed', { error: error.message });
             }
 
-            ui.userPrompt();
+            rl.prompt();
         };
 
         // Handle input
         rl.on('line', async input => {
-            rl.pause();
             await processInput(input);
-            rl.resume();
         });
 
         // Handle close
         rl.on('close', async () => {
             console.log();
-            ui.info('Goodbye!');
+            ui.info('Shutting down... Goodbye!');
             await engine.shutdown();
             process.exit(0);
         });
 
-        // Handle Ctrl+C
-        rl.on('SIGINT', () => {
-            rl.close();
-        });
-
         // Show initial prompt
-        ui.userPrompt();
+        rl.prompt();
+
     } catch (error) {
-        ui.failSpinner('Initialization failed');
+        ui.stopSpinnerFail('Initialization Failed');
         ui.error(error.message);
         logger.error('Initialization failed', { error: error.message });
         process.exit(1);
@@ -112,27 +115,25 @@ async function singleCommandMode(message) {
     const commandHandler = new CommandHandler(engine);
 
     try {
-        ui.startSpinner('Processing...');
+        ui.startSpinner('Initializing...', 'magenta');
         await engine.initialize();
+        ui.stopSpinnerSuccess('Ready');
 
         // Check if input is a command
         if (commandHandler.isCommand(message)) {
-            ui.stopSpinner();
             await commandHandler.executeCommand(message);
         } else {
+            ui.startSpinner('Processing Request...', 'cyan');
             const response = await engine.processRequest(message);
 
-            ui.stopSpinner(); // Ensure spinner is stopped
-            ui.succeedSpinner('Done');
-            console.log();
-            console.log(response.content);
-            console.log();
+            ui.stopSpinnerSuccess('Done');
+            console.log(ui.formatAIHeader(response.provider, response.model));
+            ui.renderMarkdown(response.content);
         }
 
         await engine.shutdown();
     } catch (error) {
-        ui.stopSpinner(); // Ensure spinner is stopped on error
-        ui.failSpinner('Error');
+        ui.stopSpinnerFail('Error');
         ui.error(error.message);
         logger.error('Command failed', { error: error.message });
         process.exit(1);
@@ -152,7 +153,7 @@ async function pipeMode() {
 
         process.stdin.on('end', async () => {
             if (!input.trim()) {
-                ui.error('No input provided');
+                ui.error('No input provided via pipe');
                 process.exit(1);
             }
 
@@ -177,8 +178,7 @@ async function main() {
         .description('Multi-API AI Coding Assistant with Intelligent Failover')
         .version(packageJson.version)
         .argument('[args...]', 'Message to send to AI')
-        .option('-s, --stream', 'Stream response')
-        .action(async (args, options) => {
+        .action(async (args) => {
             const message = args.join(' ');
 
             // Check if input is piped
@@ -197,7 +197,7 @@ async function main() {
             await interactiveMode();
         });
 
-    program.parse();
+    await program.parseAsync(process.argv);
 }
 
 // Run CLI

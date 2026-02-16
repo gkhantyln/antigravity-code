@@ -1,5 +1,5 @@
 const { logger } = require('../utils/logger');
-const { ui } = require('./ui');
+const ui = require('./ui');
 const inquirer = require('inquirer');
 
 /**
@@ -28,14 +28,16 @@ class CommandHandler {
             prompt = answer.prompt;
         }
 
-        ui.startSpinner('Generating...');
+        ui.startSpinner('Generating...', 'cyan');
         try {
             const aiPrompt = `Please create the following: ${prompt}\n\nCRITICAL: You MUST use the 'write_file' function to save the code to a file. Do not just print the code. Call 'write_file' with the 'path' and 'content'.`;
             const response = await this.engine.processRequest(aiPrompt);
-            ui.stopSpinner();
-            ui.aiResponse(response.content, response.provider, response.model);
+            ui.stopSpinnerSuccess('Generation Complete');
+
+            console.log(ui.formatAIHeader(response.provider, response.model));
+            ui.renderMarkdown(response.content);
         } catch (error) {
-            ui.failSpinner('Generation failed');
+            ui.stopSpinnerFail('Generation Failed');
             ui.error(error.message);
         }
     }
@@ -58,15 +60,17 @@ class CommandHandler {
             issue = answer.issue;
         }
 
-        ui.startSpinner('Analyzing...');
+        ui.startSpinner('Analyzing...', 'cyan');
         try {
 
             const aiPrompt = `Please debug this issue:\n${issue}\n\nAnalyze the problem and provide a solution. If you need to read a file to understand the context, use the 'read_file' tool.`;
             const response = await this.engine.processRequest(aiPrompt);
-            ui.stopSpinner();
-            ui.aiResponse(response.content, response.provider, response.model);
+            ui.stopSpinnerSuccess('Analysis Complete');
+
+            console.log(ui.formatAIHeader(response.provider, response.model));
+            ui.renderMarkdown(response.content);
         } catch (error) {
-            ui.failSpinner('Debugging failed');
+            ui.stopSpinnerFail('Debugging Failed');
             ui.error(error.message);
         }
     }
@@ -89,14 +93,16 @@ class CommandHandler {
             code = answer.code;
         }
 
-        ui.startSpinner('Generating tests...');
+        ui.startSpinner('Generating tests...', 'cyan');
         try {
             const aiPrompt = `Please generate unit tests for the file: ${code}\n\n1. Use 'read_file' to read the content of '${code}'.\n2. Generate comprehensive tests.\n3. Use 'write_file' to save the tests to a new file (e.g., test_${code} or similar).`;
             const response = await this.engine.processRequest(aiPrompt);
-            ui.stopSpinner();
-            ui.aiResponse(response.content, response.provider, response.model);
+            ui.stopSpinnerSuccess('Tests Generated');
+
+            console.log(ui.formatAIHeader(response.provider, response.model));
+            ui.renderMarkdown(response.content);
         } catch (error) {
-            ui.failSpinner('Test generation failed');
+            ui.stopSpinnerFail('Test Generation Failed');
             ui.error(error.message);
         }
     }

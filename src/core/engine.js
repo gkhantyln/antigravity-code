@@ -89,7 +89,13 @@ class AntigravityEngine {
     async _executeWithTools(message, context, tools) {
         // Send to API with failover support
         // Use empty string for continuation if message is null
-        const msgToSend = message || '';
+        let msgToSend = message || '';
+
+        // Inject project context if it's the first turn (message is present)
+        if (message) {
+            const projectContext = await this.contextManager.getProjectContext();
+            msgToSend = `[System Context]\n${projectContext}\n\n${message}`;
+        }
 
         let response = await this.apiOrchestrator.sendMessage(msgToSend, context, { tools });
 

@@ -252,6 +252,38 @@ class ContextManager {
             updatedAt: conversation.updated_at,
         };
     }
+    /**
+     * Detect project type based on files
+     */
+    async detectProjectType(dir = process.cwd()) {
+        const fs = require('fs').promises;
+        const path = require('path');
+
+        try {
+            const files = await fs.readdir(dir);
+
+            if (files.includes('package.json')) return 'Node.js';
+            if (files.includes('requirements.txt') || files.includes('pyproject.toml')) return 'Python';
+            if (files.includes('Cargo.toml')) return 'Rust';
+            if (files.includes('go.mod')) return 'Go';
+            if (files.includes('pom.xml') || files.includes('build.gradle')) return 'Java';
+            if (files.includes('composer.json')) return 'PHP';
+            if (files.includes('Gemfile')) return 'Ruby';
+
+            return 'Unknown';
+        } catch (error) {
+            logger.warn('Failed to detect project type', { error: error.message });
+            return 'Unknown';
+        }
+    }
+
+    /**
+     * Get project context summary
+     */
+    async getProjectContext() {
+        const type = await this.detectProjectType();
+        return `Project Type: ${type}\nWorking Directory: ${process.cwd()}`;
+    }
 }
 
 module.exports = { ContextManager };

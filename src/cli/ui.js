@@ -1,204 +1,205 @@
 const chalk = require('chalk');
 const ora = require('ora');
+const marked = require('marked');
+const { markedTerminal } = require('marked-terminal');
+
+// Configure marked with terminal renderer
+const terminalRenderer = new markedTerminal({
+    code: chalk.yellow,
+    blockquote: chalk.gray.italic,
+    html: chalk.gray,
+    heading: chalk.green.bold,
+    firstHeading: chalk.magenta.underline.bold,
+    strong: chalk.bold.cyan,
+    em: chalk.italic,
+    codespan: chalk.yellow,
+    del: chalk.dim.gray.strikethrough,
+    link: chalk.blue.underline,
+    href: chalk.blue.underline
+});
+
+marked.use(terminalRenderer);
 
 /**
- * Terminal UI Utilities
+ * UI Manager for Antigravity-Code
+ * Handles consistent styling, spinners, and markdown rendering
  */
-class TerminalUI {
+class UIManager {
     constructor() {
         this.spinner = null;
     }
 
     /**
-     * Print welcome message
+     * Display the application banner
      */
-    welcome(version, provider, model) {
-        console.log();
-        console.log(chalk.cyan.bold('🚀 Antigravity-Code') + chalk.gray(` v${version}`));
-        console.log(chalk.gray(`Connected to: ${chalk.green(provider)} (${model})`));
-        console.log();
+    showBanner() {
+        console.log('');
+        console.log(chalk.magenta.bold('🚀 Antigravity-Code v1.1.0'));
+        console.log(chalk.gray('   The Agentic AI Coding Assistant'));
+        console.log(chalk.gray('   -----------------------------------'));
     }
 
     /**
-     * Print info message
+     * Start a spinner with a message
+     * @param {string} text - Message to display
+     * @param {string} color - Spinner color (default: cyan)
+     */
+    startSpinner(text, color = 'cyan') {
+        if (this.spinner) {
+            this.spinner.stop();
+        }
+        this.spinner = ora({
+            text,
+            color,
+            spinner: 'dots'
+        }).start();
+    }
+
+    /**
+     * Stop the spinner with success message
+     * @param {string} text - Success message
+     */
+    stopSpinnerSuccess(text) {
+        if (this.spinner) {
+            this.spinner.succeed(chalk.green(text));
+            this.spinner = null;
+        }
+    }
+
+    /**
+     * Stop the spinner with failure message
+     * @param {string} text - Failure message
+     */
+    stopSpinnerFail(text) {
+        if (this.spinner) {
+            this.spinner.fail(chalk.red(text));
+            this.spinner = null;
+        }
+    }
+
+    /**
+     * Log an informational message
      */
     info(message) {
         console.log(chalk.blue('ℹ'), message);
     }
 
     /**
-     * Print success message
+     * Log a success message
      */
     success(message) {
-        console.log(chalk.green('✓'), message);
+        console.log(chalk.green('✔'), message);
     }
 
     /**
-     * Print warning message
+     * Log a warning message
      */
     warn(message) {
         console.log(chalk.yellow('⚠'), message);
     }
 
     /**
-     * Print error message
+     * Log an error message
      */
     error(message) {
-        console.log(chalk.red('✗'), message);
+        console.log(chalk.red('✖'), message);
     }
 
     /**
-     * Print AI response
+     * Render markdown content to the terminal
+     * @param {string} content - Markdown content
      */
-    aiResponse(content, provider, model) {
-        console.log();
-        console.log(chalk.gray(`[${provider}/${model}]`));
-        console.log(content);
-        console.log();
+    renderMarkdown(content) {
+        if (!content) return;
+        console.log(marked.parse(content));
     }
 
     /**
-     * Print user prompt
+     * Format a tool call for display
      */
-    userPrompt() {
-        process.stdout.write(chalk.cyan('> '));
+    formatToolCall(toolName, args) {
+        return `${chalk.blue.bold('🔧 Tool:')} ${chalk.cyan(toolName)} ${chalk.gray(JSON.stringify(args))}`;
     }
 
     /**
-     * Start spinner
+     * Format an AI response header
      */
-    startSpinner(text = 'Processing...') {
-        this.spinner = ora({
-            text,
-            color: 'cyan',
-        }).start();
+    formatAIHeader(provider, model) {
+        return chalk.magenta.bold(`\n🤖 AI (${provider}/${model}):`);
     }
-
     /**
-     * Update spinner text
+     * Display the application banner and welcome message
      */
-    updateSpinner(text) {
-        if (this.spinner) {
-            this.spinner.text = text;
-        }
+    welcome(version, provider, model) {
+        this.showBanner();
+        console.log(chalk.gray(`Connected to: ${chalk.cyan(provider)} (${chalk.yellow(model)})`));
+        console.log('');
     }
 
     /**
-     * Stop spinner with success
-     */
-    succeedSpinner(text) {
-        if (this.spinner) {
-            this.spinner.succeed(text);
-            this.spinner = null;
-        }
-    }
-
-    /**
-     * Stop spinner with failure
-     */
-    failSpinner(text) {
-        if (this.spinner) {
-            this.spinner.fail(text);
-            this.spinner = null;
-        }
-    }
-
-    /**
-     * Stop spinner
-     */
-    stopSpinner() {
-        if (this.spinner) {
-            this.spinner.stop();
-            this.spinner = null;
-        }
-    }
-
-    /**
-     * Print code block
-     */
-    codeBlock(code, language = '') {
-        console.log();
-        console.log(chalk.gray(`\`\`\`${language}`));
-        console.log(code);
-        console.log(chalk.gray('```'));
-        console.log();
-    }
-
-    /**
-     * Print divider
-     */
-    divider() {
-        console.log(chalk.gray('─'.repeat(60)));
-    }
-
-    /**
-     * Clear screen
+     * Clear the console
      */
     clear() {
         console.clear();
     }
 
     /**
-     * Print help
+     * Show help information
      */
     help() {
-        console.log();
-        console.log(chalk.cyan.bold('Available Commands:'));
-        console.log();
-        console.log(chalk.yellow('/create') + '  - Create new features');
-        console.log(chalk.yellow('/debug') + '   - Debug issues');
-        console.log(chalk.yellow('/test') + '    - Generate tests');
-        console.log(chalk.yellow('/config') + '  - Configuration management');
-        console.log(chalk.yellow('/model') + '   - Change Gemini model');
-        console.log(chalk.yellow('/provider') + ' - Switch provider');
-        console.log(chalk.yellow('/new') + '     - Start new conversation');
-        console.log(chalk.yellow('/clear') + '   - Clear screen');
-        console.log(chalk.yellow('/help') + '    - Show this help');
-        console.log(chalk.yellow('/exit') + '    - Exit Antigravity');
-        console.log();
-    }
+        console.log(chalk.bold('\nAvailable Commands:'));
+        const commands = [
+            { cmd: '/create', desc: 'Create new features', example: '/create "snake game"' },
+            { cmd: '/debug', desc: 'Debug issues', example: '/debug "fix error"' },
+            { cmd: '/test', desc: 'Generate tests', example: '/test "app.js"' },
+            { cmd: '/model', desc: 'Change Gemini model', example: '/model gemini-1.5-pro' },
+            { cmd: '/provider', desc: 'Switch provider', example: '/provider claude' },
+            { cmd: '/new', desc: 'Start new chat', example: '/new "My Project"' },
+            { cmd: '/clear', desc: 'Clear screen', example: '/clear' },
+            { cmd: '/exit', desc: 'Exit', example: '/exit' }
+        ];
 
-    /**
-     * Print provider info
-     */
-    providerInfo(providers, current) {
-        console.log();
-        console.log(chalk.cyan.bold('Available Providers:'));
-        console.log();
-
-        providers.forEach(provider => {
-            const isCurrent = provider === current.name;
-            const marker = isCurrent ? chalk.green('●') : chalk.gray('○');
-            const name = isCurrent ? chalk.green.bold(provider) : chalk.white(provider);
-            const model = isCurrent ? chalk.gray(`(${current.model})`) : '';
-
-            console.log(`${marker} ${name} ${model}`);
+        commands.forEach(({ cmd, desc, example }) => {
+            console.log(`  ${chalk.cyan(cmd.padEnd(12))} ${chalk.white(desc.padEnd(20))} ${chalk.gray(example)}`);
         });
-
-        console.log();
+        console.log('');
     }
 
     /**
-     * Print model selection
+     * Show model selection options
      */
     modelSelection(models, current) {
-        console.log();
-        console.log(chalk.cyan.bold('Available Gemini Models:'));
-        console.log();
-
+        console.log(chalk.bold('\nAvailable Models:'));
         models.forEach(model => {
             const isCurrent = model === current;
-            const marker = isCurrent ? chalk.green('●') : chalk.gray('○');
+            const prefix = isCurrent ? chalk.green('●') : chalk.gray('○');
             const name = isCurrent ? chalk.green.bold(model) : chalk.white(model);
-
-            console.log(`${marker} ${name}`);
+            console.log(`  ${prefix} ${name}`);
         });
+        console.log('');
+    }
 
-        console.log();
+    /**
+     * Show provider information
+     */
+    providerInfo(providers, current) {
+        console.log(chalk.bold('\nAvailable Providers:'));
+        providers.forEach(provider => {
+            const isCurrent = provider === current.name;
+            const prefix = isCurrent ? chalk.green('●') : chalk.gray('○');
+            const name = isCurrent ? chalk.green.bold(provider) : chalk.white(provider);
+            console.log(`  ${prefix} ${name}`);
+        });
+        console.log('');
+    }
+
+    /**
+     * Prompt for user input (fallback if readline is not used directly)
+     */
+    userPrompt() {
+        process.stdout.write(chalk.magenta.bold('AG> '));
     }
 }
 
-// Create singleton instance
-const ui = new TerminalUI();
+module.exports = new UIManager();
 
-module.exports = { TerminalUI, ui };

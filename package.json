@@ -19,6 +19,7 @@
         "lint:fix": "eslint src/ test/ --fix",
         "format": "prettier --write \"src/**/*.js\" \"test/**/*.js\"",
         "setup": "node scripts/setup.js",
+        "integrate": "node scripts/integrate.js",
         "postinstall": "node scripts/postinstall.js"
     },
     "keywords": [
@@ -46,6 +47,8 @@
         "commander": "^11.1.0",
         "dotenv": "^16.4.1",
         "inquirer": "^8.2.5",
+        "marked": "^15.0.12",
+        "marked-terminal": "^7.3.0",
         "node-fetch": "^2.7.0",
         "openai": "^4.28.0",
         "ora": "^5.4.1",
