@@ -30,7 +30,7 @@ class CommandHandler {
 
         ui.startSpinner('Generating...');
         try {
-            const aiPrompt = `Please create the following: ${prompt}\n\nProvide the code and a brief explanation.`;
+            const aiPrompt = `Please create the following: ${prompt}\n\nCRITICAL: You MUST use the 'write_file' function to save the code to a file. Do not just print the code. Call 'write_file' with the 'path' and 'content'.`;
             const response = await this.engine.processRequest(aiPrompt);
             ui.stopSpinner();
             ui.aiResponse(response.content, response.provider, response.model);
@@ -60,7 +60,8 @@ class CommandHandler {
 
         ui.startSpinner('Analyzing...');
         try {
-            const aiPrompt = `Please debug this issue:\n${issue}\n\nAnalyze the problem and provide a solution.`;
+
+            const aiPrompt = `Please debug this issue:\n${issue}\n\nAnalyze the problem and provide a solution. If you need to read a file to understand the context, use the 'read_file' tool.`;
             const response = await this.engine.processRequest(aiPrompt);
             ui.stopSpinner();
             ui.aiResponse(response.content, response.provider, response.model);
@@ -81,8 +82,8 @@ class CommandHandler {
                 {
                     type: 'input',
                     name: 'code',
-                    message: 'Enter the code or filename to test:',
-                    validate: input => input.trim() !== '' || 'Please provide code to test.',
+                    message: 'Enter the filename to test:',
+                    validate: input => input.trim() !== '' || 'Please provide a filename.',
                 },
             ]);
             code = answer.code;
@@ -90,7 +91,7 @@ class CommandHandler {
 
         ui.startSpinner('Generating tests...');
         try {
-            const aiPrompt = `Please generate unit tests for the following:\n${code}\n\nInclude test cases for edge cases and typical usage.`;
+            const aiPrompt = `Please generate unit tests for the file: ${code}\n\n1. Use 'read_file' to read the content of '${code}'.\n2. Generate comprehensive tests.\n3. Use 'write_file' to save the tests to a new file (e.g., test_${code} or similar).`;
             const response = await this.engine.processRequest(aiPrompt);
             ui.stopSpinner();
             ui.aiResponse(response.content, response.provider, response.model);

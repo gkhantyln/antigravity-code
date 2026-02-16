@@ -39,8 +39,9 @@
 | Feature | Description |
 |---------|-------------|
 | 💻 **Code Generation** | Write clean, efficient code in any language |
+| 📂 **File System Ops** | **NEW!** Read, write, and delete files directly |
 | 🐛 **Intelligent Debugging** | Find and fix bugs systematically |
-| 🧪 **Test Generation** | Automated unit, integration, and e2e tests |
+| 🧪 **Test Generation** | Automated unit tests written to disk |
 | 📝 **Documentation** | Auto-generate comprehensive docs |
 | 🔄 **Refactoring** | Improve code quality and structure |
 | 🎯 **Multi-Language** | JavaScript, TypeScript, Python, Go, and more |
@@ -123,9 +124,9 @@ console.log(validateEmail('invalid.email'));     // false
 
 > /help
 Available Commands:
-/create   - Create new features
+/create   - Create features & files
 /debug    - Debug issues
-/test     - Generate tests
+/test     - Generate & save tests
 /model    - Change Gemini model
 /provider - Switch provider
 /exit     - Exit
@@ -152,9 +153,9 @@ cat error.log | antigravity "Debug this error"
 
 | Command | Description | Example |
 |---------|-------------|---------|
-| `/create` | Create new features with AI | `/create` |
-| `/debug` | Debug and fix code issues | `/debug` |
-| `/test` | Generate unit tests | `/test` |
+| `/create` | Create new features/files directly | `/create "snake game in python"` |
+| `/debug` | Debug and fix code issues | `/debug "fix this error"` |
+| `/test` | Generate and save unit tests | `/test "app.js"` |
 | `/model` | Change Gemini model | `/model gemini-3-pro` |
 | `/provider` | Switch AI provider | `/provider claude` |
 | `/config` | View/update configuration | `/config` |
@@ -303,14 +304,13 @@ Antigravity-Code prioritizes your security and privacy:
 AI: What feature would you like to create?
 You: REST API for user management with JWT auth
 
-AI: I'll create:
+AI: I'll create `src/routes/auth.js` and `src/controllers/authController.js` with:
 - User CRUD operations
 - JWT authentication
 - Input validation
-- Error handling
-- Unit tests
 
 Proceed? (y/n): y
+✓ Files created successfully.
 ```
 
 ### Example 2: Debug an Error
@@ -328,7 +328,10 @@ AI: Let me analyze...
 ### Example 3: Generate Tests
 
 ```bash
-antigravity "Generate unit tests for src/utils/validator.js"
+> /test "src/utils/validator.js"
+
+AI: I will generate unit tests for `validator.js`.
+✓ Created `tests/validator.test.js` with 5 test cases.
 ```
 
 ---
@@ -350,6 +353,8 @@ antigravity-code/
 │   │   └── orchestrator.js  # Failover logic
 │   ├── cli/                  # CLI interface
 │   ├── core/                 # Core engine
+│   ├── tools/                # AI Tools
+│   │   └── filesystem.js    # File System ops
 │   └── utils/                # Utilities
 ├── scripts/
 │   └── setup.js              # Setup wizard

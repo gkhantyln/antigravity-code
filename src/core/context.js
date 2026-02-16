@@ -61,18 +61,21 @@ class ContextManager {
     /**
      * Add assistant message to conversation
      */
-    async addAssistantMessage(content, provider, model, tokens) {
+    async addAssistantMessage(content, provider, model, tokens, toolCalls = null) {
         if (!this.currentConversationId) {
             await this.createConversation();
         }
 
+        const metadata = toolCalls ? { toolCalls } : {};
+
         await this.database.addMessage(
             this.currentConversationId,
             'assistant',
-            content,
+            content || '', // Content might be empty if it's just a tool call
             provider,
             model,
-            tokens
+            tokens,
+            metadata
         );
 
         logger.debug('Assistant message added', {
@@ -80,6 +83,34 @@ class ContextManager {
             provider,
             model,
             tokens,
+            hasToolCalls: !!toolCalls
+        });
+    }
+
+    /**
+     * Add tool result message to conversation
+     */
+    async addToolResultMessage(toolCallId, toolName, result) {
+        if (!this.currentConversationId) {
+            await this.createConversation();
+        }
+
+        // We use 'system' role for tool results (to satisfy DB constraints)
+        // detailed info is in metadata
+        await this.database.addMessage(
+            this.currentConversationId,
+            'system',
+            typeof result === 'string' ? result : JSON.stringify(result),
+            'system',
+            null,
+            0,
+            { type: 'tool_result', toolCallId, toolName }
+        );
+
+        logger.debug('Tool result message added', {
+            conversationId: this.currentConversationId,
+            toolCallId,
+            toolName,
         });
     }
 
@@ -101,10 +132,20 @@ class ContextManager {
         const chronologicalMessages = messages.reverse();
 
         // Format messages for API
-        const formattedMessages = chronologicalMessages.map(msg => ({
-            role: msg.role,
-            content: msg.content,
-        }));
+        const formattedMessages = chronologicalMessages.map(msg => {
+            let metadata = {};
+            try {
+                metadata = JSON.parse(msg.metadata || '{}');
+            } catch (e) {
+                logger.warn('Failed to parse message metadata', { id: msg.id });
+            }
+
+            return {
+                role: msg.role,
+                content: msg.content,
+                metadata,
+            };
+        });
 
         return {
             conversationId: this.currentConversationId,

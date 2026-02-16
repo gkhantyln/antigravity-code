@@ -126,7 +126,7 @@ class SecureStorage {
             return null;
         }
 
-        return process.env[envVar] || null;
+        return (process.env[envVar] || '').trim() || null;
     }
 
     /**

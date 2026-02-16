@@ -31,7 +31,7 @@ class ConfigManager {
 
         // Gemini model selection
         this.config.gemini = {
-            defaultModel: process.env.GEMINI_DEFAULT_MODEL || 'gemini-3-flash',
+            defaultModel: process.env.GEMINI_DEFAULT_MODEL || 'gemini-1.5-pro',
             availableModels: [
                 // Gemini 3 Series (Latest)
                 'gemini-3-flash',

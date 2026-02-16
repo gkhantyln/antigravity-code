@@ -109,20 +109,29 @@ async function interactiveMode() {
  */
 async function singleCommandMode(message) {
     const engine = new AntigravityEngine();
+    const commandHandler = new CommandHandler(engine);
 
     try {
         ui.startSpinner('Processing...');
         await engine.initialize();
 
-        const response = await engine.processRequest(message);
+        // Check if input is a command
+        if (commandHandler.isCommand(message)) {
+            ui.stopSpinner();
+            await commandHandler.executeCommand(message);
+        } else {
+            const response = await engine.processRequest(message);
 
-        ui.succeedSpinner('Done');
-        console.log();
-        console.log(response.content);
-        console.log();
+            ui.stopSpinner(); // Ensure spinner is stopped
+            ui.succeedSpinner('Done');
+            console.log();
+            console.log(response.content);
+            console.log();
+        }
 
         await engine.shutdown();
     } catch (error) {
+        ui.stopSpinner(); // Ensure spinner is stopped on error
         ui.failSpinner('Error');
         ui.error(error.message);
         logger.error('Command failed', { error: error.message });
@@ -167,9 +176,11 @@ async function main() {
         .name('antigravity')
         .description('Multi-API AI Coding Assistant with Intelligent Failover')
         .version(packageJson.version)
-        .argument('[message]', 'Message to send to AI')
+        .argument('[args...]', 'Message to send to AI')
         .option('-s, --stream', 'Stream response')
-        .action(async (message, options) => {
+        .action(async (args, options) => {
+            const message = args.join(' ');
+
             // Check if input is piped
             if (!process.stdin.isTTY && !message) {
                 await pipeMode();

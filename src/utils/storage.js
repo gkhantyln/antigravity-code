@@ -192,12 +192,12 @@ class Database {
     /**
      * Add message to conversation
      */
-    async addMessage(conversationId, role, content, provider = null, model = null, tokens = null) {
+    async addMessage(conversationId, role, content, provider = null, model = null, tokens = null, metadata = {}) {
         const id = generateId();
         await this.run(
             `INSERT INTO messages (id, conversation_id, role, content, provider, model, tokens, metadata)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [id, conversationId, role, content, provider, model, tokens, JSON.stringify({})]
+            [id, conversationId, role, content, provider, model, tokens, JSON.stringify(metadata)]
         );
 
         // Update conversation timestamp

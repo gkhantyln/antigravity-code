@@ -3,6 +3,7 @@ const { ContextManager } = require('./context');
 const { Database } = require('../utils/storage');
 const { configManager } = require('./config');
 const { logger } = require('../utils/logger');
+const { FileSystemTools } = require('../tools/filesystem');
 
 /**
  * Antigravity Engine
@@ -13,6 +14,7 @@ class AntigravityEngine {
         this.database = null;
         this.contextManager = null;
         this.apiOrchestrator = null;
+        this.fileSystemTools = null;
         this.initialized = false;
     }
 
@@ -37,6 +39,9 @@ class AntigravityEngine {
         // Initialize context manager
         this.contextManager = new ContextManager(this.database);
 
+        // Initialize file system tools
+        this.fileSystemTools = new FileSystemTools();
+
         // Initialize API orchestrator
         this.apiOrchestrator = new APIOrchestrator(this.database);
         await this.apiOrchestrator.initialize();
@@ -46,6 +51,7 @@ class AntigravityEngine {
         logger.info('Antigravity Engine initialized', {
             primaryProvider: config.providers.primary,
             dbPath: config.storage.dbPath,
+            toolsInitialized: true
         });
     }
 
@@ -64,30 +70,85 @@ class AntigravityEngine {
             // Get conversation context
             const context = await this.contextManager.getContext();
 
-            // Send to API with failover support
-            const response = await this.apiOrchestrator.sendMessage(message, context);
+            // Prepare tools
+            const tools = this.fileSystemTools.getToolDefinitions();
 
-            if (!response.success) {
-                throw new Error(response.error?.message || 'API request failed');
-            }
+            // Send to API with failover support and tools
+            // Note: detailed tool execution logic handles the loop
+            return await this._executeWithTools(message, context, tools);
 
-            // Add assistant response to context
-            await this.contextManager.addAssistantMessage(
-                response.content,
-                response.provider,
-                response.model,
-                response.usage?.totalTokens
-            );
-
-            return {
-                content: response.content,
-                provider: response.provider,
-                model: response.model,
-                usage: response.usage,
-            };
         } catch (error) {
             logger.error('Request processing failed', { error: error.message });
             throw error;
+        }
+    }
+
+    /**
+     * Execute request with tool support
+     */
+    async _executeWithTools(message, context, tools) {
+        // Send to API with failover support
+        // Use empty string for continuation if message is null
+        const msgToSend = message || '';
+
+        let response = await this.apiOrchestrator.sendMessage(msgToSend, context, { tools });
+
+        if (!response.success) {
+            throw new Error(response.error?.message || 'API request failed');
+        }
+
+        // Add assistant response to context immediately
+        await this.contextManager.addAssistantMessage(
+            response.content,
+            response.provider,
+            response.model,
+            response.usage?.totalTokens,
+            response.toolCalls
+        );
+
+        // Check if tool call requested
+        if (response.toolCalls && response.toolCalls.length > 0) {
+            for (const toolCall of response.toolCalls) {
+                const result = await this._executeTool(toolCall.name, toolCall.arguments);
+
+                // Add tool result to context
+                await this.contextManager.addToolResultMessage(toolCall.id, toolCall.name, result);
+            }
+
+            // Update context with the new tool results and recurse
+            context = await this.contextManager.getContext();
+            return await this._executeWithTools(null, context, tools);
+        }
+
+        return {
+            content: response.content,
+            provider: response.provider,
+            model: response.model,
+            usage: response.usage,
+        };
+    }
+
+    /**
+     * Execute a specific tool
+     */
+    async _executeTool(name, args) {
+        logger.info(`Executing tool: ${name}`, args);
+        try {
+            switch (name) {
+                case 'read_file':
+                    return await this.fileSystemTools.readFile(args.path);
+                case 'write_file':
+                    return await this.fileSystemTools.writeFile(args.path, args.content);
+                case 'list_dir':
+                    return await this.fileSystemTools.listDir(args.path);
+                case 'delete_file':
+                    return await this.fileSystemTools.deleteFile(args.path);
+                default:
+                    throw new Error(`Unknown tool: ${name}`);
+            }
+        } catch (error) {
+            logger.error(`Tool execution failed: ${name}`, error);
+            return `Error: ${error.message}`;
         }
     }
 

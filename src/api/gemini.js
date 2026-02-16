@@ -9,7 +9,7 @@ class GeminiProvider extends BaseAPIProvider {
     constructor(apiKey, options = {}) {
         super(options, 'gemini');
         this.apiKey = apiKey;
-        this.model = options.model || 'gemini-3-flash';
+        this.model = options.model || 'gemini-1.5-pro';
         this.maxTokens = options.maxTokens || 8192;
         this.temperature = options.temperature || 0.7;
         this.client = null;
@@ -64,7 +64,7 @@ class GeminiProvider extends BaseAPIProvider {
     /**
      * Send message to Gemini
      */
-    async sendMessage(message, context = {}) {
+    async sendMessage(message, context = {}, options = {}) {
         if (!this.initialized) {
             await this.initialize();
         }
@@ -77,28 +77,52 @@ class GeminiProvider extends BaseAPIProvider {
                 requestId,
                 model: this.model,
                 messageLength: message.length,
+                tools: options.tools ? options.tools.length : 0
             });
 
             // Build chat history
             const history = this.buildGeminiHistory(context);
 
+            // Prepare tools if provided
+            let toolsConfig = undefined;
+            if (options.tools && options.tools.length > 0) {
+                toolsConfig = [{
+                    functionDeclarations: options.tools.map(tool => ({
+                        name: tool.name,
+                        description: tool.description,
+                        parameters: tool.parameters
+                    }))
+                }];
+                // DEBUG LOG
+                console.log("DEBUG: ToolsConfig:", JSON.stringify(toolsConfig, null, 2));
+            }
+
             // Create chat session
-            const chat = this.generativeModel.startChat({
+            const chatObj = {
                 history,
                 generationConfig: {
                     maxOutputTokens: this.maxTokens,
                     temperature: this.temperature,
                 },
-            });
+            };
+
+            if (toolsConfig) {
+                chatObj.tools = toolsConfig;
+            }
+
+            const chat = this.generativeModel.startChat(chatObj);
 
             // Send message
             const result = await chat.sendMessage(message);
             const response = await result.response;
-            const text = response.text();
+
+            // Check for function calls
+            const toolCalls = this.extractToolCalls(response);
+            const text = response.text ? response.text() : '';
 
             const latency = Date.now() - startTime;
 
-            // Extract token usage (if available)
+            // Extract token usage
             const usage = {
                 promptTokens: response.usageMetadata?.promptTokenCount || 0,
                 completionTokens: response.usageMetadata?.candidatesTokenCount || 0,
@@ -110,27 +134,49 @@ class GeminiProvider extends BaseAPIProvider {
                 model: this.model,
                 latency,
                 tokens: usage.totalTokens,
+                toolCalls: toolCalls ? toolCalls.length : 0
             });
 
-            return this.formatResponse(text, {
+            return {
+                success: true,
+                content: text,
+                toolCalls: toolCalls,
+                provider: 'gemini',
                 model: this.model,
                 usage,
-                requestId,
-                latency,
-            });
+                metadata: {
+                    requestId,
+                    latency,
+                }
+            };
         } catch (error) {
             const latency = Date.now() - startTime;
-
             logger.error('Gemini API error', {
                 requestId,
                 error: error.message,
                 latency,
             });
-
-            // Map Gemini errors to standard format
             const statusCode = this.mapErrorToStatusCode(error);
             return this.formatError(error, statusCode);
         }
+    }
+
+    /**
+     * Extract tool calls from Gemini response
+     */
+    extractToolCalls(response) {
+        const calls = typeof response.functionCalls === 'function' ? response.functionCalls() : [];
+        console.log("DEBUG: Extracted Tool Calls:", JSON.stringify(calls, null, 2));
+
+        if (!calls || calls.length === 0) {
+            return null;
+        }
+
+        return calls.map(call => ({
+            id: 'call_' + Math.random().toString(36).substr(2, 9),
+            name: call.name,
+            arguments: call.args
+        }));
     }
 
     /**
@@ -242,15 +288,57 @@ class GeminiProvider extends BaseAPIProvider {
 
         if (context.messages && Array.isArray(context.messages)) {
             for (const msg of context.messages) {
-                // Gemini uses 'user' and 'model' roles
-                const role = msg.role === 'assistant' ? 'model' : 'user';
+                // Handle tool results (stored as system role)
+                if (msg.role === 'system' && msg.metadata && msg.metadata.type === 'tool_result') {
+                    history.push({
+                        role: 'function',
+                        parts: [{
+                            functionResponse: {
+                                name: msg.metadata.toolName,
+                                response: {
+                                    name: msg.metadata.toolName,
+                                    content: msg.content // Pass as content field in response object
+                                }
+                            }
+                        }]
+                    });
+                    continue;
+                }
 
-                // Skip system messages (Gemini doesn't support them in history)
+                // Skip other system messages
                 if (msg.role === 'system') continue;
 
+                // Handle Assistant messages with Tool Calls
+                if (msg.role === 'assistant' && msg.metadata && msg.metadata.toolCalls) {
+                    const parts = [];
+
+                    // Add text content if present
+                    if (msg.content) {
+                        parts.push({ text: msg.content });
+                    }
+
+                    // Add function calls
+                    msg.metadata.toolCalls.forEach(call => {
+                        parts.push({
+                            functionCall: {
+                                name: call.name,
+                                args: call.arguments
+                            }
+                        });
+                    });
+
+                    history.push({
+                        role: 'model',
+                        parts: parts
+                    });
+                    continue;
+                }
+
+                // Regular messages
+                const role = msg.role === 'assistant' ? 'model' : 'user';
                 history.push({
                     role,
-                    parts: [{ text: msg.content }],
+                    parts: [{ text: msg.content || '' }], // Ensure string
                 });
             }
         }

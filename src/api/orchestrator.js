@@ -82,6 +82,7 @@ class APIOrchestrator {
         // Create provider instance
         switch (providerName) {
             case 'gemini':
+                console.log('DEBUG: Configured Gemini Model:', config.gemini.defaultModel);
                 provider = new GeminiProvider(apiKey, {
                     model: config.gemini.defaultModel,
                     maxTokens: 8192,
@@ -121,7 +122,7 @@ class APIOrchestrator {
     /**
      * Send message with automatic failover
      */
-    async sendMessage(message, context = {}) {
+    async sendMessage(message, context = {}, options = {}) {
         const config = configManager.getAll();
         const maxRetries = config.failover.maxRetriesPerProvider;
 
@@ -147,7 +148,7 @@ class APIOrchestrator {
                         maxRetries,
                     });
 
-                    const response = await provider.sendMessage(message, context);
+                    const response = await provider.sendMessage(message, context, options);
 
                     // Log successful API call
                     if (this.database) {
