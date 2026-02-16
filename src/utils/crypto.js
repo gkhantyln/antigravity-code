@@ -72,6 +72,12 @@ class SecureStorage {
             const encrypted = storage[provider];
 
             if (!encrypted) {
+                // Fallback: Try to read from .env file
+                const envKey = this.getApiKeyFromEnv(provider);
+                if (envKey) {
+                    logger.info('API key loaded from .env file', { provider });
+                    return envKey;
+                }
                 return null;
             }
 
@@ -95,8 +101,32 @@ class SecureStorage {
             return decrypted;
         } catch (error) {
             logger.error('Failed to retrieve API key', { provider, error: error.message });
+            // Fallback: Try to read from .env file
+            const envKey = this.getApiKeyFromEnv(provider);
+            if (envKey) {
+                logger.info('API key loaded from .env file (fallback)', { provider });
+                return envKey;
+            }
             throw new Error(`Failed to retrieve API key: ${error.message}`);
         }
+    }
+
+    /**
+     * Get API key from environment variables
+     */
+    getApiKeyFromEnv(provider) {
+        const envVars = {
+            gemini: 'GEMINI_API_KEY',
+            claude: 'CLAUDE_API_KEY',
+            openai: 'OPENAI_API_KEY',
+        };
+
+        const envVar = envVars[provider];
+        if (!envVar) {
+            return null;
+        }
+
+        return process.env[envVar] || null;
     }
 
     /**
