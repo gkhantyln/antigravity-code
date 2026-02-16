@@ -1,5 +1,6 @@
 const { logger } = require('../utils/logger');
 const { ui } = require('./ui');
+const inquirer = require('inquirer');
 
 /**
  * Command Handlers
@@ -12,28 +13,91 @@ class CommandHandler {
     /**
      * Handle /create command
      */
-    async handleCreate() {
-        ui.info('Create workflow not yet implemented');
-        ui.info('This will guide you through creating new features');
-        // TODO: Implement create workflow
+    async handleCreate(args) {
+        let prompt = args && args.length > 0 ? args.join(' ') : '';
+
+        if (!prompt) {
+            const answer = await inquirer.prompt([
+                {
+                    type: 'input',
+                    name: 'prompt',
+                    message: 'What would you like to create?',
+                    validate: input => input.trim() !== '' || 'Please provide a description.',
+                },
+            ]);
+            prompt = answer.prompt;
+        }
+
+        ui.startSpinner('Generating...');
+        try {
+            const aiPrompt = `Please create the following: ${prompt}\n\nProvide the code and a brief explanation.`;
+            const response = await this.engine.processRequest(aiPrompt);
+            ui.stopSpinner();
+            ui.aiResponse(response.content, response.provider, response.model);
+        } catch (error) {
+            ui.failSpinner('Generation failed');
+            ui.error(error.message);
+        }
     }
 
     /**
      * Handle /debug command
      */
-    async handleDebug() {
-        ui.info('Debug workflow not yet implemented');
-        ui.info('This will help you debug issues systematically');
-        // TODO: Implement debug workflow
+    async handleDebug(args) {
+        let issue = args && args.length > 0 ? args.join(' ') : '';
+
+        if (!issue) {
+            const answer = await inquirer.prompt([
+                {
+                    type: 'input',
+                    name: 'issue',
+                    message: 'Describe the issue or paste the error message:',
+                    validate: input => input.trim() !== '' || 'Please provide an issue description.',
+                },
+            ]);
+            issue = answer.issue;
+        }
+
+        ui.startSpinner('Analyzing...');
+        try {
+            const aiPrompt = `Please debug this issue:\n${issue}\n\nAnalyze the problem and provide a solution.`;
+            const response = await this.engine.processRequest(aiPrompt);
+            ui.stopSpinner();
+            ui.aiResponse(response.content, response.provider, response.model);
+        } catch (error) {
+            ui.failSpinner('Debugging failed');
+            ui.error(error.message);
+        }
     }
 
     /**
      * Handle /test command
      */
-    async handleTest() {
-        ui.info('Test workflow not yet implemented');
-        ui.info('This will generate tests for your code');
-        // TODO: Implement test workflow
+    async handleTest(args) {
+        let code = args && args.length > 0 ? args.join(' ') : '';
+
+        if (!code) {
+            const answer = await inquirer.prompt([
+                {
+                    type: 'input',
+                    name: 'code',
+                    message: 'Enter the code or filename to test:',
+                    validate: input => input.trim() !== '' || 'Please provide code to test.',
+                },
+            ]);
+            code = answer.code;
+        }
+
+        ui.startSpinner('Generating tests...');
+        try {
+            const aiPrompt = `Please generate unit tests for the following:\n${code}\n\nInclude test cases for edge cases and typical usage.`;
+            const response = await this.engine.processRequest(aiPrompt);
+            ui.stopSpinner();
+            ui.aiResponse(response.content, response.provider, response.model);
+        } catch (error) {
+            ui.failSpinner('Test generation failed');
+            ui.error(error.message);
+        }
     }
 
     /**
@@ -200,13 +264,13 @@ class CommandHandler {
 
         switch (command) {
             case '/create':
-                await this.handleCreate();
+                await this.handleCreate(args);
                 break;
             case '/debug':
-                await this.handleDebug();
+                await this.handleDebug(args);
                 break;
             case '/test':
-                await this.handleTest();
+                await this.handleTest(args);
                 break;
             case '/config':
                 await this.handleConfig(args);
