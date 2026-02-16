@@ -39,18 +39,19 @@
 | Feature | Description |
 |---------|-------------|
 | 💻 **Code Generation** | Write clean, efficient code in any language |
-| 📂 **File System Ops** | **NEW!** Read, write, and delete files directly |
+| 📂 **File System Ops** | Read, write, and delete files directly |
 | 🐛 **Intelligent Debugging** | Find and fix bugs systematically |
 | 🧪 **Test Generation** | Automated unit tests written to disk |
 | 📝 **Documentation** | Auto-generate comprehensive docs |
 | 🔄 **Refactoring** | Improve code quality and structure |
-| 🎯 **Multi-Language** | JavaScript, TypeScript, Python, Go, and more |
+| 🧠 **Context Awareness** | **NEW!** Auto-detects project type (Node, Python, etc.) |
 
 ### Advanced Features
 
 - **🔄 Intelligent Failover**: Automatic switching between Gemini → Claude → OpenAI
+- **🎨 Rich CLI (v1.1)**: Vibrant colors, animated spinners, and markdown rendering
+- **🐚 Shell Integration**: Native `ag` alias and system PATH setup
 - **📊 Context Management**: Smart conversation history with 5MB compression
-- **🎨 Rich CLI**: Color-coded output, spinners, and formatted code blocks
 - **🛠️ Extensible Skills**: Custom skills for specialized tasks
 - **🚀 Workflow Automation**: Pre-defined workflows (`/create`, `/debug`, `/test`)
 - **🔐 Secure Storage**: Windows DPAPI encryption for API keys
@@ -81,13 +82,16 @@ npm install
 
 # Run setup wizard
 npm run setup
+
+# Integrate with shell (Path & Aliases)
+npm run integrate
 ```
 
 The setup wizard will guide you through:
 1. ✅ API key configuration (encrypted storage)
 2. ✅ Model selection for each provider
-3. ✅ Connection testing
-4. ✅ Environment setup
+3. ✅ Environment setup
+4. ✅ Shell integration (`ag` alias)
 
 ---
 
@@ -96,18 +100,20 @@ The setup wizard will guide you through:
 ### Interactive Mode (REPL)
 
 ```bash
-antigravity-code
+ag
+# or
+antigravity
 ```
 
 **Example Session:**
 
 ```
-🚀 Antigravity-Code v1.0.0
+🚀 Antigravity-Code v1.1.0
 Connected to: gemini (gemini-2.5-flash)
 
-> Write a function to validate email addresses
+AG> Write a function to validate email addresses
 
-[gemini/gemini-2.5-flash]
+🤖 AI (gemini/gemini-2.5-flash):
 Here's a robust email validation function:
 
 function validateEmail(email) {
@@ -135,14 +141,14 @@ Available Commands:
 ### Single Command Mode
 
 ```bash
-antigravity "Explain async/await in JavaScript"
+ag "Explain async/await in JavaScript"
 ```
 
 ### Pipe Mode
 
 ```bash
-git diff | antigravity "Explain these changes"
-cat error.log | antigravity "Debug this error"
+git diff | ag "Explain these changes"
+cat error.log | ag "Debug this error"
 ```
 
 ---
@@ -382,7 +388,13 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 ## 📊 Roadmap
 
-### Version 1.0 (Current) ✅
+### Version 1.1 (Current) ✅
+- ✅ Rich CLI with `chalk` & `ora`
+- ✅ Deep Shell Integration (`ag` alias)
+- ✅ Intelligent Context Awareness
+- ✅ Markdown Rendering
+
+### Version 1.0 (Completed) ✅
 - ✅ Multi-API support (Gemini, Claude, OpenAI)
 - ✅ 85+ AI models
 - ✅ Intelligent failover
