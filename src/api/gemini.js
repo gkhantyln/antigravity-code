@@ -44,7 +44,12 @@ class GeminiProvider extends BaseAPIProvider {
     async initialize() {
         try {
             this.client = new GoogleGenerativeAI(this.apiKey);
-            this.generativeModel = this.client.getGenerativeModel({ model: this.model });
+            // Use v1beta API version to access newer models like gemini-2.5 and gemini-1.5
+            this.generativeModel = this.client.getGenerativeModel({
+                model: this.model
+            }, {
+                apiVersion: 'v1beta'
+            });
             this.initialized = true;
             this.healthy = true;
 
@@ -206,7 +211,11 @@ class GeminiProvider extends BaseAPIProvider {
         }
 
         this.model = model;
-        this.generativeModel = this.client.getGenerativeModel({ model: this.model });
+        this.generativeModel = this.client.getGenerativeModel({
+            model: this.model
+        }, {
+            apiVersion: 'v1beta'
+        });
         logger.info('Gemini model changed', { model: this.model });
     }
 
