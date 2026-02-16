@@ -4,8 +4,8 @@ const fs = require('fs');
 const os = require('os');
 const { logger } = require('../utils/logger');
 
-// Load environment variables
-dotenv.config();
+// Load environment variables with override enabled
+dotenv.config({ override: true });
 
 /**
  * Configuration Manager
