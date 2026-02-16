@@ -95,7 +95,7 @@ The setup wizard will guide you through:
 ### Interactive Mode (REPL)
 
 ```bash
-antigravity
+antigravity-code
 ```
 
 **Example Session:**
