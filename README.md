@@ -13,8 +13,6 @@
 
 [Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Models](#-supported-models)
 
-![Antigravity Demo](https://via.placeholder.com/800x400/1a1a2e/eee?text=Antigravity-Code+Demo)
-
 </div>
 
 ---
