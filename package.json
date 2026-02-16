@@ -4,18 +4,18 @@
     "description": "Multi-API AI Coding Assistant with Intelligent Failover",
     "main": "src/cli/index.js",
     "bin": {
-        "antigravity": "./bin/antigravity.js"
+        "antigravity-code": "./bin/antigravity.js"
     },
     "scripts": {
         "start": "node src/cli/index.js",
         "dev": "nodemon src/cli/index.js",
-        "test": "mocha 'test/**/*.test.js'",
+        "test": "mocha",
         "test:unit": "mocha 'test/unit/**/*.test.js'",
         "test:integration": "mocha 'test/integration/**/*.test.js'",
         "test:watch": "mocha --watch 'test/**/*.test.js'",
-        "test:coverage": "nyc npm test",
+        "test:coverage": "nyc mocha",
         "test:coverage:html": "nyc --reporter=html npm test",
-        "lint": "eslint src/ test/",
+        "lint": "eslint src/",
         "lint:fix": "eslint src/ test/ --fix",
         "format": "prettier --write \"src/**/*.js\" \"test/**/*.js\"",
         "setup": "node scripts/setup.js",
