@@ -2,6 +2,7 @@ const winston = require('winston');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
+require('dotenv').config(); // Load env vars immediately for logger configuration
 
 /**
  * Redact sensitive information from logs
