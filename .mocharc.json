@@ -1,0 +1,12 @@
+{
+    "require": [
+        "test/setup.js"
+    ],
+    "timeout": 5000,
+    "slow": 1000,
+    "recursive": true,
+    "reporter": "spec",
+    "ui": "bdd",
+    "color": true,
+    "exit": true
+}

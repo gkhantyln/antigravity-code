@@ -1,0 +1,97 @@
+{
+    "name": "antigravity-code",
+    "version": "1.0.0",
+    "description": "Multi-API AI Coding Assistant with Intelligent Failover",
+    "main": "src/cli/index.js",
+    "bin": {
+        "antigravity": "./bin/antigravity.js"
+    },
+    "scripts": {
+        "start": "node src/cli/index.js",
+        "dev": "nodemon src/cli/index.js",
+        "test": "mocha 'test/**/*.test.js'",
+        "test:unit": "mocha 'test/unit/**/*.test.js'",
+        "test:integration": "mocha 'test/integration/**/*.test.js'",
+        "test:watch": "mocha --watch 'test/**/*.test.js'",
+        "test:coverage": "nyc npm test",
+        "test:coverage:html": "nyc --reporter=html npm test",
+        "lint": "eslint src/ test/",
+        "lint:fix": "eslint src/ test/ --fix",
+        "format": "prettier --write \"src/**/*.js\" \"test/**/*.js\"",
+        "setup": "node scripts/setup.js",
+        "postinstall": "node scripts/postinstall.js"
+    },
+    "keywords": [
+        "ai",
+        "coding-assistant",
+        "claude",
+        "gemini",
+        "openai",
+        "cli",
+        "terminal",
+        "failover",
+        "multi-api"
+    ],
+    "author": "Development Team",
+    "license": "MIT",
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=9.0.0"
+    },
+    "dependencies": {
+        "@anthropic-ai/sdk": "^0.20.0",
+        "@google/generative-ai": "^0.2.0",
+        "openai": "^4.28.0",
+        "chalk": "^4.1.2",
+        "commander": "^11.1.0",
+        "inquirer": "^8.2.5",
+        "ora": "^5.4.1",
+        "dotenv": "^16.4.1",
+        "sqlite3": "^5.1.7",
+        "winston": "^3.11.0",
+        "axios": "^1.6.7",
+        "node-fetch": "^2.7.0"
+    },
+    "devDependencies": {
+        "mocha": "^10.3.0",
+        "chai": "^4.4.1",
+        "sinon": "^17.0.1",
+        "nyc": "^15.1.0",
+        "eslint": "^8.56.0",
+        "eslint-config-airbnb-base": "^15.0.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-import": "^2.29.1",
+        "prettier": "^3.2.5",
+        "nodemon": "^3.0.3",
+        "supertest": "^6.3.4"
+    },
+    "nyc": {
+        "all": true,
+        "include": [
+            "src/**/*.js"
+        ],
+        "exclude": [
+            "test/**",
+            "**/*.test.js",
+            "scripts/**"
+        ],
+        "reporter": [
+            "text",
+            "html",
+            "lcov"
+        ],
+        "check-coverage": true,
+        "lines": 80,
+        "functions": 80,
+        "branches": 75,
+        "statements": 80
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/yourusername/antigravity-code.git"
+    },
+    "bugs": {
+        "url": "https://github.com/yourusername/antigravity-code/issues"
+    },
+    "homepage": "https://github.com/yourusername/antigravity-code#readme"
+}

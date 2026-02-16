@@ -1,0 +1,40 @@
+{
+    "extends": [
+        "airbnb-base",
+        "prettier"
+    ],
+    "env": {
+        "node": true,
+        "es2022": true,
+        "mocha": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 2022,
+        "sourceType": "module"
+    },
+    "rules": {
+        "no-console": "off",
+        "no-unused-vars": [
+            "error",
+            {
+                "argsIgnorePattern": "^_"
+            }
+        ],
+        "prefer-const": "error",
+        "no-var": "error",
+        "arrow-body-style": [
+            "error",
+            "as-needed"
+        ],
+        "prefer-arrow-callback": "error",
+        "class-methods-use-this": "off",
+        "no-underscore-dangle": [
+            "error",
+            {
+                "allowAfterThis": true
+            }
+        ],
+        "import/prefer-default-export": "off",
+        "consistent-return": "off"
+    }
+}
