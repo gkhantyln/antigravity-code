@@ -94,7 +94,7 @@ class GeminiProvider extends BaseAPIProvider {
                     }))
                 }];
                 // DEBUG LOG
-                console.log("DEBUG: ToolsConfig:", JSON.stringify(toolsConfig, null, 2));
+
             }
 
             // Create chat session
@@ -166,7 +166,7 @@ class GeminiProvider extends BaseAPIProvider {
      */
     extractToolCalls(response) {
         const calls = typeof response.functionCalls === 'function' ? response.functionCalls() : [];
-        console.log("DEBUG: Extracted Tool Calls:", JSON.stringify(calls, null, 2));
+
 
         if (!calls || calls.length === 0) {
             return null;
