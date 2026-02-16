@@ -43,13 +43,6 @@ class GeminiProvider extends BaseAPIProvider {
      */
     async initialize() {
         try {
-            logger.info('Initializing Gemini Client', {
-                keyLength: this.apiKey ? this.apiKey.length : 0,
-                keyStart: this.apiKey ? this.apiKey.substring(0, 4) : 'null',
-                keyEnd: this.apiKey ? this.apiKey.substring(this.apiKey.length - 4) : 'null',
-                model: this.model
-            });
-
             this.client = new GoogleGenerativeAI(this.apiKey);
             // Use v1beta API version to access newer models like gemini-2.5 and gemini-1.5
             this.generativeModel = this.client.getGenerativeModel({
