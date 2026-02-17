@@ -1,10 +1,9 @@
-const { logger } = require('../utils/logger');
-const ui = require('./ui');
 const inquirer = require('inquirer');
 const fs = require('fs');
 const path = require('path');
+const ui = require('./ui');
+const { logger } = require('../utils/logger');
 const { CodeIndexer } = require('../core/rag/indexer');
-const { AgentOrchestrator } = require('../core/agents/orchestrator');
 const { GitTool } = require('../core/tools/git');
 
 /**
@@ -251,7 +250,7 @@ class CommandHandler {
     /**
      * Handle /agent command
      */
-    async handleAgent(args) {
+    async handleAgent(_args) {
         // ... (existing implementation)
     }
 
@@ -260,7 +259,7 @@ class CommandHandler {
      */
     async handleCommit(args) {
         const git = new GitTool();
-        let message = args && args.length > 0 ? args.join(' ') : '';
+        const message = args && args.length > 0 ? args.join(' ') : '';
 
         // If message provided, just commit
         if (message) {
@@ -360,7 +359,7 @@ Return ONLY the commit message.
             const response = await this.engine.processRequest(prompt, {
                 images: [{
                     data: base64Image,
-                    mimeType: mimeType
+                    mimeType
                 }]
             });
 
@@ -409,7 +408,7 @@ Your task is to convert this screenshot into clean, responsive HTML and CSS code
             const response = await this.engine.processRequest(systemPrompt, {
                 images: [{
                     data: base64Image,
-                    mimeType: mimeType
+                    mimeType
                 }]
             });
 

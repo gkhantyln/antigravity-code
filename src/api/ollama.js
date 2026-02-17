@@ -15,7 +15,7 @@ class OllamaProvider extends BaseAPIProvider {
         return true;
     }
 
-    validateApiKey(apiKey) {
+    validateApiKey(_apiKey) {
         // Ollama usually doesn't require an API key for local use
         return true;
     }
@@ -26,7 +26,7 @@ class OllamaProvider extends BaseAPIProvider {
         const messages = this.buildContextMessages(message, context);
         const requestBody = {
             model: this.defaultModel,
-            messages: messages,
+            messages,
             stream: false,
             options: {
                 // Approximate mapping of config to Ollama options
@@ -39,7 +39,7 @@ class OllamaProvider extends BaseAPIProvider {
 
         try {
             const response = await axios.post(`${this.baseUrl}/api/chat`, requestBody);
-            const data = response.data;
+            const { data } = response;
 
             // Ollama response format:
             // { model: 'llama3', created_at: '...', message: { role: 'assistant', content: '...' }, done: true, ... }
@@ -63,7 +63,7 @@ class OllamaProvider extends BaseAPIProvider {
 
             // Handle connection refused (Ollama likely not running)
             if (error.code === 'ECONNREFUSED') {
-                return this.formatError(new Error('Connection refused. Is Ollama running on ' + this.baseUrl + '?'));
+                return this.formatError(new Error(`Connection refused. Is Ollama running on ${this.baseUrl}?`));
             }
 
             return this.formatError(error);

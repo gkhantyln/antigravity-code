@@ -1,5 +1,5 @@
 const { OllamaProvider } = require('../src/api/ollama');
-const { logger } = require('../src/utils/logger');
+
 
 async function testOllama() {
     console.log('--- Ollama Integration Test ---');

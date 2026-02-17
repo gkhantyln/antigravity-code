@@ -1,7 +1,8 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 const { ESLint } = require('eslint');
+// eslint-disable-next-line import/no-extraneous-dependencies
 const prettier = require('prettier');
 const fs = require('fs').promises;
-const path = require('path');
 const { logger } = require('../../utils/logger');
 
 class LintingTool {

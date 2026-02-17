@@ -134,7 +134,7 @@ class APIOrchestrator {
         const maxRetries = config.failover.maxRetriesPerProvider;
 
         let lastError;
-        let attemptedProviders = [];
+        const attemptedProviders = [];
 
         for (const providerName of this.providerOrder) {
             const provider = this.providers.get(providerName);
@@ -206,7 +206,7 @@ class APIOrchestrator {
 
                     // Wait before retry (exponential backoff)
                     if (attempt < maxRetries - 1) {
-                        const delay = config.failover.retryDelayMs * Math.pow(2, attempt);
+                        const delay = config.failover.retryDelayMs * 2 ** attempt;
                         await this.sleep(delay);
                     }
                 }
@@ -229,7 +229,7 @@ class APIOrchestrator {
     /**
      * Stream message with automatic failover
      */
-    async streamMessage(message, context = {}, onChunk) {
+    async streamMessage(message, onChunk, context = {}) {
         const provider = this.providers.get(this.currentProvider);
 
         if (!provider) {
@@ -237,7 +237,7 @@ class APIOrchestrator {
         }
 
         try {
-            await provider.streamMessage(message, context, onChunk);
+            await provider.streamMessage(message, onChunk, context);
         } catch (error) {
             logger.error('Streaming failed', {
                 provider: this.currentProvider,
@@ -344,7 +344,7 @@ class APIOrchestrator {
      * Sleep utility
      */
     sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise((resolve) => { setTimeout(resolve, ms); });
     }
 
     /**

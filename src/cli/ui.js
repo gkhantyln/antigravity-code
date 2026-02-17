@@ -4,6 +4,7 @@ const marked = require('marked');
 const { markedTerminal } = require('marked-terminal');
 
 // Configure marked with terminal renderer
+// eslint-disable-next-line new-cap
 const terminalRenderer = new markedTerminal({
     code: chalk.yellow,
     blockquote: chalk.gray.italic,
@@ -127,6 +128,7 @@ class UIManager {
     formatAIHeader(provider, model) {
         return chalk.magenta.bold(`\n🤖 AI (${provider}/${model}):`);
     }
+
     /**
      * Display the application banner and welcome message
      */
@@ -202,4 +204,3 @@ class UIManager {
 }
 
 module.exports = new UIManager();
-

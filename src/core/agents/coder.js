@@ -1,9 +1,8 @@
-const { BaseAgent } = require('./base');
-const { logger } = require('../../utils/logger');
-const fs = require('fs').promises;
-const path = require('path');
 const { exec } = require('child_process');
 const util = require('util');
+const { BaseAgent } = require('./base');
+const { logger } = require('../../utils/logger');
+
 const execAsync = util.promisify(exec);
 
 class CoderAgent extends BaseAgent {
@@ -15,12 +14,12 @@ class CoderAgent extends BaseAgent {
         logger.info(`Coder executing step ${step.id}: ${step.description}`);
 
         if (step.type === 'command') {
-            return await this.executeCommand(step.details);
-        } else if (step.type === 'code') {
-            return await this.generateCode(step);
-        } else {
-            return { success: true, message: 'Step skipped or handled elsewhere.' };
+            return this.executeCommand(step.details);
+        } if (step.type === 'code') {
+            return this.generateCode(step);
         }
+        return { success: true, message: 'Step skipped or handled elsewhere.' };
+
     }
 
     async executeCommand(command) {
@@ -41,13 +40,6 @@ class CoderAgent extends BaseAgent {
     }
 
     async generateCode(step) {
-        const systemPrompt = `
-You are an Expert Developer. Your task is to write code based on the instructions.
-You must return the code. If the user asks to save it to a file, use the 'write_file' format or just provide the code and I will handle saving if you specify the filename in a specific block.
-
-For now, please just provide the complete code content.
-If the step implies modifying an existing file, provide the full new content of the file.
-`;
         // In a real agentic loop, we would give this agent tool access (read/write file).
         // For this phase, we'll rely on the engine's tool capability or simulate it.
 

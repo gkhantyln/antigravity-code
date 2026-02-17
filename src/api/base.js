@@ -32,7 +32,7 @@ class BaseAPIProvider {
      * @param {Object} context - Conversation context
      * @returns {Promise<Object>} AI response
      */
-    async sendMessage(message, context) {
+    async sendMessage(_message, _context) {
         throw new Error('Method sendMessage() must be implemented');
     }
 
@@ -44,7 +44,7 @@ class BaseAPIProvider {
      * @param {Function} onChunk - Callback for each chunk
      * @returns {Promise<void>}
      */
-    async streamMessage(message, context, onChunk) {
+    async streamMessage(_message, _context, _onChunk) {
         throw new Error('Method streamMessage() must be implemented');
     }
 
@@ -100,7 +100,7 @@ class BaseAPIProvider {
      * @param {string} apiKey - API key to validate
      * @returns {boolean} Is valid
      */
-    validateApiKey(apiKey) {
+    validateApiKey(_apiKey) {
         throw new Error('Method validateApiKey() must be implemented');
     }
 
@@ -194,7 +194,7 @@ class BaseAPIProvider {
      * @protected
      */
     sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise((resolve) => { setTimeout(resolve, ms); });
     }
 
     /**

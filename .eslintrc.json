@@ -35,6 +35,16 @@
             }
         ],
         "import/prefer-default-export": "off",
-        "consistent-return": "off"
+        "consistent-return": "off",
+        "no-restricted-syntax": "off",
+        "no-await-in-loop": "off",
+        "no-continue": "off",
+        "no-plusplus": "off",
+        "no-use-before-define": [
+            "error",
+            {
+                "functions": false
+            }
+        ]
     }
 }

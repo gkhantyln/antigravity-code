@@ -1,5 +1,6 @@
 const { exec } = require('child_process');
 const util = require('util');
+
 const execAsync = util.promisify(exec);
 const { logger } = require('../../utils/logger');
 
@@ -19,30 +20,30 @@ class GitTool {
     }
 
     async status() {
-        return await this.run('git status --porcelain');
+        return this.run('git status --porcelain');
     }
 
     async diff(staged = false) {
         const flag = staged ? '--staged' : '';
-        return await this.run(`git diff ${flag}`);
+        return this.run(`git diff ${flag}`);
     }
 
     async add(files = '.') {
-        return await this.run(`git add ${files}`);
+        return this.run(`git add ${files}`);
     }
 
     async commit(message) {
         // Escape quotes in message to prevent shell issues
         const escapedMessage = message.replace(/"/g, '\\"');
-        return await this.run(`git commit -m "${escapedMessage}"`);
+        return this.run(`git commit -m "${escapedMessage}"`);
     }
 
     async log(limit = 5) {
-        return await this.run(`git log -n ${limit} --oneline`);
+        return this.run(`git log -n ${limit} --oneline`);
     }
 
     async getCurrentBranch() {
-        return await this.run('git rev-parse --abbrev-ref HEAD');
+        return this.run('git rev-parse --abbrev-ref HEAD');
     }
 }
 

@@ -1,5 +1,6 @@
+const fs = require('fs').promises;
 const { logger } = require('../utils/logger');
-const { generateId } = require('../utils/storage');
+
 
 const { CodeRetriever } = require('./rag/retriever');
 
@@ -248,7 +249,7 @@ class ContextManager {
     /**
      * Clear current conversation
      */
-    clearConversation() {
+    async clearConversation() {
         this.currentConversationId = null;
         logger.info('Conversation cleared');
     }
@@ -272,13 +273,11 @@ class ContextManager {
             updatedAt: conversation.updated_at,
         };
     }
+
     /**
      * Detect project type based on files
      */
     async detectProjectType(dir = process.cwd()) {
-        const fs = require('fs').promises;
-        const path = require('path');
-
         try {
             const files = await fs.readdir(dir);
 

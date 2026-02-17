@@ -16,7 +16,7 @@ class BaseAgent {
      * @param {string} task - The task or goal
      * @param {object} context - Additional context
      */
-    async think(task, context = {}) {
+    async think(task, _context = {}) {
         logger.debug(`${this.name} (${this.role}) is thinking...`);
         // Default implementation just returns the task, subclasses should override
         return task;
@@ -26,7 +26,7 @@ class BaseAgent {
      * Act on the task
      * @param {string} task - The task to execute
      */
-    async act(task) {
+    async act(_task) {
         throw new Error('Method act() must be implemented by subclasses');
     }
 

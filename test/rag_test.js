@@ -1,7 +1,7 @@
+const path = require('path');
 const { CodeIndexer } = require('../src/core/rag/indexer');
 const { CodeRetriever } = require('../src/core/rag/retriever');
-const path = require('path');
-const fs = require('fs').promises;
+
 
 async function testRAG() {
     console.log('--- RAG System Test ---');

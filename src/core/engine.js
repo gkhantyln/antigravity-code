@@ -75,7 +75,7 @@ class AntigravityEngine {
 
             // Send to API with failover support and tools
             // Note: detailed tool execution logic handles the loop
-            return await this._executeWithTools(message, context, tools);
+            return await this._executeWithTools(message, context, tools, options);
 
         } catch (error) {
             logger.error('Request processing failed', { error: error.message });
@@ -86,7 +86,7 @@ class AntigravityEngine {
     /**
      * Execute request with tool support
      */
-    async _executeWithTools(message, context, tools) {
+    async _executeWithTools(message, context, tools, options = {}) {
         // Send to API with failover support
         // Use empty string for continuation if message is null
         let msgToSend = message || '';
@@ -97,9 +97,9 @@ class AntigravityEngine {
             msgToSend = `[System Context]\n${projectContext}\n\n${message}`;
         }
 
-        // Merge options (for images) with tools
         const sendOptions = { ...options, tools };
-        let response = await this.apiOrchestrator.sendMessage(msgToSend, context, sendOptions);
+        // eslint-disable-next-line arrow-body-style
+        const response = await this.apiOrchestrator.sendMessage(msgToSend, context, sendOptions);
 
         if (!response.success) {
             throw new Error(response.error?.message || 'API request failed');
@@ -124,8 +124,9 @@ class AntigravityEngine {
             }
 
             // Update context with the new tool results and recurse
-            context = await this.contextManager.getContext();
-            return await this._executeWithTools(null, context, tools);
+            // Update context with the new tool results and recurse
+            const updatedContext = await this.contextManager.getContext();
+            return this._executeWithTools(null, updatedContext, tools, options);
         }
 
         return {
@@ -163,7 +164,7 @@ class AntigravityEngine {
     /**
      * Stream a user request
      */
-    async streamRequest(message, onChunk, options = {}) {
+    async streamRequest(message, onChunk, _options = {}) {
         if (!this.initialized) {
             throw new Error('Engine not initialized');
         }
@@ -178,12 +179,12 @@ class AntigravityEngine {
             let fullResponse = '';
 
             // Stream from API
-            await this.apiOrchestrator.streamMessage(message, context, chunk => {
+            await this.apiOrchestrator.streamMessage(message, chunk => {
                 fullResponse += chunk;
                 if (onChunk) {
                     onChunk(chunk);
                 }
-            });
+            }, context);
 
             // Add complete response to context
             const currentProvider = this.apiOrchestrator.getCurrentProvider();

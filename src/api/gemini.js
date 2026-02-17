@@ -84,7 +84,7 @@ class GeminiProvider extends BaseAPIProvider {
             const history = this.buildGeminiHistory(context);
 
             // Prepare tools if provided
-            let toolsConfig = undefined;
+            let toolsConfig;
             if (options.tools && options.tools.length > 0) {
                 toolsConfig = [{
                     functionDeclarations: options.tools.map(tool => ({
@@ -155,7 +155,7 @@ class GeminiProvider extends BaseAPIProvider {
             return {
                 success: true,
                 content: text,
-                toolCalls: toolCalls,
+                toolCalls,
                 provider: 'gemini',
                 model: this.model,
                 usage,
@@ -189,7 +189,7 @@ class GeminiProvider extends BaseAPIProvider {
         }
 
         return calls.map(call => ({
-            id: 'call_' + Math.random().toString(36).substr(2, 9),
+            id: `call_${Math.random().toString(36).substr(2, 9)}`,
             name: call.name,
             arguments: call.args
         }));
@@ -198,7 +198,7 @@ class GeminiProvider extends BaseAPIProvider {
     /**
      * Stream message response
      */
-    async streamMessage(message, context = {}, onChunk) {
+    async streamMessage(message, onChunk, context = {}) {
         if (!this.initialized) {
             await this.initialize();
         }
@@ -345,7 +345,7 @@ class GeminiProvider extends BaseAPIProvider {
 
                     history.push({
                         role: 'model',
-                        parts: parts
+                        parts
                     });
                     continue;
                 }

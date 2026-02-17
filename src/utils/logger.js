@@ -16,11 +16,12 @@ const redactSecrets = winston.format(info => {
         { pattern: /token["\s:=]+["']?[\w-]+/gi, replacement: 'token=***' },
     ];
 
-    let message = info.message;
+    let { message } = info;
     patterns.forEach(({ pattern, replacement }) => {
         message = message.replace(pattern, replacement);
     });
 
+    // eslint-disable-next-line no-param-reassign
     info.message = message;
     return info;
 });

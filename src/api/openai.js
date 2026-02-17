@@ -165,7 +165,7 @@ class OpenAIProvider extends BaseAPIProvider {
     /**
      * Stream message response
      */
-    async streamMessage(message, context = {}, onChunk) {
+    async streamMessage(message, onChunk, context = {}) {
         if (!this.initialized) {
             await this.initialize();
         }
