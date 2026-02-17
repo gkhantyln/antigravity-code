@@ -605,6 +605,7 @@ Your task is to convert this screenshot into clean, responsive HTML and CSS code
      */
     async handleInit(args) {
         const targetDir = args && args.length > 0 ? args[0] : '.';
+        const projectDescription = args && args.length > 1 ? args.slice(1).join(' ') : 'This project is initialized with the Fractal Agent architecture.';
         const fullPath = path.resolve(process.cwd(), targetDir);
 
         ui.startSpinner('Initializing Fractal Agent Scaffolding...', 'cyan');
@@ -639,11 +640,15 @@ Your task is to convert this screenshot into clean, responsive HTML and CSS code
 - **Style**: Concise, Professional, Educational
 
 ## 📂 Context
-This project is initialized with the Fractal Agent architecture.
+${projectDescription}
 `;
             fs.writeFileSync(path.join(fullPath, 'GEMINI.md'), geminiContent);
 
-            // 3. Create placeholder READMEs
+            // 3. Generate Content with AI
+            ui.stopSpinnerSuccess('Directories Created');
+            ui.startSpinner('Generating .agent content with AI...', 'cyan');
+
+            let generatedFiles = {};
             const placeholders = {
                 '.agent/.shared/README.md': '# ⛩ Core Library\nShared API, DB, and Security standards.',
                 '.agent/rules/README.md': '# ⚖️ Governance\nProject rules, compliance, and context.',
@@ -651,15 +656,61 @@ This project is initialized with the Fractal Agent architecture.
                 '.agent/workflows/README.md': '# 🚀 Ops\nOperational workflows (CI/CD, scripts).'
             };
 
-            Object.entries(placeholders).forEach(([file, content]) => {
-                const filePath = path.join(fullPath, file);
-                if (!fs.existsSync(filePath)) {
-                    fs.writeFileSync(filePath, content);
+            try {
+                const aiPrompt = `
+You are an expert software architect.
+I am initializing a new project with the following description: "${projectDescription}"
+
+Please generate specific, high-quality content for the following files in the .agent directory.
+The content should be in Markdown format.
+
+1. .agent/.shared/README.md (Core Library & Standards)
+2. .agent/rules/README.md (Project Rules & Governance)
+3. .agent/skills/README.md (Required Skills & Tools)
+4. .agent/workflows/README.md (Operational Workflows)
+
+Return the response as a valid JSON object where keys are the file paths and values are the file contents.
+Do not use markdown code blocks for the JSON. Just return the raw JSON.
+Example format:
+{
+  ".agent/.shared/README.md": "# Content...",
+  ".agent/rules/README.md": "# Content...",
+  ".agent/skills/README.md": "# Content...",
+  ".agent/workflows/README.md": "# Content..."
+}
+`;
+
+                const response = await this.engine.processRequest(aiPrompt);
+
+                // Attempt to parse JSON from response
+                const jsonStr = response.content.replace(/```json/g, '').replace(/```/g, '').trim();
+                generatedFiles = JSON.parse(jsonStr);
+
+                // Validate keys
+                const requiredKeys = Object.keys(placeholders);
+                const hasAllKeys = requiredKeys.every(k => Object.keys(generatedFiles).includes(k));
+
+                if (!hasAllKeys) {
+                    throw new Error('Incomplete AI response');
                 }
+
+            } catch (e) {
+                // Fallback if AI fails or JSON parsing fails
+                ui.warn(`AI Generation failed: ${e.message}. Using default placeholders.`);
+                generatedFiles = placeholders;
+            }
+
+            // Write files
+            Object.entries(generatedFiles).forEach(([file, content]) => {
+                const filePath = path.join(fullPath, file);
+                fs.writeFileSync(filePath, content);
             });
 
             ui.stopSpinnerSuccess('Project Initialized Successfully');
             ui.info(`Fractal Agent structure created in: ${targetDir}`);
+            if (projectDescription !== 'This project is initialized with the Fractal Agent architecture.') {
+                ui.info(`Context set: ${projectDescription}`);
+            }
 
         } catch (error) {
             ui.stopSpinnerFail('Initialization Failed');
