@@ -501,8 +501,9 @@ This project is initialized with the Fractal Agent architecture.
     /**
      * Handle /help command
      */
-    handleHelp() {
-        ui.help();
+    handleHelp(args) {
+        const commandName = args && args.length > 0 ? args[0] : null;
+        ui.help(commandName);
     }
 
     /**
@@ -574,7 +575,7 @@ This project is initialized with the Fractal Agent architecture.
                 this.handleClear();
                 break;
             case '/help':
-                this.handleHelp();
+                this.handleHelp(args);
                 break;
             case '/exit':
             case '/quit':

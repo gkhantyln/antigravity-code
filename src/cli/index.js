@@ -19,20 +19,22 @@ async function interactiveMode() {
 
     try {
         // Initialize engine
-        ui.showBanner();
+        // (Spinner removed to avoid clearing dashboard immediately, or handled inside dashboard flow if needed)
+        // For now, we'll keep the spinner but clear after
         ui.startSpinner('Initializing Antigravity Engine...', 'magenta');
         await engine.initialize();
         ui.stopSpinnerSuccess('Engine Ready');
 
         // Show connection info
+        // Show Dashboard
         const provider = engine.getCurrentProvider();
-        ui.info(`Connected to: ${provider.name} (${provider.model})`);
+        ui.showDashboard(provider, provider.model);
 
         // Create readline interface
         const rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
-            prompt: 'AG> ',
+            prompt: ui.theme.accent('> ') + ' ',
         });
 
         // Main REPL loop
@@ -40,6 +42,8 @@ async function interactiveMode() {
             const trimmed = input.trim();
 
             if (!trimmed) {
+                const provider = engine.getCurrentProvider();
+                ui.printPromptTop({ cwd: process.cwd(), provider });
                 rl.prompt();
                 return;
             }
@@ -56,6 +60,8 @@ async function interactiveMode() {
                     ui.error(error.message);
                 }
 
+                const provider = engine.getCurrentProvider();
+                ui.printPromptTop({ cwd: process.cwd(), provider });
                 rl.prompt();
                 return;
             }
@@ -80,11 +86,14 @@ async function interactiveMode() {
                 logger.error('Request failed', { error: error.message });
             }
 
+            const provider = engine.getCurrentProvider();
+            ui.printPromptTop({ cwd: process.cwd(), provider });
             rl.prompt();
         };
 
         // Handle input
         rl.on('line', async input => {
+            ui.printPromptBottom();
             await processInput(input);
         });
 
@@ -97,6 +106,7 @@ async function interactiveMode() {
         });
 
         // Show initial prompt
+        ui.printPromptTop({ cwd: process.cwd(), provider });
         rl.prompt();
 
     } catch (error) {
