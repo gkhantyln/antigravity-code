@@ -112,8 +112,23 @@ class GeminiProvider extends BaseAPIProvider {
 
             const chat = this.generativeModel.startChat(chatObj);
 
+            // Prepare message content (Text + Images)
+            let messageContent = message;
+
+            if (options.images && options.images.length > 0) {
+                messageContent = [message];
+                for (const image of options.images) {
+                    messageContent.push({
+                        inlineData: {
+                            data: image.data, // Base64 string
+                            mimeType: image.mimeType || 'image/png'
+                        }
+                    });
+                }
+            }
+
             // Send message
-            const result = await chat.sendMessage(message);
+            const result = await chat.sendMessage(messageContent);
             const response = await result.response;
 
             // Check for function calls
@@ -165,6 +180,7 @@ class GeminiProvider extends BaseAPIProvider {
      * Extract tool calls from Gemini response
      */
     extractToolCalls(response) {
+        if (!response || !response.functionCalls) return null;
         const calls = typeof response.functionCalls === 'function' ? response.functionCalls() : [];
 
 

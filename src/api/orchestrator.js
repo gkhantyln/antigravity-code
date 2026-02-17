@@ -1,6 +1,7 @@
 const { GeminiProvider } = require('./gemini');
 const { ClaudeProvider } = require('./claude');
 const { OpenAIProvider } = require('./openai');
+const { OllamaProvider } = require('./ollama');
 const { logger } = require('../utils/logger');
 const { secureStorage } = require('../utils/crypto');
 const { configManager } = require('../core/config');
@@ -71,7 +72,7 @@ class APIOrchestrator {
         // Get API key from secure storage
         const apiKey = await secureStorage.getApiKey(providerName);
 
-        if (!apiKey) {
+        if (!apiKey && providerName !== 'ollama') {
             logger.warn(`No API key found for provider: ${providerName}`);
             return;
         }
@@ -103,6 +104,12 @@ class APIOrchestrator {
                     model: config.openai.model,
                     maxTokens: config.openai.maxTokens,
                     temperature: 0.7,
+                });
+                break;
+
+            case 'ollama':
+                provider = new OllamaProvider({
+                    ollama: config.ollama
                 });
                 break;
 

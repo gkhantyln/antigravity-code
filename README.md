@@ -1,8 +1,9 @@
 <div align="center">
 
-# 🚀 Antigravity-Code
+# 🚀 Antigravity-Code v2.0
 
-### Multi-API AI Coding Assistant with Intelligent Failover
+### Multi-API Agentic AI Coding Assistant
+**Agentic Workflow • RAG Memory • Vision • Local Models • Smart Failover**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
@@ -11,7 +12,7 @@
 
 **Never lose productivity to API downtime again!**
 
-[Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Models](#-supported-models)
+[Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [New in v2.0](#-new-capabilities-v20) • [Documentation](#-documentation)
 
 </div>
 
@@ -21,10 +22,16 @@
 
 **Antigravity-Code** is a powerful terminal-based AI coding assistant designed for Windows developers. Unlike traditional AI assistants that rely on a single provider, Antigravity features **intelligent multi-API architecture** with automatic failover, ensuring uninterrupted coding assistance even when individual AI providers experience downtime.
 
+With **v2.0**, Antigravity evolves into a fully **Agentic System**. It doesn't just write code; it plans, implements, reviews, and fixes it for you using a team of specialized AI agents. It also gains sight (Vision), memory (RAG), and complete privacy with Local Models (Ollama).
+
 ### Why Antigravity?
 
 - 🔄 **99.9% Uptime** - Automatic failover across 3 AI providers
-- 🎯 **85+ AI Models** - Choose from Gemini, Claude, and OpenAI
+- 🤖 **Agentic Workflow** - Autonomous Planner, Coder, and Reviewer agents
+- 🧠 **RAG Memory** - Indexes your codebase for intelligent context retrieval
+- 👁️ **Vision & UI** - Converts screenshots directly to HTML/CSS code
+- � **Local & Private** - Run 100% offline with Ollama (Llama 3, Mistral, etc.)
+- �🎯 **85+ AI Models** - Choose from Gemini, Claude, and OpenAI
 - 🛡️ **Zero Context Loss** - Seamless provider switching mid-conversation
 - 🔒 **Privacy First** - Local storage, encrypted keys, no telemetry
 - ⚡ **Lightning Fast** - Native Windows terminal integration
@@ -38,23 +45,29 @@
 
 | Feature | Description |
 |---------|-------------|
+| 🤖 **Agentic Mode** | **NEW!** Autonomous planning, coding, and reviewing workflow |
 | 💻 **Code Generation** | Write clean, efficient code in any language |
-| 📂 **File System Ops** | Read, write, and delete files directly |
-| 🐛 **Intelligent Debugging** | Find and fix bugs systematically |
+| �️ **Vision Analysis** | **NEW!** Analyze images and generated code from screenshots |
+| 🧠 **RAG Context** | **NEW!** Index entire codebase for accurate answers |
+| �📂 **File System Ops** | Read, write, and delete files directly |
+| 🐛 **Intelligent Debugging** | Find and fix bugs systematically using Linter and Auto-Fix |
+| 🔄 **Smart Commit** | **NEW!** Auto-generate conventional commit messages from git diff |
 | 🧪 **Test Generation** | Automated unit tests written to disk |
 | 📝 **Documentation** | Auto-generate comprehensive docs |
 | 🔄 **Refactoring** | Improve code quality and structure |
-| 🧠 **Context Awareness** | **NEW!** Auto-detects project type (Node, Python, etc.) |
+| 🧠 **Context Awareness** | Auto-detects project type (Node, Python, etc.) |
+| 🏗️ **Project Scaffolding** | **NEW!** Auto-generate Fractal Agent structure with \`/init\` |
 
 ### Advanced Features
 
-- **🔄 Intelligent Failover**: Automatic switching between Gemini → Claude → OpenAI
-- **🎨 Rich CLI (v1.1)**: Vibrant colors, animated spinners, and markdown rendering
-- **🐚 Shell Integration**: Native `ag` alias and system PATH setup
-- **📊 Context Management**: Smart conversation history with 5MB compression
-- **🛠️ Extensible Skills**: Custom skills for specialized tasks
-- **🚀 Workflow Automation**: Pre-defined workflows (`/create`, `/debug`, `/test`)
-- **🔐 Secure Storage**: Windows DPAPI encryption for API keys
+- **🏠 Local Model Support**: Full support for Ollama (Llama 3, etc.) for offline coding.
+- **🔄 Intelligent Failover**: Automatic switching between Gemini → Claude → OpenAI.
+- **🎨 Rich CLI**: Vibrant colors, animated spinners, and markdown rendering.
+- **🐚 Shell Integration**: Native `ag` alias and system PATH setup.
+- **📊 Context Management**: Smart conversation history with 5MB compression.
+- **🛠️ Extensible Skills**: Custom skills for specialized tasks.
+- **🚀 Workflow Automation**: Pre-defined workflows (`/create`, `/debug`, `/test`).
+- **🔐 Secure Storage**: Windows DPAPI encryption for API keys.
 
 ---
 
@@ -65,7 +78,9 @@
 - **Node.js** 18.0.0 or higher ([Download](https://nodejs.org/))
 - **npm** 9.0.0 or higher
 - **Windows** 10/11 with PowerShell 5.1+
-- **API Key** from at least one provider:
+- **Git** installed and available in PATH
+- (Optional) **Ollama** for local models ([Download](https://ollama.com/))
+- **API Key** from at least one provider (if not using Ollama):
   - [Google AI Studio](https://makersuite.google.com/app/apikey) (Gemini - Recommended)
   - [Anthropic Console](https://console.anthropic.com/) (Claude)
   - [OpenAI Platform](https://platform.openai.com/api-keys) (OpenAI)
@@ -102,40 +117,32 @@ The setup wizard will guide you through:
 ```bash
 ag
 # or
-antigravity
+antigravity-code
 ```
 
 **Example Session:**
 
 ```
-🚀 Antigravity-Code v1.1.0
+🚀 Antigravity-Code v2.0
 Connected to: gemini (gemini-2.5-flash)
 
-AG> Write a function to validate email addresses
+AG> /agent "Refactor the auth middleware to use JWT"
 
-🤖 AI (gemini/gemini-2.5-flash):
-Here's a robust email validation function:
+🤖 Planner: Creating execution plan...
+1. [ ] Install jsonwebtoken package
+2. [ ] Update middleware/auth.js
+3. [ ] Update routes/auth.js
 
-function validateEmail(email) {
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return regex.test(email);
-}
+🤖 Coder: Executing step 1...
+✓ Installed jsonwebtoken
 
-// Usage
-console.log(validateEmail('user@example.com')); // true
-console.log(validateEmail('invalid.email'));     // false
+🤖 Reviewer: Checking code changes...
+✓ Linting passed. functionality verified.
 
-> /model gemini-3-pro
-✓ Changed Gemini model to: gemini-3-pro
-
-> /help
-Available Commands:
-/create   - Create features & files
-/debug    - Debug issues
-/test     - Generate & save tests
-/model    - Change Gemini model
-/provider - Switch provider
-/exit     - Exit
+> /commit
+AI: Suggested message: "refactor(auth): migrate to JWT authentication"
+Commit? (y/n): y
+✓ Committed.
 ```
 
 ### Single Command Mode
@@ -159,11 +166,17 @@ cat error.log | ag "Debug this error"
 
 | Command | Description | Example |
 |---------|-------------|---------|
+| `/agent` | **NEW!** Start autonomous agentic workflow | `/agent "Build a todo app"` |
+| `/ui` | **NEW!** Convert screenshot to HTML/CSS code | `/ui mockup.png` |
+| `/see` | **NEW!** Analyze an image | `/see error_screenshot.png` |
+| `/commit` | **NEW!** Smart git commit message generation | `/commit` (auto-detects changes) |
+| `/index` | **NEW!** Index codebase for RAG | `/index` |
+| `/init` | **NEW!** Initialize Fractal Agent scaffolding | `/init my-app` |
 | `/create` | Create new features/files directly | `/create "snake game in python"` |
 | `/debug` | Debug and fix code issues | `/debug "fix this error"` |
 | `/test` | Generate and save unit tests | `/test "app.js"` |
-| `/model` | Change Gemini model | `/model gemini-3-pro` |
-| `/provider` | Switch AI provider | `/provider claude` |
+| `/model` | Change Gemini/Ollama model | `/model llama3` |
+| `/provider` | Switch AI provider | `/provider ollama` |
 | `/config` | View/update configuration | `/config` |
 | `/new` | Start new conversation | `/new` |
 | `/clear` | Clear screen | `/clear` |
@@ -190,6 +203,12 @@ cat error.log | ag "Debug this error"
 **Legacy Models**
 - `gemini-2.0-flash-exp`, `gemini-2.0-flash`, `gemini-2.0-flash-lite`
 - `gemini-1.5-pro`, `gemini-1.5-flash`, `gemini-1.0-pro`
+
+### Ollama (Local Provider) - **NEW!**
+- `llama3`
+- `mistral`
+- `codellama`
+- *Any model pulled via `ollama pull <model>`*
 
 ### Claude (Secondary Provider) - 11 Models
 
@@ -234,12 +253,16 @@ Edit `.env` file:
 
 ```env
 # Provider Priority
-PRIMARY_PROVIDER=gemini
+PRIMARY_PROVIDER=gemini # or ollama
 SECONDARY_PROVIDER=claude
 TERTIARY_PROVIDER=openai
 
 # Gemini Configuration
 GEMINI_DEFAULT_MODEL=gemini-2.5-flash
+
+# Ollama Configuration (NEW)
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=llama3
 
 # Failover Settings
 FAILOVER_ENABLED=true
@@ -255,16 +278,13 @@ MAX_CONTEXT_SIZE_MB=5
 
 ### Model Switching
 
-**Change Gemini Model:**
+**Switch to Local Mode:**
 ```bash
-> /model gemini-3-pro
-✓ Changed Gemini model to: gemini-3-pro
-```
+> /provider ollama
+✓ Switched to provider: ollama
 
-**Switch Provider:**
-```bash
-> /provider claude
-✓ Switched to provider: claude
+> /model llama3
+✓ Changed Ollama model to: llama3
 ```
 
 ---
@@ -274,6 +294,7 @@ MAX_CONTEXT_SIZE_MB=5
 Antigravity-Code prioritizes your security and privacy:
 
 - 🔐 **Encrypted API Keys** - Windows DPAPI encryption
+- 🏠 **Local Mode** - Use Ollama for complete data privacy (no data leaves your machine)
 - 💾 **Local Storage** - All data stored locally on your machine
 - 🚫 **No Telemetry** - Zero data collection or analytics
 - 🔒 **Secure Logging** - Automatic secret redaction in logs
@@ -303,41 +324,48 @@ Antigravity-Code prioritizes your security and privacy:
 ## 🎨 Examples
 
 ### Example 1: Create a REST API
-
 ```bash
 > /create
-
 AI: What feature would you like to create?
 You: REST API for user management with JWT auth
-
 AI: I'll create `src/routes/auth.js` and `src/controllers/authController.js` with:
 - User CRUD operations
 - JWT authentication
 - Input validation
-
 Proceed? (y/n): y
 ✓ Files created successfully.
 ```
 
 ### Example 2: Debug an Error
-
 ```bash
 > /debug
-
 AI: What issue are you experiencing?
 You: Getting "Cannot read property 'map' of undefined"
-
 AI: Let me analyze...
 [Provides detailed analysis and fix]
 ```
 
 ### Example 3: Generate Tests
-
 ```bash
 > /test "src/utils/validator.js"
-
 AI: I will generate unit tests for `validator.js`.
 ✓ Created `tests/validator.test.js` with 5 test cases.
+```
+
+### Example 4: Agentic Workflow (NEW)
+```bash
+> /agent "Implement a User Profile page with React"
+🤖 Planner: Creating execution plan...
+1. [ ] Create Profile.js component
+2. [ ] Add CSS definitions
+3. [ ] Update App.js router
+...
+```
+
+### Example 5: Vision Analysis (NEW)
+```bash
+> /see diagram.png "Explain this database schema"
+AI: This diagram shows a relational database with 3 tables...
 ```
 
 ---
@@ -356,11 +384,14 @@ antigravity-code/
 │   │   ├── gemini.js        # Gemini (14 models)
 │   │   ├── claude.js        # Claude (11 models)
 │   │   ├── openai.js        # OpenAI (60+ models)
+│   │   ├── ollama.js        # Ollama (Local Models)
 │   │   └── orchestrator.js  # Failover logic
 │   ├── cli/                  # CLI interface
 │   ├── core/                 # Core engine
 │   ├── tools/                # AI Tools
-│   │   └── filesystem.js    # File System ops
+│   │   ├── filesystem.js    # File System ops
+│   │   ├── git.js           # Git operations
+│   │   └── linter.js        # Linter integration
 │   └── utils/                # Utilities
 ├── scripts/
 │   └── setup.js              # Setup wizard
@@ -370,25 +401,18 @@ antigravity-code/
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions! Here's how you can help:
-
-1. 🍴 Fork the repository
-2. 🌿 Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. 💻 Make your changes
-4. ✅ Run tests (`npm test`)
-5. 📝 Commit your changes (`git commit -m 'Add amazing feature'`)
-6. 🚀 Push to the branch (`git push origin feature/amazing-feature`)
-7. 🎉 Open a Pull Request
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and development process.
-
----
-
 ## 📊 Roadmap
 
-### Version 1.1 (Current) ✅
+### Version 2.0 (Current) ✅
+- ✅ **Agentic Workflow** (Planner, Coder, Reviewer)
+- ✅ **RAG Memory** (Codebase Indexing)
+- ✅ **Vision Support** (Image Analysis & UI Gen)
+- ✅ **Local Models** (Ollama Integration)
+- ✅ **Git Integration** (Smart Commit)
+- ✅ **Proactive Debugging** (Linting)
+- ✅ **Project Scaffolding** (Fractal Agent /init)
+
+### Version 1.1 (Completed) ✅
 - ✅ Rich CLI with `chalk` & `ora`
 - ✅ Deep Shell Integration (`ag` alias)
 - ✅ Intelligent Context Awareness
@@ -401,18 +425,18 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 - ✅ Terminal interface
 - ✅ Skills and workflows
 
-### Version 2.0 (Planned)
-- [ ] GUI interface (Electron)
+### Version 3.0 (Planned)
+- [ ] GUI interface (Electron/Web)
 - [ ] Team collaboration
-- [ ] Cloud sync (optional)
 - [ ] Plugin marketplace
 - [ ] Voice commands
-
-### Version 3.0 (Future)
-- [ ] Self-hosted AI models
-- [ ] Custom model fine-tuning
-- [ ] Advanced analytics
 - [ ] IDE integrations (VS Code, JetBrains)
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ---
 
@@ -420,22 +444,16 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 ### Common Issues
 
+**Problem:** "Ollama connection failed"
+```bash
+# Solution: Ensure Ollama is running
+ollama serve
+```
+
 **Problem:** "Invalid API key"
 ```bash
 # Solution: Re-run setup
 npm run setup
-```
-
-**Problem:** "Failed to connect to API"
-```bash
-# Solution: Check internet connection and try switching provider
-> /provider claude
-```
-
-**Problem:** "Model not available"
-```bash
-# Solution: Check available models
-> /model
 ```
 
 For more help, see [Troubleshooting Guide](docs/troubleshooting.md)
@@ -444,23 +462,7 @@ For more help, see [Troubleshooting Guide](docs/troubleshooting.md)
 
 ## 📄 License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-```
-MIT License
-
-Copyright (c) 2026 gkhantyln
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-```
+MIT License © 2026 gkhantyln
 
 ---
 
@@ -470,9 +472,28 @@ Special thanks to:
 - [Google AI](https://ai.google.dev/) for Gemini API
 - [Anthropic](https://www.anthropic.com/) for Claude API
 - [OpenAI](https://openai.com/) for OpenAI API
+- [Ollama](https://ollama.com/) for Local LLM support
 - All contributors and supporters of this project
 
 ---
+
+## 🥊 The Ultimate Showdown: Antigravity vs Claude Code
+
+Why limit yourself to one brain when you can have the entire hive mind? **Antigravity-Code** is engineered to be **Anti-Fragile**, correcting itself and adapting to any situation.
+
+| Feature Strategy | 🚀 **Antigravity-Code** (The Hive Mind) | 🤖 Claude Code (The Solitary Cloud) |
+| :--- | :--- | :--- |
+| **🧠 Intelligence Architecture** | **Fractal Agent Swarm**<br>(Planner + Coder + Reviewer agents working in parallel) | Linear Chain<br>(One-step thinking) |
+| **🛡️ Resilience Strategy** | **Unstoppable Failover**<br>(Auto-switches: Gemini → Claude → OpenAI if one fails) | **Single Point of Failure**<br>(If Anthropic is down, you stop coding) |
+| **🔒 Data Sovereignty** | **100% Private & Offline Capable**<br>(Run locally via Ollama with zero data leak) | **Cloud Locked**<br>(Your code always leaves your machine) |
+| **⚡ Performance** | **Native Shell Speed**<br>(Interacts directly with OS kernel & filesystem) | API Latency Dependent |
+| **👁️ Sensory Input** | **True Multi-Modal Vision**<br>(Sees screenshots, diagrams, and UI mockups) | Text-Based constraints |
+| **🔄 DevOps Integration** | **Smart Context Awareness**<br>(Auto-detects environment, git state, and project type) | Standard CLI inputs |
+| **💸 Economy** | **Cost-Agnostic**<br>(Switch to free local models to save $) | Pay-per-token only |
+| **🏗️ Scaffolding** | **Fractal Core Injection** (`/init`)<br>(Instantly builds enterprise-grade agent structure) | Basic file creation |
+
+### 🏆 The Verdict: **Antigravity-Code Dominates**
+> *While Claude Code is a brilliant tool, **Antigravity-Code is a Platform.** It gives you the freedom of Open Source, the power of Multi-Model orchestration, and the security of Local Execution. Don't just code; **Antigravity**.*
 
 ## 📞 Contact & Support
 
@@ -482,11 +503,13 @@ Special thanks to:
 
 [![Email](https://img.shields.io/badge/Email-tylngkhn@gmail.com-red?style=for-the-badge&logo=gmail&logoColor=white)](mailto:tylngkhn@gmail.com)
 [![GitHub](https://img.shields.io/badge/GitHub-gkhantyln-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/gkhantyln)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/gkhantyln/)
 
 **Need help?**
 - 📧 Email: [tylngkhn@gmail.com](mailto:tylngkhn@gmail.com)
 - 🐛 Issues: [GitHub Issues](https://github.com/gkhantyln/antigravity-code/issues)
 - 💬 Discussions: [GitHub Discussions](https://github.com/gkhantyln/antigravity-code/discussions)
+- 💼 LinkedIn: [Gökhan TAYLAN](https://www.linkedin.com/in/gkhantyln/)
 
 </div>
 
@@ -505,6 +528,6 @@ Special thanks to:
 
 **© 2026 Antigravity-Code | MIT License**
 
-[⬆ Back to Top](#-antigravity-code)
+[⬆ Back to Top](#-antigravity-code-v20)
 
 </div>

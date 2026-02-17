@@ -213,7 +213,7 @@ class ConfigManager {
         const errors = [];
 
         // Validate providers
-        const validProviders = ['claude', 'gemini', 'openai'];
+        const validProviders = ['claude', 'gemini', 'openai', 'ollama'];
         if (!validProviders.includes(this.config.providers.primary)) {
             errors.push(`Invalid primary provider: ${this.config.providers.primary}`);
         }

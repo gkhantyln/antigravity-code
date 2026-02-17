@@ -1,6 +1,11 @@
 const { logger } = require('../utils/logger');
 const ui = require('./ui');
 const inquirer = require('inquirer');
+const fs = require('fs');
+const path = require('path');
+const { CodeIndexer } = require('../core/rag/indexer');
+const { AgentOrchestrator } = require('../core/agents/orchestrator');
+const { GitTool } = require('../core/tools/git');
 
 /**
  * Command Handlers
@@ -229,6 +234,263 @@ class CommandHandler {
     }
 
     /**
+     * Handle /index command
+     */
+    async handleIndex() {
+        ui.startSpinner('Indexing codebase...', 'cyan');
+        try {
+            const indexer = new CodeIndexer();
+            const count = await indexer.indexFiles();
+            ui.stopSpinnerSuccess(`Indexing Complete. Processed ${count} chunks.`);
+        } catch (error) {
+            ui.stopSpinnerFail('Indexing Failed');
+            ui.error(error.message);
+        }
+    }
+
+    /**
+     * Handle /agent command
+     */
+    async handleAgent(args) {
+        // ... (existing implementation)
+    }
+
+    /**
+     * Handle /commit command (Smart Commit)
+     */
+    async handleCommit(args) {
+        const git = new GitTool();
+        let message = args && args.length > 0 ? args.join(' ') : '';
+
+        // If message provided, just commit
+        if (message) {
+            try {
+                await git.commit(message);
+                ui.success(`Committed: ${message}`);
+            } catch (error) {
+                ui.error(`Commit failed: ${error.message}`);
+            }
+            return;
+        }
+
+        // Smart Commit Flow
+        ui.startSpinner('Analyzing changes...', 'cyan');
+        try {
+            // 1. Check status
+            const status = await git.status();
+            if (!status) {
+                ui.stopSpinnerFail('No changes to commit.');
+                return;
+            }
+
+            // 2. Stage all changes (for simplicity in this flow, or asking user first is better)
+            // Let's assume user wants to commit everything they see in 'git status'
+            await git.add('.');
+
+            // 3. Get Diff
+            const diff = await git.diff(true); // Get staged diff
+            if (!diff) {
+                ui.stopSpinnerFail('No changes detected in diff.');
+                return;
+            }
+
+            // 4. Generate Message
+            const prompt = `
+Generate a concise, conventional commit message for these changes.
+Format: <type>(<scope>): <subject>
+
+Diff:
+${diff}
+
+Return ONLY the commit message.
+`;
+            const response = await this.engine.processRequest(prompt);
+            const suggestedMessage = response.content.trim().replace(/^['"]|['"]$/g, ''); // Clean quotes
+
+            ui.stopSpinnerSuccess('Analysis Complete');
+
+            // 5. Confirm
+            const answer = await inquirer.prompt([
+                {
+                    type: 'confirm',
+                    name: 'confirm',
+                    message: `Suggested Message: "${suggestedMessage}"\nCommit now?`,
+                    default: true
+                }
+            ]);
+
+            if (answer.confirm) {
+                await git.commit(suggestedMessage);
+                ui.success(`Committed: ${suggestedMessage}`);
+            } else {
+                ui.info('Commit cancelled.');
+            }
+
+        } catch (error) {
+            ui.stopSpinnerFail('Smart Commit Failed');
+            ui.error(error.message);
+        }
+    }
+
+    /**
+     * Handle /see command (Vision)
+     */
+    async handleSee(args) {
+        if (!args || args.length === 0) {
+            ui.warn('Usage: /see <path/to/image> [prompt]');
+            return;
+        }
+
+        const imagePath = args[0];
+        // Combine remaining args as prompt, or default
+        const prompt = args.length > 1 ? args.slice(1).join(' ') : 'Describe this image and analyze its contents.';
+
+        if (!fs.existsSync(imagePath)) {
+            ui.error(`File not found: ${imagePath}`);
+            return;
+        }
+
+        ui.startSpinner('Analyzing Image...', 'cyan');
+        try {
+            // Read image and convert to base64
+            const imageBuffer = fs.readFileSync(imagePath);
+            const base64Image = imageBuffer.toString('base64');
+            const mimeType = path.extname(imagePath) === '.png' ? 'image/png' : 'image/jpeg';
+
+            const response = await this.engine.processRequest(prompt, {
+                images: [{
+                    data: base64Image,
+                    mimeType: mimeType
+                }]
+            });
+
+            ui.stopSpinnerSuccess('Analysis Complete');
+            console.log(ui.formatAIHeader(response.provider, response.model));
+            ui.renderMarkdown(response.content);
+
+        } catch (error) {
+            ui.stopSpinnerFail('Vision Analysis Failed');
+            ui.error(error.message);
+        }
+    }
+
+    /**
+     * Handle /ui command (Screenshot to Code)
+     */
+    async handleUI(args) {
+        if (!args || args.length === 0) {
+            ui.warn('Usage: /ui <path/to/screenshot>');
+            return;
+        }
+
+        const imagePath = args[0];
+        if (!fs.existsSync(imagePath)) {
+            ui.error(`File not found: ${imagePath}`);
+            return;
+        }
+
+        ui.startSpinner('Converting Screenshot to Code...', 'cyan');
+        try {
+            // Read image and convert to base64
+            const imageBuffer = fs.readFileSync(imagePath);
+            const base64Image = imageBuffer.toString('base64');
+            const mimeType = path.extname(imagePath) === '.png' ? 'image/png' : 'image/jpeg';
+
+            const systemPrompt = `
+You are an expert Front-End Developer.
+Your task is to convert this screenshot into clean, responsive HTML and CSS code.
+1. Analyze the UI components, layout, colors, and typography.
+2. Generate the HTML structure.
+3. Generate the CSS styles (you can use Tailwind CSS classes or raw CSS).
+4. Output the full code in a single file or clear blocks.
+5. Do not include verbose explanations, just the code.
+`;
+
+            const response = await this.engine.processRequest(systemPrompt, {
+                images: [{
+                    data: base64Image,
+                    mimeType: mimeType
+                }]
+            });
+
+            ui.stopSpinnerSuccess('Code Generation Complete');
+            console.log(ui.formatAIHeader(response.provider, response.model));
+            ui.renderMarkdown(response.content);
+
+        } catch (error) {
+            ui.stopSpinnerFail('UI Generation Failed');
+            ui.error(error.message);
+        }
+    }
+
+    /**
+     * Handle /init command (Project Scaffolding)
+     */
+    async handleInit(args) {
+        const targetDir = args && args.length > 0 ? args[0] : '.';
+        const fullPath = path.resolve(process.cwd(), targetDir);
+
+        ui.startSpinner('Initializing Fractal Agent Scaffolding...', 'cyan');
+
+        try {
+            // 1. Create Directories
+            const dirs = [
+                '.agent',
+                '.agent/.shared',
+                '.agent/rules',
+                '.agent/skills',
+                '.agent/workflows'
+            ];
+
+            dirs.forEach(dir => {
+                const dirPath = path.join(fullPath, dir);
+                if (!fs.existsSync(dirPath)) {
+                    fs.mkdirSync(dirPath, { recursive: true });
+                }
+            });
+
+            // 2. Create GEMINI.md
+            const geminiContent = `# 🧠 GEMINI AGENT IDENTITY
+
+## 🆔 Core Identity
+- **Name**: Antigravity Assistant
+- **Role**: Senior Full-Stack Developer & Architect
+- **Mission**: To build scalable, maintainable, and high-quality software.
+
+## ⚙️ Configuration
+- **Language**: English (Primary), Turkish (Secondary)
+- **Style**: Concise, Professional, Educational
+
+## 📂 Context
+This project is initialized with the Fractal Agent architecture.
+`;
+            fs.writeFileSync(path.join(fullPath, 'GEMINI.md'), geminiContent);
+
+            // 3. Create placeholder READMEs
+            const placeholders = {
+                '.agent/.shared/README.md': '# ⛩ Core Library\nShared API, DB, and Security standards.',
+                '.agent/rules/README.md': '# ⚖️ Governance\nProject rules, compliance, and context.',
+                '.agent/skills/README.md': '# 🛠 Mastery\nSpecialized AI skills and tools.',
+                '.agent/workflows/README.md': '# 🚀 Ops\nOperational workflows (CI/CD, scripts).'
+            };
+
+            Object.entries(placeholders).forEach(([file, content]) => {
+                const filePath = path.join(fullPath, file);
+                if (!fs.existsSync(filePath)) {
+                    fs.writeFileSync(filePath, content);
+                }
+            });
+
+            ui.stopSpinnerSuccess('Project Initialized Successfully');
+            ui.info(`Fractal Agent structure created in: ${targetDir}`);
+
+        } catch (error) {
+            ui.stopSpinnerFail('Initialization Failed');
+            ui.error(error.message);
+        }
+    }
+
+    /**
      * Handle /clear command
      */
     handleClear() {
@@ -270,6 +532,21 @@ class CommandHandler {
         const { command, args } = this.parseCommand(input);
 
         switch (command) {
+            case '/agent':
+                await this.handleAgent(args);
+                break;
+            case '/commit':
+                await this.handleCommit(args);
+                break;
+            case '/see':
+                await this.handleSee(args);
+                break;
+            case '/ui':
+                await this.handleUI(args);
+                break;
+            case '/init':
+                await this.handleInit(args);
+                break;
             case '/create':
                 await this.handleCreate(args);
                 break;
@@ -290,6 +567,9 @@ class CommandHandler {
                 break;
             case '/new':
                 await this.handleNew(args);
+                break;
+            case '/index':
+                await this.handleIndex();
                 break;
             case '/clear':
                 this.handleClear();

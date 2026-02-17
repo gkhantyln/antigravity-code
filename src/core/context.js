@@ -1,6 +1,8 @@
 const { logger } = require('../utils/logger');
 const { generateId } = require('../utils/storage');
 
+const { CodeRetriever } = require('./rag/retriever');
+
 /**
  * Context Manager
  * Manages conversation history and file context
@@ -12,6 +14,7 @@ class ContextManager {
         this.maxMessages = 50;
         this.maxFileContext = 10;
         this.maxContextSizeMB = 5;
+        this.retriever = new CodeRetriever();
     }
 
     /**
@@ -147,9 +150,26 @@ class ContextManager {
             };
         });
 
+        // Fetch relevant code chunks via RAG
+        let relevantCode = [];
+        try {
+            // Find user query from the last message
+            const lastUserMessage = chronologicalMessages
+                .filter(m => m.role === 'user')
+                .pop();
+
+            if (lastUserMessage) {
+                await this.retriever.initialize();
+                relevantCode = await this.retriever.findRelevant(lastUserMessage.content);
+            }
+        } catch (error) {
+            logger.warn('Failed to retrieve relevant code', { error: error.message });
+        }
+
         return {
             conversationId: this.currentConversationId,
             messages: formattedMessages,
+            relevantCode // Add RAG context
         };
     }
 

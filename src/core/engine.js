@@ -97,7 +97,9 @@ class AntigravityEngine {
             msgToSend = `[System Context]\n${projectContext}\n\n${message}`;
         }
 
-        let response = await this.apiOrchestrator.sendMessage(msgToSend, context, { tools });
+        // Merge options (for images) with tools
+        const sendOptions = { ...options, tools };
+        let response = await this.apiOrchestrator.sendMessage(msgToSend, context, sendOptions);
 
         if (!response.success) {
             throw new Error(response.error?.message || 'API request failed');
