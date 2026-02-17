@@ -135,7 +135,7 @@ class UIManager {
 
         // Header
         console.log(topParams);
-        const title = 'Antigravity-Code v2.1.0';
+        const title = 'Antigravity-Code v2.2.0';
         const leftPad = Math.floor((width - title.length) / 2);
         console.log(border + ' '.repeat(leftPad) + THEME.accent.bold(title) + ' '.repeat(width - title.length - leftPad) + border);
         console.log(midParams);

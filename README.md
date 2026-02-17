@@ -447,15 +447,6 @@ antigravity-code/
 
 ## 📊 Roadmap
 
-### Version 2.0 (Current) ✅
-- ✅ **Agentic Workflow** (Planner, Coder, Reviewer)
-- ✅ **RAG Memory** (Codebase Indexing)
-- ✅ **Vision Support** (Image Analysis & UI Gen)
-- ✅ **Local Models** (Ollama Integration)
-- ✅ **Git Integration** (Smart Commit)
-- ✅ **Proactive Debugging** (Linting)
-- ✅ **Project Scaffolding** (Fractal Agent /init)
-
 ### Version 2.2.0 (Current) ✅
 - ✅ **Checkpoint System** (File snapshots with `/rewind` and `/checkpoints`)
 - ✅ **Permission Modes** (3 modes: default, auto-edit, plan-only)
@@ -469,6 +460,15 @@ antigravity-code/
 - ✅ **Safe Execution** (Sandboxing & Blocklist)
 - ✅ **UX Polish** (Colorized Diffs & Confirmations)
 - ✅ **IDE Readiness** (MCP Server & JSON Output)
+
+### Version 2.0 (Current) ✅
+- ✅ **Agentic Workflow** (Planner, Coder, Reviewer)
+- ✅ **RAG Memory** (Codebase Indexing)
+- ✅ **Vision Support** (Image Analysis & UI Gen)
+- ✅ **Local Models** (Ollama Integration)
+- ✅ **Git Integration** (Smart Commit)
+- ✅ **Proactive Debugging** (Linting)
+- ✅ **Project Scaffolding** (Fractal Agent /init)
 
 ### Version 1.1 (Completed) ✅
 - ✅ Rich CLI with `chalk` & `ora`

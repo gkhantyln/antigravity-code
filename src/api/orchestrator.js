@@ -59,10 +59,11 @@ class APIOrchestrator {
             availableProviders: Array.from(this.providers.keys()),
         });
 
-        // Start health check monitoring
-        if (config.failover.enabled) {
-            this.startHealthChecks();
-        }
+        // Health checks disabled to prevent unnecessary API calls
+        // Failover will still work automatically when a provider fails
+        // if (config.failover.enabled) {
+        //     this.startHealthChecks();
+        // }
     }
 
     /**

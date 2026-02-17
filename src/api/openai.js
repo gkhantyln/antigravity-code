@@ -150,15 +150,28 @@ class OpenAIProvider extends BaseAPIProvider {
         } catch (error) {
             const latency = Date.now() - startTime;
 
+            // Simplify error messages for users
+            let userMessage = error.message;
+            if (userMessage.includes('429') || userMessage.includes('quota') || userMessage.includes('rate limit')) {
+                userMessage = '⏱️ OpenAI API rate limit reached. Please wait and try again.';
+            } else if (userMessage.includes('401') || userMessage.includes('authentication')) {
+                userMessage = '🔑 Invalid OpenAI API key. Please check your configuration.';
+            } else if (userMessage.includes('timeout') || userMessage.includes('ETIMEDOUT')) {
+                userMessage = '🌐 Cannot connect to OpenAI API. Check your internet connection.';
+            } else {
+                userMessage = `❌ OpenAI API error: ${userMessage.split('\n')[0].substring(0, 100)}`;
+            }
+
             logger.error('OpenAI API error', {
                 requestId,
-                error: error.message,
+                error: userMessage.substring(0, 100),
                 latency,
             });
 
             // Map OpenAI errors to standard format
             const statusCode = error.status || 500;
-            return this.formatError(error, statusCode);
+            const friendlyError = new Error(userMessage);
+            return this.formatError(friendlyError, statusCode);
         }
     }
 

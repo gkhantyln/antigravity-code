@@ -167,29 +167,42 @@ class GeminiProvider extends BaseAPIProvider {
         } catch (error) {
             const latency = Date.now() - startTime;
 
-            // Checks for Invalid API Key error
-            let errorMessage = error.message;
-            const isApiKeyError = errorMessage.includes('API_KEY_INVALID') || errorMessage.includes('API key not valid');
+            // Parse and simplify error messages for users
+            let userMessage = error.message;
+            let logMessage = error.message;
 
-            if (isApiKeyError) {
-                errorMessage = 'Invalid Gemini API Key. Please check your .env file and ensure "GEMINI_API_KEY" is correct.';
-
-                // Log as warning instead of error for configuration issues to reduce noise
-                logger.warn('Gemini API Key Invalid', { requestId });
-            } else {
-                // Log full error for other issues
-                logger.error('Gemini API error', {
-                    requestId,
-                    error: error.message,
-                    latency,
-                });
+            // Rate limit / Quota errors
+            if (userMessage.includes('429') || userMessage.includes('quota') || userMessage.includes('rate limit')) {
+                userMessage = '⏱️ Gemini API rate limit reached. Please wait a few seconds and try again.';
+                logMessage = 'Rate limit exceeded';
+            }
+            // API Key errors
+            else if (userMessage.includes('API_KEY_INVALID') || userMessage.includes('API key not valid') || userMessage.includes('401')) {
+                userMessage = '🔑 Invalid Gemini API key. Please check your configuration.';
+                logMessage = 'Invalid API key';
+            }
+            // Network/timeout errors
+            else if (userMessage.includes('timeout') || userMessage.includes('ETIMEDOUT') || userMessage.includes('ECONNREFUSED')) {
+                userMessage = '🌐 Cannot connect to Gemini API. Please check your internet connection.';
+                logMessage = 'Connection timeout';
+            }
+            // Generic errors - show only first line
+            else {
+                userMessage = `❌ Gemini API error: ${userMessage.split('\n')[0].substring(0, 100)}`;
             }
 
-            // Create a modified error object with the friendly message
-            const friendlyError = new Error(errorMessage);
-            friendlyError.code = isApiKeyError ? 'API_KEY_INVALID' : (error.code || 'UNKNOWN_ERROR');
+            // Log simplified version
+            logger.error('Gemini API error', {
+                requestId,
+                error: logMessage,
+                latency,
+            });
 
-            const statusCode = this.mapErrorToStatusCode(friendlyError);
+            // Create user-friendly error
+            const friendlyError = new Error(userMessage);
+            friendlyError.code = error.code || 'GEMINI_ERROR';
+
+            const statusCode = this.mapErrorToStatusCode(error);
             return this.formatError(friendlyError, statusCode);
         }
     }

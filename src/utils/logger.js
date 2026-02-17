@@ -51,12 +51,9 @@ function createLogger(options = {}) {
                 format: winston.format.combine(
                     winston.format.colorize(),
                     winston.format.timestamp({ format: 'HH:mm:ss' }),
-                    winston.format.printf(({ timestamp, level, message, ...meta }) => {
-                        let msg = `${timestamp} [${level}]: ${message}`;
-                        if (Object.keys(meta).length > 0) {
-                            msg += ` ${JSON.stringify(meta)}`;
-                        }
-                        return msg;
+                    winston.format.printf(({ timestamp, level, message }) => {
+                        // Only show timestamp, level, and message - no technical metadata
+                        return `${timestamp} [${level}]: ${message}`;
                     })
                 ),
             })

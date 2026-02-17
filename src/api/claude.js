@@ -110,15 +110,28 @@ class ClaudeProvider extends BaseAPIProvider {
         } catch (error) {
             const latency = Date.now() - startTime;
 
+            // Simplify error messages for users
+            let userMessage = error.message;
+            if (userMessage.includes('429') || userMessage.includes('quota') || userMessage.includes('rate limit')) {
+                userMessage = '⏱️ Claude API rate limit reached. Please wait and try again.';
+            } else if (userMessage.includes('401') || userMessage.includes('authentication')) {
+                userMessage = '🔑 Invalid Claude API key. Please check your configuration.';
+            } else if (userMessage.includes('timeout') || userMessage.includes('ETIMEDOUT')) {
+                userMessage = '🌐 Cannot connect to Claude API. Check your internet connection.';
+            } else {
+                userMessage = `❌ Claude API error: ${userMessage.split('\n')[0].substring(0, 100)}`;
+            }
+
             logger.error('Claude API error', {
                 requestId,
-                error: error.message,
+                error: userMessage.substring(0, 100),
                 latency,
             });
 
             // Map Claude errors to standard format
             const statusCode = error.status || 500;
-            return this.formatError(error, statusCode);
+            const friendlyError = new Error(userMessage);
+            return this.formatError(friendlyError, statusCode);
         }
     }
 
