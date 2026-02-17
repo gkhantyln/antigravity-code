@@ -53,7 +53,7 @@ class GeminiProvider extends BaseAPIProvider {
             this.initialized = true;
             this.healthy = true;
 
-            logger.info('Gemini provider initialized', { model: this.model });
+            logger.debug('Gemini provider initialized', { model: this.model });
             return true;
         } catch (error) {
             logger.error('Failed to initialize Gemini provider', { error: error.message });
@@ -166,13 +166,31 @@ class GeminiProvider extends BaseAPIProvider {
             };
         } catch (error) {
             const latency = Date.now() - startTime;
-            logger.error('Gemini API error', {
-                requestId,
-                error: error.message,
-                latency,
-            });
-            const statusCode = this.mapErrorToStatusCode(error);
-            return this.formatError(error, statusCode);
+
+            // Checks for Invalid API Key error
+            let errorMessage = error.message;
+            const isApiKeyError = errorMessage.includes('API_KEY_INVALID') || errorMessage.includes('API key not valid');
+
+            if (isApiKeyError) {
+                errorMessage = 'Invalid Gemini API Key. Please check your .env file and ensure "GEMINI_API_KEY" is correct.';
+
+                // Log as warning instead of error for configuration issues to reduce noise
+                logger.warn('Gemini API Key Invalid', { requestId });
+            } else {
+                // Log full error for other issues
+                logger.error('Gemini API error', {
+                    requestId,
+                    error: error.message,
+                    latency,
+                });
+            }
+
+            // Create a modified error object with the friendly message
+            const friendlyError = new Error(errorMessage);
+            friendlyError.code = isApiKeyError ? 'API_KEY_INVALID' : (error.code || 'UNKNOWN_ERROR');
+
+            const statusCode = this.mapErrorToStatusCode(friendlyError);
+            return this.formatError(friendlyError, statusCode);
         }
     }
 

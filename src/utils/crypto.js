@@ -75,7 +75,7 @@ class SecureStorage {
                 // Fallback: Try to read from .env file
                 const envKey = this.getApiKeyFromEnv(provider);
                 if (envKey) {
-                    logger.info('API key loaded from .env file', { provider });
+                    logger.debug('API key loaded from .env file', { provider });
                     return envKey;
                 }
                 return null;
@@ -104,7 +104,7 @@ class SecureStorage {
             // Fallback: Try to read from .env file
             const envKey = this.getApiKeyFromEnv(provider);
             if (envKey) {
-                logger.info('API key loaded from .env file (fallback)', { provider });
+                logger.debug('API key loaded from .env file (fallback)', { provider });
                 return envKey;
             }
             throw new Error(`Failed to retrieve API key: ${error.message}`);

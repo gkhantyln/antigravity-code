@@ -26,7 +26,7 @@ class AntigravityEngine {
             return;
         }
 
-        logger.info('Initializing Antigravity Engine');
+        logger.debug('Initializing Antigravity Engine');
 
         // Load configuration
         const config = configManager.load();
@@ -48,7 +48,7 @@ class AntigravityEngine {
 
         this.initialized = true;
 
-        logger.info('Antigravity Engine initialized', {
+        logger.debug('Antigravity Engine initialized', {
             primaryProvider: config.providers.primary,
             dbPath: config.storage.dbPath,
             toolsInitialized: true

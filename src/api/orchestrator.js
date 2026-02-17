@@ -32,7 +32,7 @@ class APIOrchestrator {
             config.providers.tertiary,
         ].filter(Boolean);
 
-        logger.info('Initializing API orchestrator', {
+        logger.debug('Initializing API orchestrator', {
             providerOrder: this.providerOrder,
         });
 
@@ -54,7 +54,7 @@ class APIOrchestrator {
             throw new Error('No API providers available. Please configure at least one provider.');
         }
 
-        logger.info('API orchestrator initialized', {
+        logger.debug('API orchestrator initialized', {
             currentProvider: this.currentProvider,
             availableProviders: Array.from(this.providers.keys()),
         });
@@ -73,7 +73,7 @@ class APIOrchestrator {
         const apiKey = await secureStorage.getApiKey(providerName);
 
         if (!apiKey && providerName !== 'ollama') {
-            logger.warn(`No API key found for provider: ${providerName}`);
+            logger.debug(`No API key found for provider: ${providerName}`);
             return;
         }
 
@@ -121,7 +121,7 @@ class APIOrchestrator {
         await provider.initialize();
         this.providers.set(providerName, provider);
 
-        logger.info(`Provider loaded: ${providerName}`, {
+        logger.debug(`Provider loaded: ${providerName}`, {
             model: provider.model || provider.getModel?.(),
         });
     }
@@ -288,7 +288,7 @@ class APIOrchestrator {
             }
         }, interval);
 
-        logger.info('Health check monitoring started', { interval });
+        logger.debug('Health check monitoring started', { interval });
     }
 
     /**

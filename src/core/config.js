@@ -30,7 +30,7 @@ class ConfigManager {
 
         // Gemini model selection
         this.config.gemini = {
-            defaultModel: process.env.GEMINI_DEFAULT_MODEL || 'gemini-1.5-pro',
+            defaultModel: process.env.GEMINI_DEFAULT_MODEL || 'gemini-2.5-flash',
             availableModels: [
                 // Gemini 3 Series (Latest)
                 'gemini-3-flash',
@@ -168,7 +168,7 @@ class ConfigManager {
         };
 
         this.loaded = true;
-        logger.info('Configuration loaded', {
+        logger.debug('Configuration loaded', {
             primary: this.config.providers.primary,
             geminiModel: this.config.gemini.defaultModel,
         });
@@ -238,7 +238,7 @@ class ConfigManager {
             throw new Error(`Configuration validation failed: ${errors.join(', ')}`);
         }
 
-        logger.info('Configuration validated');
+        logger.debug('Configuration validated');
         return true;
     }
 

@@ -39,7 +39,7 @@ class Database {
                     return;
                 }
 
-                logger.info('Database connected', { path: this.dbPath });
+                logger.debug('Database connected', { path: this.dbPath });
 
                 // Promisify methods
                 this.run = promisify(this.db.run.bind(this.db));
@@ -155,7 +155,7 @@ class Database {
       )
     `);
 
-        logger.info('Database tables created');
+        logger.debug('Database tables created');
     }
 
     /**
