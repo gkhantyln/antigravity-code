@@ -608,7 +608,7 @@ Your task is to convert this screenshot into clean, responsive HTML and CSS code
 
         try {
             switch (subcommand) {
-                case 'list':
+                case 'list': {
                     ui.startSpinner('Fetching recent sessions...');
                     const conversations = await this.engine.getRecentConversations(10);
                     ui.stopSpinnerSuccess('Recent Sessions:');
@@ -619,12 +619,13 @@ Your task is to convert this screenshot into clean, responsive HTML and CSS code
                         // Simple list for now
                         conversations.forEach(c => {
                             const date = new Date(c.updated_at).toLocaleString();
-                            console.log(ui.theme.dim(`[${c.id}]`) + ` ${ui.theme.primary.bold(c.title || 'Untitled')} (${date})`);
+                            console.log(`${ui.theme.dim(`[${c.id}]`)} ${ui.theme.primary.bold(c.title || 'Untitled')} (${date})`);
                         });
                     }
                     break;
+                }
 
-                case 'load':
+                case 'load': {
                     if (args.length < 2) {
                         ui.error('Usage: /session load <session_id>');
                         return;
@@ -634,9 +635,10 @@ Your task is to convert this screenshot into clean, responsive HTML and CSS code
                     await this.engine.loadConversation(loadId);
                     ui.stopSpinnerSuccess(`Session loaded: ${loadId}`);
                     break;
+                }
 
                 case 'save':
-                case 'rename':
+                case 'rename': {
                     if (args.length < 2) {
                         ui.error('Usage: /session save <new_title>');
                         return;
@@ -656,14 +658,16 @@ Your task is to convert this screenshot into clean, responsive HTML and CSS code
                     await this.engine.updateConversation(current.id, { title: newTitle });
                     ui.success(`Session saved as: "${newTitle}"`);
                     break;
+                }
 
-                case 'new':
+                case 'new': {
                     await this.engine.newConversation();
                     ui.success('New session started.');
                     break;
+                }
 
                 case 'info':
-                default:
+                default: {
                     const summary = await this.engine.getConversationSummary();
                     if (summary) {
                         ui.drawBox('Session Info', [
@@ -676,6 +680,7 @@ Your task is to convert this screenshot into clean, responsive HTML and CSS code
                         ui.info('No active session.');
                     }
                     break;
+                }
             }
         } catch (error) {
             ui.stopSpinnerFail('Session operation failed');
