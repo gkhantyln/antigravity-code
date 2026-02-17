@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚀 Antigravity-Code v2.0
+# 🚀 Antigravity-Code v2.1.0
 
 ### Multi-API Agentic AI Coding Assistant
 **Agentic Workflow • RAG Memory • Vision • Local Models • Smart Failover**
@@ -51,6 +51,7 @@ With **v2.0**, Antigravity evolves into a fully **Agentic System**. It doesn't j
 | �️ **Vision Analysis** | **NEW!** Analyze images and generated code from screenshots |
 | 🧠 **RAG Context** | **NEW!** Index entire codebase for accurate answers |
 | �📂 **File System Ops** | Read, write, and delete files directly |
+| 📂 **File System Ops** | Read, write, and delete files directly |
 | 🐛 **Intelligent Debugging** | Find and fix bugs systematically using Linter and Auto-Fix |
 | 🔄 **Smart Commit** | **NEW!** Auto-generate conventional commit messages from git diff |
 | 🧪 **Test Generation** | Automated unit tests written to disk |
@@ -58,6 +59,9 @@ With **v2.0**, Antigravity evolves into a fully **Agentic System**. It doesn't j
 | 🔄 **Refactoring** | Improve code quality and structure |
 | 🧠 **Context Awareness** | Auto-detects project type (Node, Python, etc.) |
 | 🏗️ **Project Scaffolding** | **NEW!** Auto-generate Fractal Agent structure with \`/init\` |
+| 🛡️ **Self-Healing** | **NEW!** Autonomous error detection and fixing loop |
+| 📦 **Safe Execution** | **NEW!** Sandboxed execution with blocklist & user confirmation |
+| 🔌 **IDE Integration** | **NEW!** MCP Server & JSON output for VS Code/Cursor |
 
 ### Advanced Features
 
@@ -422,6 +426,12 @@ antigravity-code/
 - ✅ **Git Integration** (Smart Commit)
 - ✅ **Proactive Debugging** (Linting)
 - ✅ **Project Scaffolding** (Fractal Agent /init)
+
+### Version 2.1.0 (Current) ✅
+- ✅ **Autonomous Self-Healing** (Auto-fix errors)
+- ✅ **Safe Execution** (Sandboxing & Blocklist)
+- ✅ **UX Polish** (Colorized Diffs & Confirmations)
+- ✅ **IDE Readiness** (MCP Server & JSON Output)
 
 ### Version 1.1 (Completed) ✅
 - ✅ Rich CLI with `chalk` & `ora`

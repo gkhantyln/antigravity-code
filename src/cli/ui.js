@@ -2,6 +2,8 @@ const chalk = require('chalk');
 const ora = require('ora');
 const marked = require('marked');
 const { markedTerminal } = require('marked-terminal');
+const diff = require('diff');
+const readline = require('readline');
 
 // Configure marked with terminal renderer
 // eslint-disable-next-line new-cap
@@ -28,12 +30,14 @@ marked.use(terminalRenderer);
 class UIManager {
     constructor() {
         this.spinner = null;
+        this.jsonMode = process.argv.includes('--json');
     }
 
     /**
      * Display the application banner
      */
     showBanner() {
+        if (this.jsonMode) return;
         console.log('');
         console.log(chalk.magenta.bold('🚀 Antigravity-Code v2.0.0'));
         console.log(chalk.gray('   The Agentic AI Coding Assistant'));
@@ -46,6 +50,11 @@ class UIManager {
      * @param {string} color - Spinner color (default: cyan)
      */
     startSpinner(text, color = 'cyan') {
+        if (this.jsonMode) {
+            console.log(JSON.stringify({ type: 'progress', status: 'started', message: text }));
+            return;
+        }
+
         if (this.spinner) {
             this.spinner.stop();
         }
@@ -61,6 +70,11 @@ class UIManager {
      * @param {string} text - Success message
      */
     stopSpinnerSuccess(text) {
+        if (this.jsonMode) {
+            console.log(JSON.stringify({ type: 'progress', status: 'success', message: text }));
+            return;
+        }
+
         if (this.spinner) {
             this.spinner.succeed(chalk.green(text));
             this.spinner = null;
@@ -72,6 +86,11 @@ class UIManager {
      * @param {string} text - Failure message
      */
     stopSpinnerFail(text) {
+        if (this.jsonMode) {
+            console.log(JSON.stringify({ type: 'progress', status: 'failed', message: text }));
+            return;
+        }
+
         if (this.spinner) {
             this.spinner.fail(chalk.red(text));
             this.spinner = null;
@@ -82,6 +101,10 @@ class UIManager {
      * Log an informational message
      */
     info(message) {
+        if (this.jsonMode) {
+            console.log(JSON.stringify({ type: 'info', message }));
+            return;
+        }
         console.log(chalk.blue('ℹ'), message);
     }
 
@@ -89,6 +112,10 @@ class UIManager {
      * Log a success message
      */
     success(message) {
+        if (this.jsonMode) {
+            console.log(JSON.stringify({ type: 'success', message }));
+            return;
+        }
         console.log(chalk.green('✔'), message);
     }
 
@@ -96,6 +123,10 @@ class UIManager {
      * Log a warning message
      */
     warn(message) {
+        if (this.jsonMode) {
+            console.log(JSON.stringify({ type: 'warning', message }));
+            return;
+        }
         console.log(chalk.yellow('⚠'), message);
     }
 
@@ -103,6 +134,10 @@ class UIManager {
      * Log an error message
      */
     error(message) {
+        if (this.jsonMode) {
+            console.log(JSON.stringify({ type: 'error', message }));
+            return;
+        }
         console.log(chalk.red('✖'), message);
     }
 
@@ -112,6 +147,12 @@ class UIManager {
      */
     renderMarkdown(content) {
         if (!content) return;
+
+        if (this.jsonMode) {
+            console.log(JSON.stringify({ type: 'markdown', content }));
+            return;
+        }
+
         console.log(marked.parse(content));
     }
 
@@ -119,6 +160,14 @@ class UIManager {
      * Format a tool call for display
      */
     formatToolCall(toolName, args) {
+        if (this.jsonMode) {
+            // This method usually returns a string for logging, not logs itself.
+            // If used within a log call, it's fine. 
+            // If jsonMode, we probably shouldn't be calling this for display purposes 
+            // but rather logging the tool object directly.
+            // For now, return a plain string representation.
+            return `Tool: ${toolName}`;
+        }
         return `${chalk.blue.bold('🔧 Tool:')} ${chalk.cyan(toolName)} ${chalk.gray(JSON.stringify(args))}`;
     }
 
@@ -126,6 +175,7 @@ class UIManager {
      * Format an AI response header
      */
     formatAIHeader(provider, model) {
+        if (this.jsonMode) return '';
         return chalk.magenta.bold(`\n🤖 AI (${provider}/${model}):`);
     }
 
@@ -133,6 +183,10 @@ class UIManager {
      * Display the application banner and welcome message
      */
     welcome(version, provider, model) {
+        if (this.jsonMode) {
+            console.log(JSON.stringify({ type: 'welcome', version, provider, model }));
+            return;
+        }
         this.showBanner();
         console.log(chalk.gray(`Connected to: ${chalk.cyan(provider)} (${chalk.yellow(model)})`));
         console.log('');
@@ -142,6 +196,7 @@ class UIManager {
      * Clear the console
      */
     clear() {
+        if (this.jsonMode) return;
         console.clear();
     }
 
@@ -149,6 +204,7 @@ class UIManager {
      * Show help information
      */
     help() {
+        if (this.jsonMode) return;
         console.log(chalk.bold('\nAvailable Commands:'));
         const commands = [
             { cmd: '/create', desc: 'Create new features', example: '/create "snake game"' },
@@ -171,6 +227,7 @@ class UIManager {
      * Show model selection options
      */
     modelSelection(models, current) {
+        if (this.jsonMode) return;
         console.log(chalk.bold('\nAvailable Models:'));
         models.forEach(model => {
             const isCurrent = model === current;
@@ -185,6 +242,7 @@ class UIManager {
      * Show provider information
      */
     providerInfo(providers, current) {
+        if (this.jsonMode) return;
         console.log(chalk.bold('\nAvailable Providers:'));
         providers.forEach(provider => {
             const isCurrent = provider === current.name;
@@ -199,7 +257,68 @@ class UIManager {
      * Prompt for user input (fallback if readline is not used directly)
      */
     userPrompt() {
+        if (this.jsonMode) return;
         process.stdout.write(chalk.magenta.bold('AG> '));
+    }
+    /**
+     * Show a colorized diff between old and new content
+     */
+    showDiff(oldContent, newContent, filePath) {
+        if (this.jsonMode) return;
+
+        console.log(chalk.bold(`\n📝 Proposed changes for: ${chalk.cyan(filePath)}`));
+
+        // If file didn't exist (new file)
+        if (oldContent === null) {
+            console.log(chalk.green('  (New File Created)'));
+            // Show first few lines
+            const lines = newContent.split('\n').slice(0, 10);
+            lines.forEach(line => console.log(chalk.green(`+ ${line}`)));
+            if (lines.length < newContent.split('\n').length) {
+                console.log(chalk.gray(`  ... and ${newContent.split('\n').length - 10} more lines`));
+            }
+            return;
+        }
+
+        const changes = diff.diffLines(oldContent, newContent);
+
+        changes.forEach(part => {
+            const color = part.added ? chalk.green :
+                part.removed ? chalk.red : chalk.gray;
+            const prefix = part.added ? '+ ' :
+                part.removed ? '- ' : '  ';
+
+            // Limit large diffs for unchanged parts
+            if (!part.added && !part.removed && part.count > 5) {
+                console.log(chalk.gray(`  ... (${part.count} unchanged lines) ...`));
+                return;
+            }
+
+            // Print lines
+            part.value.split('\n').forEach(line => {
+                if (line) console.log(color(prefix + line));
+            });
+        });
+        console.log('');
+    }
+
+    /**
+     * Ask for user confirmation
+     */
+    async confirmAction(message) {
+        if (this.jsonMode) return true; // Auto-confirm in JSON mode (usually CI/Extension)
+
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+
+        return new Promise(resolve => {
+            rl.question(chalk.yellow.bold(`❓ ${message} (Y/n) `), (answer) => {
+                rl.close();
+                resolve(answer.toLowerCase() !== 'n');
+            });
+        });
     }
 }
 

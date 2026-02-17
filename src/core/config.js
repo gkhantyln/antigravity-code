@@ -160,6 +160,13 @@ class ConfigManager {
             syntaxHighlighting: process.env.SYNTAX_HIGHLIGHTING !== 'false',
         };
 
+        // Execution (Sandboxing)
+        this.config.execution = {
+            mode: process.env.EXECUTION_MODE || 'local', // 'local' or 'docker'
+            dockerImage: process.env.DOCKER_IMAGE || 'node:18-alpine',
+            blocklist: (process.env.CMD_BLOCKLIST || '').split(',').filter(Boolean),
+        };
+
         this.loaded = true;
         logger.info('Configuration loaded', {
             primary: this.config.providers.primary,

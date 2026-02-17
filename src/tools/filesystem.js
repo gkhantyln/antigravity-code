@@ -1,6 +1,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 const { logger } = require('../utils/logger');
+const ui = require('../cli/ui');
 
 /**
  * File System Tools
@@ -43,6 +44,24 @@ class FileSystemTools {
     async writeFile(filePath, content) {
         try {
             const fullPath = this._resolvePath(filePath);
+
+            // UX Polish: Show diff and ask confirmation
+            if (!ui.jsonMode) {
+                let oldContent = null;
+                try {
+                    oldContent = await fs.readFile(fullPath, 'utf8');
+                } catch (e) {
+                    // File doesn't exist, fine
+                }
+
+                ui.showDiff(oldContent, content, filePath);
+
+                const confirmed = await ui.confirmAction(`Write to ${filePath}?`);
+                if (!confirmed) {
+                    throw new Error('User cancelled file write');
+                }
+            }
+
             await fs.mkdir(path.dirname(fullPath), { recursive: true });
             await fs.writeFile(fullPath, content, 'utf8');
             logger.info('File written', { path: filePath });
