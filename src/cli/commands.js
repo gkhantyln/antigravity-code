@@ -712,6 +712,14 @@ Example format:
                 ui.info(`Context set: ${projectDescription}`);
             }
 
+            // Auto-navigate to the new directory
+            try {
+                process.chdir(fullPath);
+                ui.success(`Switched working directory to: ${targetDir}`);
+            } catch (err) {
+                ui.warn(`Could not switch directory: ${err.message}`);
+            }
+
         } catch (error) {
             ui.stopSpinnerFail('Initialization Failed');
             ui.error(error.message);
