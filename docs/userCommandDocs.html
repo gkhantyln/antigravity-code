@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antigravity-Code | User Manual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'], mono: ['Fira Code', 'monospace'] },
+                    colors: {
+                        brand: { 500: '#14b8a6', 600: '#0d9488' },
+                        dark: { bg: '#0f172a', sidebar: '#1e293b', border: '#334155', card: '#1e293b' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            scroll-behavior: smooth;
+        }
+
+        .sidebar {
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 16rem;
+            z-index: 50;
+        }
+
+        .content-wrapper {
+            margin-left: 16rem;
+        }
+
+        .cmd-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            transition: all 0.2s;
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+
+        .cmd-card:hover {
+            border-color: #14b8a6;
+            box-shadow: 0 4px 20px rgba(20, 184, 166, 0.1);
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+            color: #14b8a6;
+            background: rgba(20, 184, 166, 0.1);
+            padding: 0.2rem 0.4rem;
+            rounded: 0.3rem;
+            font-size: 0.875rem;
+        }
+
+        .lang-active {
+            color: #14b8a6;
+            border-bottom: 2px solid #14b8a6;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-core {
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+        }
+
+        .badge-ai {
+            background: rgba(168, 85, 247, 0.1);
+            color: #c084fc;
+        }
+
+        .badge-util {
+            background: rgba(148, 163, 184, 0.1);
+            color: #94a3b8;
+        }
+
+        .badge-pro {
+            background: rgba(20, 184, 166, 0.1);
+            color: #14b8a6;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .content-wrapper {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Mobile Menu Button -->
+    <button id="menu-btn" onclick="toggleMenu()"
+        class="lg:hidden fixed bottom-6 right-6 z-50 bg-brand-600 text-white p-4 rounded-full shadow-lg">
+        ☰
+    </button>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar bg-dark-sidebar border-r border-dark-border flex flex-col">
+        <div class="p-6 border-b border-dark-border">
+            <div class="flex items-center gap-2 mb-6">
+                <span class="text-2xl">🚀</span>
+                <div>
+                    <h1 class="font-bold text-lg leading-none tracking-tight">Antigravity</h1>
+                    <span class="text-xs text-brand-500 font-mono">v2.1.0 Manual</span>
+                </div>
+            </div>
+            <div class="flex gap-4 border-b border-dark-border pb-1">
+                <button onclick="setLang('en')" id="btn-en"
+                    class="text-xs font-bold pb-2 transition-colors lang-active flex-1">ENGLISH</button>
+                <button onclick="setLang('tr')" id="btn-tr"
+                    class="text-xs font-bold pb-2 transition-colors text-gray-500 flex-1">TÜRKÇE</button>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto p-6 space-y-8">
+            <div>
+                <h5 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">
+                    <span class="lang-en">Project Setup</span><span class="lang-tr hidden">Kurulum</span>
+                </h5>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li><a href="#init" class="hover:text-brand-500 flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> /init</a></li>
+                    <li><a href="#new" class="hover:text-brand-500 flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> /new</a></li>
+                    <li><a href="#index" class="hover:text-brand-500 flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> /index</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">
+                    <span class="lang-en">Generation</span><span class="lang-tr hidden">Üretim</span>
+                </h5>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li><a href="#create" class="hover:text-brand-500 flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 rounded-full bg-purple-500"></span> /create</a></li>
+                    <li><a href="#ui" class="hover:text-brand-500 flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 rounded-full bg-purple-500"></span> /ui</a></li>
+                    <li><a href="#see" class="hover:text-brand-500 flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 rounded-full bg-purple-500"></span> /see</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">
+                    <span class="lang-en">Quality</span><span class="lang-tr hidden">Kalite & Bakım</span>
+                </h5>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li><a href="#debug" class="hover:text-brand-500 flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 rounded-full bg-green-500"></span> /debug</a></li>
+                    <li><a href="#test" class="hover:text-brand-500 flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 rounded-full bg-green-500"></span> /test</a></li>
+                    <li><a href="#commit" class="hover:text-brand-500 flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 rounded-full bg-green-500"></span> /commit</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">
+                    <span class="lang-en">Configuration</span><span class="lang-tr hidden">Ayarlar</span>
+                </h5>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li><a href="#config" class="hover:text-brand-500 flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 rounded-full bg-gray-500"></span> /config</a></li>
+                    <li><a href="#provider" class="hover:text-brand-500 flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 rounded-full bg-gray-500"></span> /provider</a></li>
+                    <li><a href="#model" class="hover:text-brand-500 flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 rounded-full bg-gray-500"></span> /model</a></li>
+                </ul>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Content -->
+    <div class="content-wrapper min-h-screen">
+        <main class="max-w-4xl mx-auto p-8 lg:p-16">
+
+            <!-- Hero -->
+            <header class="mb-16 border-b border-dark-border pb-8">
+                <h1
+                    class="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-brand-500 to-purple-500">
+                    <span class="lang-en">Command Reference</span>
+                    <span class="lang-tr hidden">Komut Referansı</span>
+                </h1>
+                <p class="text-xl text-gray-400">
+                    <span class="lang-en">The complete guide to every command in Antigravity-Code v2.1.0.</span>
+                    <span class="lang-tr hidden">Antigravity-Code v2.1.0 içindeki tüm komutlar için kapsamlı
+                        rehber.</span>
+                </p>
+            </header>
+
+            <!-- 1. PROJECT SETUP -->
+            <section class="mb-16">
+                <h2 class="text-2xl font-bold mb-6 text-blue-400 flex items-center gap-2">
+                    <span class="text-3xl">📂</span> <span class="lang-en">Project Setup</span><span
+                        class="lang-tr hidden">Proje Kurulumu</span>
+                </h2>
+
+                <div class="space-y-6">
+                    <!-- /init -->
+                    <div id="init" class="cmd-card p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold font-mono text-white">/init [path]</h3>
+                            <span class="badge badge-core">Essential</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            <span class="lang-en">Initializes the Fractal Agent scaffolding in the current or target
+                                directory. Creates `.agent` structure and `GEMINI.md` identity file.</span>
+                            <span class="lang-tr hidden">Mevcut veya hedef dizinde Fractal Ajan iskelesini başlatır.
+                                `.agent` yapısını ve `GEMINI.md` kimlik dosyasını oluşturur.</span>
+                        </p>
+                        <div class="bg-black/50 p-4 rounded border border-dark-border font-mono text-sm text-gray-400">
+                            <div class="mb-2"><span class="text-brand-500">ag</span> /init</div>
+                            <div><span class="text-brand-500">ag</span> /init ./my-new-app</div>
+                        </div>
+                    </div>
+
+                    <!-- /new -->
+                    <div id="new" class="cmd-card p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold font-mono text-white">/new [title]</h3>
+                            <span class="badge badge-core">Context</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            <span class="lang-en">Starts a fresh conversation context. Useful when switching tasks to
+                                avoid confusing the AI with old history.</span>
+                            <span class="lang-tr hidden">Yeni bir konuşma bağlamı başlatır. Yapay zekanın kafasını eski
+                                geçmişle karıştırmamak için görev değiştirirken kullanışlıdır.</span>
+                        </p>
+                        <div class="bg-black/50 p-4 rounded border border-dark-border font-mono text-sm text-gray-400">
+                            <div class="mb-2"><span class="text-brand-500">ag</span> /new</div>
+                            <div><span class="text-brand-500">ag</span> /new "Working on Login Feature"</div>
+                        </div>
+                    </div>
+
+                    <!-- /index -->
+                    <div id="index" class="cmd-card p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold font-mono text-white">/index</h3>
+                            <span class="badge badge-core">RAG</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            <span class="lang-en">Indexes the entire codebase into the local vector database. Only
+                                needed if you added many files manually and want the AI to "read" them all at
+                                once.</span>
+                            <span class="lang-tr hidden">Tüm kod tabanını yerel vektör veritabanına indeksler. Sadece
+                                manuel olarak çok sayıda dosya eklediyseniz ve yapay zekanın hepsini "okumasını"
+                                istiyorsanız gereklidir.</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. GENERATION -->
+            <section class="mb-16">
+                <h2 class="text-2xl font-bold mb-6 text-purple-400 flex items-center gap-2">
+                    <span class="text-3xl">✨</span> <span class="lang-en">Generation</span><span
+                        class="lang-tr hidden">Üretim</span>
+                </h2>
+
+                <div class="space-y-6">
+                    <!-- /create -->
+                    <div id="create" class="cmd-card p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold font-mono text-white">/create [prompt]</h3>
+                            <span class="badge badge-ai">Core</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            <span class="lang-en">The main command for generating code, files, scripts, or entire
+                                modules.</span>
+                            <span class="lang-tr hidden">Kod, dosya, komut dosyası veya tam modüller üretmek için ana
+                                komut.</span>
+                        </p>
+                        <div class="bg-black/50 p-4 rounded border border-dark-border font-mono text-sm text-gray-400">
+                            <div class="mb-2"><span class="text-brand-500">ag</span> /create "A Python script to scrape
+                                weather data"</div>
+                            <div><span class="text-brand-500">ag</span> /create "Landing page with Hero section and
+                                Testimonials"</div>
+                        </div>
+                    </div>
+
+                    <!-- /ui -->
+                    <div id="ui" class="cmd-card p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold font-mono text-white">/ui &lt;image_path&gt;</h3>
+                            <span class="badge badge-pro">Vision</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            <span class="lang-en">Converts a screenshot of a website/app into HTML/CSS code
+                                (Tailwind).</span>
+                            <span class="lang-tr hidden">Bir web sitesi/uygulama ekran görüntüsünü HTML/CSS koduna
+                                (Tailwind) dönüştürür.</span>
+                        </p>
+                        <div class="bg-black/50 p-4 rounded border border-dark-border font-mono text-sm text-gray-400">
+                            <div><span class="text-brand-500">ag</span> /ui screenshot.png</div>
+                        </div>
+                    </div>
+
+                    <!-- /see -->
+                    <div id="see" class="cmd-card p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold font-mono text-white">/see &lt;image&gt; [prompt]</h3>
+                            <span class="badge badge-pro">Vision</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            <span class="lang-en">Analyzes any image and answers questions about it. Useful for
+                                debugging UI glitches or reading diagrams.</span>
+                            <span class="lang-tr hidden">herhangi bir resmi analiz eder ve soruları cevaplar. UI
+                                hatalarını ayıklamak veya diyagramları okumak için kullanışlıdır.</span>
+                        </p>
+                        <div class="bg-black/50 p-4 rounded border border-dark-border font-mono text-sm text-gray-400">
+                            <div><span class="text-brand-500">ag</span> /see error_log.png "What does this error say?"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. QUALITY -->
+            <section class="mb-16">
+                <h2 class="text-2xl font-bold mb-6 text-green-400 flex items-center gap-2">
+                    <span class="text-3xl">🛡️</span> <span class="lang-en">Quality & Maintenance</span><span
+                        class="lang-tr hidden">Kalite & Bakım</span>
+                </h2>
+
+                <div class="space-y-6">
+                    <!-- /debug -->
+                    <div id="debug" class="cmd-card p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold font-mono text-white">/debug [issue]</h3>
+                            <span class="badge badge-ai">Fixer</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            <span class="lang-en">Diagnoses issues. It reads your files, finds errors, and proposes
+                                fixes.</span>
+                            <span class="lang-tr hidden">Sorunları teşhis eder. Dosyalarınızı okur, hataları bulur ve
+                                düzeltmeler önerir.</span>
+                        </p>
+                        <div class="bg-black/50 p-4 rounded border border-dark-border font-mono text-sm text-gray-400">
+                            <div><span class="text-brand-500">ag</span> /debug "App crashes on startup"</div>
+                        </div>
+                    </div>
+
+                    <!-- /test -->
+                    <div id="test" class="cmd-card p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold font-mono text-white">/test [filename]</h3>
+                            <span class="badge badge-ai">Testing</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            <span class="lang-en">Writes automated unit tests for the specified file.</span>
+                            <span class="lang-tr hidden">Belirtilen dosya için otomatik birim testleri yazar.</span>
+                        </p>
+                        <div class="bg-black/50 p-4 rounded border border-dark-border font-mono text-sm text-gray-400">
+                            <div><span class="text-brand-500">ag</span> /test src/utils/math.js</div>
+                        </div>
+                    </div>
+
+                    <!-- /commit -->
+                    <div id="commit" class="cmd-card p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold font-mono text-white">/commit [message]</h3>
+                            <span class="badge badge-util">Git</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            <span class="lang-en">Smart Commit. If no message is provided, it <strong>analyzes your code
+                                    changes</strong> and generates a conventional commit message automatically.</span>
+                            <span class="lang-tr hidden">Akıllı Commit. Mesaj sağlanmazsa, <strong>kod
+                                    değişikliklerinizi analiz eder</strong> ve otomatik olarak konvansiyonel bir commit
+                                mesajı oluşturur.</span>
+                        </p>
+                        <div class="bg-black/50 p-4 rounded border border-dark-border font-mono text-sm text-gray-400">
+                            <div class="mb-2"><span class="text-brand-500">ag</span> /commit <span
+                                    class="text-gray-500">(Auto-generate message)</span></div>
+                            <div><span class="text-brand-500">ag</span> /commit "feat: add login"</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. CONFIGURATION -->
+            <section class="mb-16">
+                <h2 class="text-2xl font-bold mb-6 text-gray-400 flex items-center gap-2">
+                    <span class="text-3xl">⚙️</span> <span class="lang-en">Configuration</span><span
+                        class="lang-tr hidden">Ayarlar</span>
+                </h2>
+
+                <div class="space-y-6">
+                    <!-- /provider -->
+                    <div id="provider" class="cmd-card p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold font-mono text-white">/provider &lt;name&gt;</h3>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            <span class="lang-en">Switch the active AI brain. Options: <code>gemini</code>,
+                                <code>claude</code>, <code>openai</code>.</span>
+                            <span class="lang-tr hidden">Aktif yapay zeka beynini değiştirin. Seçenekler:
+                                <code>gemini</code>, <code>claude</code>, <code>openai</code>.</span>
+                        </p>
+                    </div>
+
+                    <!-- /model -->
+                    <div id="model" class="cmd-card p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold font-mono text-white">/model &lt;name&gt;</h3>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            <span class="lang-en">Change the specific model for the current provider (e.g., switch from
+                                <code>gemini-1.5-flash</code> to <code>gemini-1.5-pro</code>).</span>
+                            <span class="lang-tr hidden">Mevcut sağlayıcı için belirli modeli değiştirin (örn:
+                                <code>gemini-1.5-flash</code>'tan <code>gemini-1.5-pro</code>'ya geçiş).</span>
+                        </p>
+                    </div>
+
+                    <!-- /config -->
+                    <div id="config" class="cmd-card p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold font-mono text-white">/config show</h3>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            <span class="lang-en">Displays the current system configuration, connected provider, and
+                                active model.</span>
+                            <span class="lang-tr hidden">Mevcut sistem yapılandırmasını, bağlı sağlayıcıyı ve aktif
+                                modeli görüntüler.</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        function setLang(lang) {
+            document.querySelectorAll('.lang-en').forEach(el => el.style.display = lang === 'en' ? 'inline' : 'none');
+            document.querySelectorAll('.lang-tr').forEach(el => el.style.display = lang === 'tr' ? 'inline' : 'none');
+
+            const btnEn = document.getElementById('btn-en');
+            const btnTr = document.getElementById('btn-tr');
+
+            if (lang === 'en') {
+                btnEn.classList.add('lang-active', 'text-brand-500'); btnEn.classList.remove('text-gray-500');
+                btnTr.classList.remove('lang-active', 'text-brand-500'); btnTr.classList.add('text-gray-500');
+            } else {
+                btnTr.classList.add('lang-active', 'text-brand-500'); btnTr.classList.remove('text-gray-500');
+                btnEn.classList.remove('lang-active', 'text-brand-500'); btnEn.classList.add('text-gray-500');
+            }
+        }
+
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // Initialize
+        setLang('en');
+    </script>
+</body>
+
+</html>
