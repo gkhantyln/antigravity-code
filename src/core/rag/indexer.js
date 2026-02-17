@@ -1,7 +1,7 @@
 const { glob } = require('glob');
 const fs = require('fs').promises;
 const path = require('path');
-const { pipeline } = require('@xenova/transformers');
+
 const { logger } = require('../../utils/logger');
 const { configManager } = require('../config');
 
@@ -16,6 +16,7 @@ class CodeIndexer {
         try {
             // Initialize the embedding model
             // We use a small, efficient model suitable for code/text
+            const { pipeline } = await import('@xenova/transformers');
             this.extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
             logger.info('RAG Indexer initialized with Xenova/all-MiniLM-L6-v2');
         } catch (error) {

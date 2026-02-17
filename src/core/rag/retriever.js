@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs').promises;
-const { pipeline } = require('@xenova/transformers');
+
 const { logger } = require('../../utils/logger');
 const { configManager } = require('../config');
 
@@ -24,6 +24,7 @@ class CodeRetriever {
             }
 
             // Initialize embedding model for query encoding
+            const { pipeline } = await import('@xenova/transformers');
             this.extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
             logger.info('RAG Retriever initialized');
         } catch (error) {
