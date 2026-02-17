@@ -1,6 +1,3 @@
-const util = require('util');
-const fs = require('fs').promises;
-const path = require('path');
 const { BaseAgent } = require('./base');
 const { logger } = require('../../utils/logger');
 const { ExecutionManager } = require('../execution');
@@ -27,7 +24,7 @@ class CoderAgent extends BaseAgent {
      * Execute an operation with autonomous retry and self-healing
      */
     async executeWithRetry(content, type, maxRetries = 2) {
-        let currentContent = content;
+        const currentContent = content;
         let retries = 0;
 
         while (retries <= maxRetries) {
@@ -54,7 +51,7 @@ class CoderAgent extends BaseAgent {
             logger.warn(`Step failed, attempting auto-fix (Attempt ${retries + 1}/${maxRetries})`);
 
             try {
-                const fixResult = await this.performFix(currentContent, result.error);
+                await this.performFix(currentContent, result.error);
                 logger.info('Auto-fix applied, retrying operation...');
             } catch (fixError) {
                 logger.error('Auto-fix failed', { error: fixError.message });
@@ -82,7 +79,7 @@ INSRUCTIONS:
 3. If the error is due to a missing package, use 'command' to install it.
 4. DO NOT explain the fix, JUST ACT.
 `;
-        return await this.engine.processRequest(prompt);
+        return this.engine.processRequest(prompt);
     }
 
     async executeCommand(command) {

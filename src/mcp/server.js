@@ -1,6 +1,7 @@
-const { LocalResult } = require('@modelcontextprotocol/sdk/types');
+// eslint-disable-next-line import/no-unresolved
 const { Server } = require('@modelcontextprotocol/sdk/server');
-const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio');
+// eslint-disable-next-line import/no-unresolved, import/extensions
+const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio.js');
 const { logger } = require('../utils/logger');
 const { AntigravityEngine } = require('../core/engine');
 
@@ -37,7 +38,7 @@ class AntigravityMCPServer {
         // Expose 'ask_antigravity' tool
         this.server.setRequestHandler('call_tool', async (request) => {
             if (request.params.name === 'ask_antigravity') {
-                const query = request.params.arguments.query;
+                const { query } = request.params.arguments;
                 try {
                     const response = await this.engine.processRequest(query);
                     return {
@@ -54,23 +55,21 @@ class AntigravityMCPServer {
         });
 
         // List tools
-        this.server.setRequestHandler('list_tools', async () => {
-            return {
-                tools: [
-                    {
-                        name: 'ask_antigravity',
-                        description: 'Ask the Antigravity AI Agent to perform a task or answer a question',
-                        inputSchema: {
-                            type: 'object',
-                            properties: {
-                                query: { type: 'string', description: 'The task or question' },
-                            },
-                            required: ['query'],
+        this.server.setRequestHandler('list_tools', async () => ({
+            tools: [
+                {
+                    name: 'ask_antigravity',
+                    description: 'Ask the Antigravity AI Agent to perform a task or answer a question',
+                    inputSchema: {
+                        type: 'object',
+                        properties: {
+                            query: { type: 'string', description: 'The task or question' },
                         },
+                        required: ['query'],
                     },
-                ],
-            };
-        });
+                },
+            ],
+        }));
     }
 }
 

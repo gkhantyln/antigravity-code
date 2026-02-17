@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 const { exec } = require('child_process');
 const util = require('util');
 const { logger } = require('../utils/logger');
@@ -9,7 +10,7 @@ const execAsync = util.promisify(exec);
  * Execution Provider Interface
  */
 class ExecutionProvider {
-    async execute(command, cwd) {
+    async execute(_command, _cwd) {
         throw new Error('Method execute() must be implemented');
     }
 }
@@ -42,7 +43,7 @@ class LocalExecutionProvider extends ExecutionProvider {
         }
 
         logger.debug(`[LocalExecution] Running: ${command} in ${cwd}`);
-        return await execAsync(command, { cwd });
+        return execAsync(command, { cwd });
     }
 }
 
@@ -56,7 +57,7 @@ class DockerExecutionProvider extends ExecutionProvider {
         this.image = image;
     }
 
-    async execute(command, cwd = process.cwd()) {
+    async execute(command, _cwd = process.cwd()) {
         // We mount the current working directory to /app
         // and set working directory to /app
         // NOTE: This assumes 'cwd' is the project root or subfolder.
@@ -72,7 +73,7 @@ class DockerExecutionProvider extends ExecutionProvider {
         const dockerCmd = `docker run --rm -v "${hostPath}:${containerPath}" -w ${containerPath} ${this.image} /bin/sh -c "${command.replace(/"/g, '\\"')}"`;
 
         logger.debug(`[DockerExecution] Running: ${dockerCmd}`);
-        return await execAsync(dockerCmd);
+        return execAsync(dockerCmd);
     }
 }
 

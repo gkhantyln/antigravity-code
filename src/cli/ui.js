@@ -260,6 +260,7 @@ class UIManager {
         if (this.jsonMode) return;
         process.stdout.write(chalk.magenta.bold('AG> '));
     }
+
     /**
      * Show a colorized diff between old and new content
      */
@@ -283,10 +284,15 @@ class UIManager {
         const changes = diff.diffLines(oldContent, newContent);
 
         changes.forEach(part => {
-            const color = part.added ? chalk.green :
-                part.removed ? chalk.red : chalk.gray;
-            const prefix = part.added ? '+ ' :
-                part.removed ? '- ' : '  ';
+            let color = chalk.gray;
+            let prefix = '  ';
+            if (part.added) {
+                color = chalk.green;
+                prefix = '+ ';
+            } else if (part.removed) {
+                color = chalk.red;
+                prefix = '- ';
+            }
 
             // Limit large diffs for unchanged parts
             if (!part.added && !part.removed && part.count > 5) {
