@@ -150,12 +150,17 @@ class APIOrchestrator {
 
                     const response = await provider.sendMessage(message, context, options);
 
+                    // Check for soft errors (success: false)
+                    if (!response.success) {
+                        throw new Error(response.error?.message || 'Provider returned failure response');
+                    }
+
                     // Log successful API call
                     if (this.database) {
                         await this.database.logAPICall({
                             provider: providerName,
                             requestId: response.metadata?.requestId,
-                            success: response.success,
+                            success: true,
                             statusCode: 200,
                             latencyMs: response.metadata?.latency,
                             tokensUsed: response.usage?.totalTokens,
