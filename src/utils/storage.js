@@ -207,6 +207,16 @@ class Database {
     }
 
     /**
+     * Get recent conversations
+     */
+    async getRecentConversations(limit = 10) {
+        return this.all(
+            `SELECT * FROM conversations ORDER BY updated_at DESC LIMIT ?`,
+            [limit]
+        );
+    }
+
+    /**
      * Add message to conversation
      */
     async addMessage(conversationId, role, content, provider = null, model = null, tokens = null, metadata = {}) {

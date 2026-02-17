@@ -156,6 +156,7 @@ class UIManager {
             '• Type /create to generate',
             '• Type /debug to fix errors',
             '• Type /audit to analyze security',
+            '• Type /session to manage history',
             '• Type /test to run tests'
         ];
 

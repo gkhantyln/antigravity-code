@@ -96,6 +96,9 @@ With **v2.0**, Antigravity evolves into a fully **Agentic System**. It doesn't j
   - `[C] Cancel` - Reject all changes
 - **🌿 Session Forking**: Branch your conversation with `/fork` to explore different approaches without losing the original context.
 - **📊 Context Management**: Smart context compaction prioritizes important messages. Use `/compact` to optimize and `/context` to view statistics.
+- **🛡️ Security Audit**: Scan your code for vulnerabilities and quality issues with `/audit`.
+- **🕰️ Session Management**: Save, load, and manage your conversation history with `/session`.
+- **🏗️ Smart Init**: Generate project scaffolding with AI-driven content using `/init`.
 
 ---
 
@@ -213,6 +216,8 @@ cat error.log | ag "Debug this error"
 | `/rewind` | **NEW!** Revert file to checkpoint | `/rewind abc123` |
 | `/checkpoints` | **NEW!** List recent file checkpoints | `/checkpoints` |
 | `/permission` | **NEW!** Change permission mode | `/permission auto-edit` |
+| `/session` | **NEW!** Manage conversation history | `/session save "My Feature"` |
+| `/audit` | **NEW!** Audit code for security/quality | `/audit src/app.js` |
 | `/fork` | **NEW!** Fork current conversation | `/fork` |
 | `/compact` | **NEW!** Compact conversation context | `/compact` |
 | `/context` | **NEW!** Show context statistics | `/context` |
@@ -454,6 +459,9 @@ antigravity-code/
 - ✅ **Context Compaction** (Smart memory management)
 - ✅ **Visual File Tree** (Beautiful tree rendering with status icons)
 - ✅ **Batch Operations** (Multi-file approval with [Apply All] [Review Each] [Cancel])
+- ✅ **Session Management** (List, Load, Save, New with `/session`)
+- ✅ **Security Auditing** (Code analysis with `/audit`)
+- ✅ **Smart Scaffolding** (AI-driven `/init` with context)
 
 ### Version 2.1.0 ✅
 - ✅ **Autonomous Self-Healing** (Auto-fix errors)

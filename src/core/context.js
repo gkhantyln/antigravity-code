@@ -43,6 +43,14 @@ class ContextManager {
     }
 
     /**
+     * Update conversation details
+     */
+    async updateConversation(id, updates) {
+        await this.database.updateConversation(id, updates);
+        logger.info('Conversation updated', { id, updates });
+    }
+
+    /**
      * Add user message to conversation
      */
     async addUserMessage(content) {
@@ -369,6 +377,13 @@ class ContextManager {
             createdAt: conversation.created_at,
             updatedAt: conversation.updated_at,
         };
+    }
+
+    /**
+     * Get recent conversations
+     */
+    async getRecentConversations(limit = 10) {
+        return this.database.getRecentConversations(limit);
     }
 
     /**

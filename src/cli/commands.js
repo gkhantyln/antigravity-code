@@ -601,8 +601,91 @@ Your task is to convert this screenshot into clean, responsive HTML and CSS code
     }
 
     /**
-    * Handle /audit command (Code Analysis)
-    */
+     * Handle /session command (Session Management)
+     */
+    async handleSession(args) {
+        const subcommand = args && args.length > 0 ? args[0].toLowerCase() : 'info';
+
+        try {
+            switch (subcommand) {
+                case 'list':
+                    ui.startSpinner('Fetching recent sessions...');
+                    const conversations = await this.engine.getRecentConversations(10);
+                    ui.stopSpinnerSuccess('Recent Sessions:');
+
+                    if (conversations.length === 0) {
+                        ui.info('No recent sessions found.');
+                    } else {
+                        // Simple list for now
+                        conversations.forEach(c => {
+                            const date = new Date(c.updated_at).toLocaleString();
+                            console.log(ui.theme.dim(`[${c.id}]`) + ` ${ui.theme.primary.bold(c.title || 'Untitled')} (${date})`);
+                        });
+                    }
+                    break;
+
+                case 'load':
+                    if (args.length < 2) {
+                        ui.error('Usage: /session load <session_id>');
+                        return;
+                    }
+                    const loadId = args[1];
+                    ui.startSpinner('Loading session...');
+                    await this.engine.loadConversation(loadId);
+                    ui.stopSpinnerSuccess(`Session loaded: ${loadId}`);
+                    break;
+
+                case 'save':
+                case 'rename':
+                    if (args.length < 2) {
+                        ui.error('Usage: /session save <new_title>');
+                        return;
+                    }
+                    let newTitle = args.slice(1).join(' ');
+                    // Strip quotes if present
+                    if ((newTitle.startsWith('"') && newTitle.endsWith('"')) ||
+                        (newTitle.startsWith("'") && newTitle.endsWith("'"))) {
+                        newTitle = newTitle.slice(1, -1);
+                    }
+
+                    const current = await this.engine.getConversationSummary();
+                    if (!current) {
+                        ui.error('No active session to save.');
+                        return;
+                    }
+                    await this.engine.updateConversation(current.id, { title: newTitle });
+                    ui.success(`Session saved as: "${newTitle}"`);
+                    break;
+
+                case 'new':
+                    await this.engine.newConversation();
+                    ui.success('New session started.');
+                    break;
+
+                case 'info':
+                default:
+                    const summary = await this.engine.getConversationSummary();
+                    if (summary) {
+                        ui.drawBox('Session Info', [
+                            `ID:      ${summary.id}`,
+                            `Title:   ${summary.title || 'Untitled'}`,
+                            `Msgs:    ${summary.messageCount}`,
+                            `Updated: ${new Date(summary.updatedAt).toLocaleString()}`
+                        ]);
+                    } else {
+                        ui.info('No active session.');
+                    }
+                    break;
+            }
+        } catch (error) {
+            ui.stopSpinnerFail('Session operation failed');
+            ui.error(error.message);
+        }
+    }
+
+    /**
+     * Handle /audit command (Code Analysis)
+     */
     async handleAudit(args) {
         let target = args && args.length > 0 ? args[0] : '.';
 
@@ -858,6 +941,9 @@ Example format:
                 break;
             case '/audit':
                 await this.handleAudit(args);
+                break;
+            case '/session':
+                await this.handleSession(args);
                 break;
             case '/debug':
                 await this.handleDebug(args);

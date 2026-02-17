@@ -321,10 +321,24 @@ class AntigravityEngine {
     }
 
     /**
+     * Update conversation details
+     */
+    async updateConversation(id, updates) {
+        return this.contextManager.updateConversation(id, updates);
+    }
+
+    /**
      * Get current conversation summary
      */
     async getConversationSummary() {
         return this.contextManager.getConversationSummary();
+    }
+
+    /**
+     * Get recent conversations
+     */
+    async getRecentConversations(limit) {
+        return this.contextManager.getRecentConversations(limit);
     }
 
     /**
