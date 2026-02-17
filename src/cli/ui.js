@@ -155,6 +155,7 @@ class UIManager {
             '• Type /init to start project',
             '• Type /create to generate',
             '• Type /debug to fix errors',
+            '• Type /audit to analyze security',
             '• Type /test to run tests'
         ];
 

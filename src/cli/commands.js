@@ -601,6 +601,75 @@ Your task is to convert this screenshot into clean, responsive HTML and CSS code
     }
 
     /**
+    * Handle /audit command (Code Analysis)
+    */
+    async handleAudit(args) {
+        let target = args && args.length > 0 ? args[0] : '.';
+
+        // Resolve target path
+        const fullPath = path.resolve(process.cwd(), target);
+
+        if (!fs.existsSync(fullPath)) {
+            ui.error(`File or directory not found: ${target}`);
+            return;
+        }
+
+        ui.startSpinner('Auditing Code...', 'cyan');
+
+        try {
+            let codeContent = '';
+            const stats = fs.statSync(fullPath);
+
+            if (stats.isDirectory()) {
+                // For directories, maybe list files or read critical ones?
+                // For simplicity in this version, let's just warn or pick index/main files
+                // or read all known text files up to a limit.
+                // Let's keep it simple: "Audit this file" for now, or "Audit this directory" (file listing + summary)
+                ui.stopSpinnerFail('Directory audit not fully supported in this version. Please specify a file.');
+                return;
+            } else {
+                codeContent = fs.readFileSync(fullPath, 'utf-8');
+            }
+
+            if (!codeContent) {
+                ui.stopSpinnerFail('File is empty.');
+                return;
+            }
+
+            const prompt = `
+You are an expert Security and Code Quality Auditor.
+Please audit the following code file: ${target}
+
+Analyze it for:
+1. **Security Vulnerabilities** (Critical, High, Medium, Low)
+2. **Code Quality Issues** (Complexity, Maintainability, Performance)
+3. **Best Practice Violations** (Standards, Conventions)
+
+Format your response in Markdown with:
+- A summary table of issues found.
+- Detailed explanation for each issue.
+- **Specific code fixes** or refactoring suggestions for critical/high issues.
+
+Code Content:
+\`\`\`
+${codeContent.substring(0, 8000)} 
+\`\`\`
+(Note: Code may be truncated for context limits)
+`;
+
+            const response = await this.engine.processRequest(prompt);
+
+            ui.stopSpinnerSuccess('Audit Complete');
+            console.log(ui.formatAIHeader(response.provider, response.model));
+            ui.renderMarkdown(response.content);
+
+        } catch (error) {
+            ui.stopSpinnerFail('Audit Failed');
+            ui.error(error.message);
+        }
+    }
+
+    /**
      * Handle /init command (Project Scaffolding)
      */
     async handleInit(args) {
@@ -786,6 +855,9 @@ Example format:
                 break;
             case '/create':
                 await this.handleCreate(args);
+                break;
+            case '/audit':
+                await this.handleAudit(args);
                 break;
             case '/debug':
                 await this.handleDebug(args);
