@@ -35,7 +35,7 @@ class UIManager {
      */
     showBanner() {
         console.log('');
-        console.log(chalk.magenta.bold('🚀 Antigravity-Code v1.1.0'));
+        console.log(chalk.magenta.bold('🚀 Antigravity-Code v2.0.0'));
         console.log(chalk.gray('   The Agentic AI Coding Assistant'));
         console.log(chalk.gray('   -----------------------------------'));
     }

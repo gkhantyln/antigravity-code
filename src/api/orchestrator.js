@@ -83,7 +83,7 @@ class APIOrchestrator {
         // Create provider instance
         switch (providerName) {
             case 'gemini':
-                console.log('DEBUG: Configured Gemini Model:', config.gemini.defaultModel);
+
                 provider = new GeminiProvider(apiKey, {
                     model: config.gemini.defaultModel,
                     maxTokens: 8192,

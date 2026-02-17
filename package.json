@@ -1,6 +1,6 @@
 {
     "name": "antigravity-code",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": "Multi-API AI Coding Assistant with Intelligent Failover",
     "main": "src/cli/index.js",
     "bin": {
