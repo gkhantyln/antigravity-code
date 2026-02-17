@@ -692,7 +692,7 @@ Your task is to convert this screenshot into clean, responsive HTML and CSS code
      * Handle /audit command (Code Analysis)
      */
     async handleAudit(args) {
-        let target = args && args.length > 0 ? args[0] : '.';
+        const target = args && args.length > 0 ? args[0] : '.';
 
         // Resolve target path
         const fullPath = path.resolve(process.cwd(), target);
@@ -715,9 +715,10 @@ Your task is to convert this screenshot into clean, responsive HTML and CSS code
                 // Let's keep it simple: "Audit this file" for now, or "Audit this directory" (file listing + summary)
                 ui.stopSpinnerFail('Directory audit not fully supported in this version. Please specify a file.');
                 return;
-            } else {
-                codeContent = fs.readFileSync(fullPath, 'utf-8');
             }
+
+            codeContent = fs.readFileSync(fullPath, 'utf-8');
+
 
             if (!codeContent) {
                 ui.stopSpinnerFail('File is empty.');
