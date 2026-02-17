@@ -84,3 +84,10 @@ ag /config
 ```
 
 This will display the currently active settings, loaded from both your `.env` file and any runtime overrides.
+
+### 🐳 Docker Configuration
+
+When running in Docker, environment variables can be passed via `docker-compose.yml` or the command line.
+
+-   **Mounting Keys**: The easiest way to provide API keys is to mount your local `.env` file or pass them as environment variables.
+-   **Volumes**: The default configuration mounts the current directory to `/app` for live development.

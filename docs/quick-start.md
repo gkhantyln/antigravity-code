@@ -41,6 +41,20 @@ You will also need an API key from at least one provider if you are not using lo
     npm run integrate
     ```
 
+### 🐳 Running with Docker
+
+If you prefer not to install Node.js locally, you can use Docker:
+
+1.  **Build and Start**:
+    ```bash
+    docker-compose up -d
+    ```
+
+2.  **Run Antigravity**:
+    ```bash
+    docker-compose exec antigravity ag
+    ```
+
 ## 🎮 Basic Usage
 
 ### Interactive Mode

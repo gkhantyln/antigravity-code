@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  antigravity:
+    build: .
+    image: antigravity-code
+    container_name: antigravity-code
+    environment:
+      - NODE_ENV=development
+      # Mount your local configured keys or set them here
+      # - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: ["node", "src/cli/index.js", "/help"] # Default command
+    stdin_open: true # Equivalent to -i
+    tty: true        # Equivalent to -t

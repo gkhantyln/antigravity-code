@@ -7,8 +7,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
-[![Platform](https://img.shields.io/badge/platform-Windows-blue)](https://www.microsoft.com/windows)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Docker-blue)](https://www.microsoft.com/windows)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
 
 **Never lose productivity to API downtime again!**
 
@@ -118,6 +119,16 @@ The setup wizard will guide you through:
 ag
 # or
 antigravity-code
+```
+
+### 🐳 Docker Quick Start
+
+Run Antigravity in a container without installing Node.js:
+
+```bash
+# Build and run
+docker-compose up -d
+docker-compose exec antigravity ag
 ```
 
 **Example Session:**
@@ -425,18 +436,13 @@ antigravity-code/
 - ✅ Terminal interface
 - ✅ Skills and workflows
 
-### Version 3.0 (Planned)
-- [ ] GUI interface (Electron/Web)
-- [ ] Team collaboration
-- [ ] Plugin marketplace
-- [ ] Voice commands
-- [ ] IDE integrations (VS Code, JetBrains)
-
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests.
+
+We use **Changesets** for version management and **Husky** for git hooks to ensure code quality.
 
 ---
 

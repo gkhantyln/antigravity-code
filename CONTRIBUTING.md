@@ -47,6 +47,27 @@ We use `mocha` for testing and `eslint` for linting.
     npm run format
     ```
 
+### 🪝 Git Hooks
+
+We use `husky` and `lint-staged` to automatically lint and format your code before every commit.
+-   **Pre-commit**: Runs `eslint` and `prettier` on staged files.
+-   If you encounter issues, fix the linting errors or run `npm run lint:fix`.
+
+## 📦 Versioning (Changesets)
+
+We use [Changesets](https://github.com/changesets/changesets) to manage versions and changelogs.
+
+1.  **Make your changes**.
+2.  **Add a changeset**:
+    ```bash
+    npx changeset
+    ```
+3.  Follow the prompts to select the package and bump type (patch, minor, major).
+4.  Commit the generated `.changeset` file with your code.
+
+> [!IMPORTANT]
+> A changeset file is required for any PR that affects the released package or functionality.
+
 > [!IMPORTANT]
 > Please ensure all tests pass and there are no linting errors before submitting a PR.
 
