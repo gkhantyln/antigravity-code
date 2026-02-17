@@ -248,6 +248,184 @@ class CommandHandler {
     }
 
     /**
+     * Handle /checkpoints command
+     */
+    async handleCheckpoints() {
+        try {
+            const { checkpointManager } = this.engine.fileSystemTools;
+
+            if (!checkpointManager) {
+                ui.warn('Checkpoint system not available');
+                return;
+            }
+
+            const checkpoints = await checkpointManager.listCheckpoints();
+
+            if (checkpoints.length === 0) {
+                ui.info('No checkpoints found');
+                return;
+            }
+
+            console.log(ui.theme.primary.bold('\nRecent Checkpoints:'));
+            console.log(ui.theme.dim('─'.repeat(60)));
+
+            checkpoints.forEach((cp, index) => {
+                console.log(`${ui.theme.accent(`${index + 1}.`)} ${ui.theme.secondary(cp.id)}`);
+                console.log(`   ${ui.theme.dim('File:')} ${cp.filePath}`);
+                console.log(`   ${ui.theme.dim('Age:')} ${cp.age}`);
+                console.log('');
+            });
+
+            ui.info('Use /rewind <checkpoint_id> to restore a file');
+        } catch (error) {
+            ui.error(`Failed to list checkpoints: ${error.message}`);
+        }
+    }
+
+    /**
+     * Handle /rewind command
+     */
+    async handleRewind(args) {
+        try {
+            const { checkpointManager } = this.engine.fileSystemTools;
+
+            if (!checkpointManager) {
+                ui.warn('Checkpoint system not available');
+                return;
+            }
+
+            if (!args || args.length === 0) {
+                // Show checkpoints if no ID provided
+                await this.handleCheckpoints();
+                return;
+            }
+
+            const checkpointId = args[0];
+
+            ui.startSpinner('Reverting to checkpoint...', 'cyan');
+            const result = await checkpointManager.revertToCheckpoint(checkpointId);
+            ui.stopSpinnerSuccess('File Reverted');
+
+            ui.success(`Restored: ${result.filePath}`);
+        } catch (error) {
+            ui.stopSpinnerFail('Revert Failed');
+            ui.error(`Failed to revert: ${error.message}`);
+        }
+    }
+
+    /**
+     * Handle /permission command
+     */
+    async handlePermission(args) {
+        try {
+            const { permissionManager } = this.engine;
+
+            if (!permissionManager) {
+                ui.warn('Permission system not available');
+                return;
+            }
+
+            if (!args || args.length === 0) {
+                // Show current mode
+                const display = permissionManager.getModeDisplay();
+
+                console.log(ui.theme.primary.bold('\nPermission Modes:'));
+                console.log(ui.theme.dim('─'.repeat(60)));
+                console.log(`${ui.theme.accent('•')} default - Ask before every action`);
+                console.log(`${ui.theme.accent('•')} auto-edit - Auto-approve file edits`);
+                console.log(`${ui.theme.accent('•')} plan-only - Read-only, no execution`);
+                console.log('');
+                console.log(`${ui.theme.secondary('Current mode:')} ${display}`);
+                console.log('');
+                ui.info('Use /permission <mode> to change or Shift+Tab to cycle');
+                return;
+            }
+
+            const newMode = args[0];
+            await permissionManager.setMode(newMode);
+            const display = permissionManager.getModeDisplay();
+            ui.success(`Permission mode changed to: ${display}`);
+        } catch (error) {
+            ui.error(`Failed to change permission mode: ${error.message}`);
+        }
+    }
+
+    /**
+     * Handle /fork command
+     */
+    async handleFork(args) {
+        try {
+            const title = args && args.length > 0 ? args.join(' ') : null;
+
+            ui.startSpinner('Forking conversation...', 'cyan');
+            const result = await this.engine.contextManager.forkConversation(title);
+            ui.stopSpinnerSuccess('Conversation Forked');
+
+            console.log(ui.theme.primary.bold('\nConversation Forked:'));
+            console.log(ui.theme.dim('─'.repeat(60)));
+            console.log(`${ui.theme.accent('Original:')} ${result.originalId}`);
+            console.log(`${ui.theme.accent('New Fork:')} ${result.newId}`);
+            console.log(`${ui.theme.accent('Title:')} ${result.title}`);
+            console.log(`${ui.theme.accent('Messages:')} ${result.messageCount}`);
+            console.log('');
+            ui.success('Now working in forked conversation');
+        } catch (error) {
+            ui.stopSpinnerFail('Fork Failed');
+            ui.error(`Failed to fork conversation: ${error.message}`);
+        }
+    }
+
+    /**
+     * Handle /compact command
+     */
+    async handleCompact() {
+        try {
+            ui.startSpinner('Compacting context...', 'cyan');
+            const context = await this.engine.contextManager.getContext();
+            const compacted = await this.engine.contextManager.compactContext(context);
+            ui.stopSpinnerSuccess('Context Compacted');
+
+            console.log(ui.theme.primary.bold('\nContext Compaction:'));
+            console.log(ui.theme.dim('─'.repeat(60)));
+            console.log(`${ui.theme.accent('Original messages:')} ${context.messages.length}`);
+            console.log(`${ui.theme.accent('Compacted messages:')} ${compacted.messages.length}`);
+            console.log(`${ui.theme.accent('Removed:')} ${context.messages.length - compacted.messages.length}`);
+            console.log('');
+            ui.success('Context optimized for better performance');
+        } catch (error) {
+            ui.stopSpinnerFail('Compaction Failed');
+            ui.error(`Failed to compact context: ${error.message}`);
+        }
+    }
+
+    /**
+     * Handle /context command
+     */
+    async handleContext() {
+        try {
+            const context = await this.engine.contextManager.getContext();
+            const size = this.engine.contextManager.getContextSize(context);
+            const sizeMB = (JSON.stringify(context).length / (1024 * 1024)).toFixed(2);
+
+            console.log(ui.theme.primary.bold('\nContext Usage:'));
+            console.log(ui.theme.dim('─'.repeat(60)));
+            console.log(`${ui.theme.accent('Messages:')} ${context.messages.length}`);
+            console.log(`${ui.theme.accent('Approx. tokens:')} ${size.toLocaleString()}`);
+            console.log(`${ui.theme.accent('Size:')} ${sizeMB} MB`);
+            console.log(`${ui.theme.accent('Compacted:')} ${context.compacted ? 'Yes' : 'No'}`);
+            console.log('');
+
+            if (size > 100000) {
+                ui.warn('Context is large. Consider using /compact to optimize.');
+            } else {
+                ui.info('Context size is healthy');
+            }
+        } catch (error) {
+            ui.error(`Failed to get context info: ${error.message}`);
+        }
+    }
+
+    /**
      * Handle /agent command
      */
     async handleAgent(_args) {
@@ -570,6 +748,24 @@ This project is initialized with the Fractal Agent architecture.
                 break;
             case '/index':
                 await this.handleIndex();
+                break;
+            case '/checkpoints':
+                await this.handleCheckpoints();
+                break;
+            case '/rewind':
+                await this.handleRewind(args);
+                break;
+            case '/permission':
+                await this.handlePermission(args);
+                break;
+            case '/fork':
+                await this.handleFork(args);
+                break;
+            case '/compact':
+                await this.handleCompact();
+                break;
+            case '/context':
+                await this.handleContext();
                 break;
             case '/clear':
                 this.handleClear();

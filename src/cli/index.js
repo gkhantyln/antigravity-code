@@ -43,7 +43,8 @@ async function interactiveMode() {
 
             if (!trimmed) {
                 const currentProvider = engine.getCurrentProvider();
-                ui.printPromptTop({ cwd: process.cwd(), provider: currentProvider });
+                const permissionMode = engine.permissionManager ? engine.permissionManager.getModeDisplay() : '';
+                ui.printPromptTop({ cwd: process.cwd(), provider: currentProvider, permissionMode });
                 rl.prompt();
                 return;
             }
@@ -61,7 +62,8 @@ async function interactiveMode() {
                 }
 
                 const currentProvider = engine.getCurrentProvider();
-                ui.printPromptTop({ cwd: process.cwd(), provider: currentProvider });
+                const permissionMode = engine.permissionManager ? engine.permissionManager.getModeDisplay() : '';
+                ui.printPromptTop({ cwd: process.cwd(), provider: currentProvider, permissionMode });
                 rl.prompt();
                 return;
             }
@@ -87,7 +89,8 @@ async function interactiveMode() {
             }
 
             const currentProvider = engine.getCurrentProvider();
-            ui.printPromptTop({ cwd: process.cwd(), provider: currentProvider });
+            const permissionMode = engine.permissionManager ? engine.permissionManager.getModeDisplay() : '';
+            ui.printPromptTop({ cwd: process.cwd(), provider: currentProvider, permissionMode });
             rl.prompt();
         };
 

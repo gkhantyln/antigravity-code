@@ -155,6 +155,23 @@ class Database {
       )
     `);
 
+        // Checkpoints table
+        await this.run(`
+      CREATE TABLE IF NOT EXISTS checkpoints (
+        id TEXT PRIMARY KEY,
+        file_path TEXT NOT NULL,
+        content TEXT,
+        file_exists BOOLEAN NOT NULL,
+        timestamp INTEGER NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+        await this.run(`
+      CREATE INDEX IF NOT EXISTS idx_checkpoints_timestamp 
+      ON checkpoints(timestamp DESC)
+    `);
+
         logger.debug('Database tables created');
     }
 
@@ -260,6 +277,63 @@ class Database {
     async getConfig(key) {
         const row = await this.get(`SELECT value FROM config WHERE key = ?`, [key]);
         return row ? JSON.parse(row.value) : null;
+    }
+
+    /**
+     * Save a checkpoint
+     */
+    async saveCheckpoint(checkpoint) {
+        const id = generateId();
+        await this.run(
+            `INSERT INTO checkpoints (id, file_path, content, file_exists, timestamp)
+       VALUES (?, ?, ?, ?, ?)`,
+            [
+                id,
+                checkpoint.filePath,
+                checkpoint.content,
+                checkpoint.fileExists ? 1 : 0,
+                checkpoint.timestamp,
+            ]
+        );
+        logger.debug('Checkpoint saved', { id, path: checkpoint.filePath });
+        return id;
+    }
+
+    /**
+     * Get checkpoint by ID
+     */
+    async getCheckpoint(id) {
+        const row = await this.get(`SELECT * FROM checkpoints WHERE id = ?`, [id]);
+        if (!row) return null;
+
+        return {
+            id: row.id,
+            filePath: row.file_path,
+            content: row.content,
+            fileExists: row.file_exists === 1,
+            timestamp: row.timestamp,
+        };
+    }
+
+    /**
+     * Get recent checkpoints
+     */
+    async getRecentCheckpoints(limit = 20) {
+        return this.all(
+            `SELECT * FROM checkpoints ORDER BY timestamp DESC LIMIT ?`,
+            [limit]
+        );
+    }
+
+    /**
+     * Delete checkpoints older than timestamp
+     */
+    async deleteCheckpointsBefore(timestamp) {
+        const result = await this.run(
+            `DELETE FROM checkpoints WHERE timestamp < ?`,
+            [timestamp]
+        );
+        return result.changes || 0;
     }
 
     /**

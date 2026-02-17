@@ -4,6 +4,7 @@ const marked = require('marked');
 const { markedTerminal } = require('marked-terminal');
 const readline = require('readline');
 const path = require('path');
+const { FileTree } = require('./file-tree');
 const { COMMANDS } = require('./commands-data');
 
 // Theme Configuration
@@ -460,6 +461,88 @@ class UIManager {
     // Export theme color for use in other files
     get theme() {
         return THEME;
+    }
+
+    /**
+     * Show batch operation confirmation
+     */
+    async confirmBatchOperation(files) {
+        if (this.jsonMode) return 'apply_all';
+
+        const fileTree = new FileTree();
+
+        // Show file tree
+        const treeLines = fileTree.render(files);
+        treeLines.forEach(line => console.log(line));
+
+        // Show options
+        console.log(chalk.bold.cyan('Options:'));
+        console.log(`  ${chalk.green('[A]')} Apply All Changes`);
+        console.log(`  ${chalk.yellow('[R]')} Review Each File`);
+        console.log(`  ${chalk.red('[C]')} Cancel`);
+        console.log('');
+
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+
+        return new Promise(resolve => {
+            rl.question(chalk.bold('Your choice: '), answer => {
+                rl.close();
+                const choice = answer.trim().toLowerCase();
+
+                if (choice === 'a' || choice === 'apply') {
+                    resolve('apply_all');
+                } else if (choice === 'r' || choice === 'review') {
+                    resolve('review_each');
+                } else {
+                    resolve('cancel');
+                }
+            });
+        });
+    }
+
+    /**
+     * Show batch operation results
+     */
+    showBatchResults(results) {
+        if (this.jsonMode) return;
+
+        console.log('');
+        console.log(chalk.bold.cyan('📊 Batch Operation Results:'));
+        console.log(chalk.dim('─'.repeat(60)));
+
+        const successful = results.filter(r => r.success);
+        const failed = results.filter(r => !r.success);
+
+        if (successful.length > 0) {
+            console.log(chalk.green(`✓ ${successful.length} file${successful.length !== 1 ? 's' : ''} applied successfully`));
+            successful.forEach(r => {
+                console.log(`  ${chalk.dim('•')} ${r.path}`);
+            });
+        }
+
+        if (failed.length > 0) {
+            console.log('');
+            console.log(chalk.red(`✗ ${failed.length} file${failed.length !== 1 ? 's' : ''} failed`));
+            failed.forEach(r => {
+                console.log(`  ${chalk.dim('•')} ${r.path}: ${r.error}`);
+            });
+        }
+
+        console.log('');
+    }
+
+    /**
+     * Show file tree
+     */
+    showFileTree(files, title) {
+        if (this.jsonMode) return;
+
+        const fileTree = new FileTree();
+        const lines = fileTree.render(files, title);
+        lines.forEach(line => console.log(line));
     }
 }
 

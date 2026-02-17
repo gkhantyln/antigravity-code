@@ -221,29 +221,72 @@ class ContextManager {
     }
 
     /**
-     * Compress context if too large
+     * Compact context intelligently
+     * Removes old tool outputs and keeps important messages
      */
-    async compressContext(context) {
-        const json = JSON.stringify(context);
+    async compactContext(context = null) {
+        const ctx = context || await this.getContext();
+        const json = JSON.stringify(ctx);
         const sizeMB = Buffer.byteLength(json, 'utf8') / (1024 * 1024);
 
         if (sizeMB <= this.maxContextSizeMB) {
-            return context;
+            return ctx;
         }
 
-        logger.warn('Context too large, compressing', {
+        logger.warn('Context too large, compacting', {
             sizeMB: sizeMB.toFixed(2),
             maxSizeMB: this.maxContextSizeMB,
         });
 
-        // Keep only recent messages
-        const compressedMessages = context.messages.slice(-this.maxMessages);
+        // Prioritize messages
+        const prioritized = ctx.messages.map((msg, index) => {
+            let priority = 0;
+
+            // Keep all user messages (highest priority)
+            if (msg.role === 'user') priority = 10;
+
+            // Keep recent assistant messages
+            if (msg.role === 'assistant') priority = 5;
+
+            // Tool results have lower priority (can be summarized)
+            if (msg.role === 'system' && msg.metadata?.type === 'tool_result') {
+                priority = 1;
+            }
+
+            // Recent messages are more important
+            const recencyBonus = index / ctx.messages.length;
+            priority += recencyBonus * 3;
+
+            return { ...msg, priority, index };
+        });
+
+        // Sort by priority and keep top messages
+        const sorted = prioritized.sort((a, b) => b.priority - a.priority);
+        const kept = sorted.slice(0, this.maxMessages);
+
+        // Re-sort by original index to maintain chronological order
+        const compactedMessages = kept.sort((a, b) => a.index - b.index).map(({ priority: _priority, index: _index, ...msg }) => msg);
+
+        logger.info('Context compacted', {
+            originalCount: ctx.messages.length,
+            compactedCount: compactedMessages.length,
+            originalSizeMB: sizeMB.toFixed(2)
+        });
 
         return {
-            ...context,
-            messages: compressedMessages,
-            compressed: true,
+            ...ctx,
+            messages: compactedMessages,
+            compacted: true,
         };
+    }
+
+    /**
+     * Get context size in tokens (approximate)
+     */
+    getContextSize(context) {
+        const json = JSON.stringify(context);
+        // Rough approximation: 1 token ≈ 4 characters
+        return Math.ceil(json.length / 4);
     }
 
     /**
@@ -252,6 +295,60 @@ class ContextManager {
     async clearConversation() {
         this.currentConversationId = null;
         logger.info('Conversation cleared');
+    }
+
+    /**
+     * Fork current conversation
+     * Creates a new conversation with all messages from the current one
+     */
+    async forkConversation(title = null) {
+        if (!this.currentConversationId) {
+            throw new Error('No active conversation to fork');
+        }
+
+        // Get current conversation
+        const originalConversation = await this.database.getConversation(this.currentConversationId);
+        const originalMessages = await this.database.getMessages(this.currentConversationId, 1000);
+
+        // Create new conversation
+        const forkTitle = title || `Fork of ${originalConversation.title}`;
+        const newConversationId = await this.database.createConversation(forkTitle);
+
+        // Copy all messages to new conversation
+        for (const msg of originalMessages.reverse()) {
+            let metadata = {};
+            try {
+                metadata = JSON.parse(msg.metadata || '{}');
+            } catch (e) {
+                // Ignore parse errors
+            }
+
+            await this.database.addMessage(
+                newConversationId,
+                msg.role,
+                msg.content,
+                msg.provider,
+                msg.model,
+                msg.tokens,
+                metadata
+            );
+        }
+
+        logger.info('Conversation forked', {
+            originalId: this.currentConversationId,
+            newId: newConversationId,
+            messageCount: originalMessages.length
+        });
+
+        // Switch to forked conversation
+        this.currentConversationId = newConversationId;
+
+        return {
+            originalId: originalConversation.id,
+            newId: newConversationId,
+            title: forkTitle,
+            messageCount: originalMessages.length
+        };
     }
 
     /**

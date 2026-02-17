@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚀 Antigravity-Code v2.1.0
+# 🚀 Antigravity-Code v2.2.0
 
 ### Multi-API Agentic AI Coding Assistant
 **Agentic Workflow • RAG Memory • Vision • Local Models • Smart Failover**
@@ -31,8 +31,12 @@ With **v2.0**, Antigravity evolves into a fully **Agentic System**. It doesn't j
 - 🤖 **Agentic Workflow** - Autonomous Planner, Coder, and Reviewer agents
 - 🧠 **RAG Memory** - Indexes your codebase for intelligent context retrieval
 - 👁️ **Vision & UI** - Converts screenshots directly to HTML/CSS code
-- � **Local & Private** - Run 100% offline with Ollama (Llama 3, Mistral, etc.)
-- �🎯 **85+ AI Models** - Choose from Gemini, Claude, and OpenAI
+- 🏠 **Local & Private** - Run 100% offline with Ollama (Llama 3, Mistral, etc.)
+- 🎯 **85+ AI Models** - Choose from Gemini, Claude, and OpenAI
+- ⏮️ **Checkpoint System** - Time-travel through file changes with snapshots
+- 🔒 **Permission Modes** - 3 control modes (default, auto-edit, plan-only)
+- 📦 **Batch Operations** - Visual file tree with multi-file approval
+- 🌿 **Session Forking** - Branch conversations without losing context
 - 🛡️ **Zero Context Loss** - Seamless provider switching mid-conversation
 - 🔒 **Privacy First** - Local storage, encrypted keys, no telemetry
 - ⚡ **Lightning Fast** - Native Windows terminal integration
@@ -46,22 +50,26 @@ With **v2.0**, Antigravity evolves into a fully **Agentic System**. It doesn't j
 
 | Feature | Description |
 |---------|-------------|
-| 🤖 **Agentic Mode** | **NEW!** Autonomous planning, coding, and reviewing workflow |
+| 🤖 **Agentic Mode** | Autonomous planning, coding, and reviewing workflow |
 | 💻 **Code Generation** | Write clean, efficient code in any language |
-| �️ **Vision Analysis** | **NEW!** Analyze images and generated code from screenshots |
-| 🧠 **RAG Context** | **NEW!** Index entire codebase for accurate answers |
-| �📂 **File System Ops** | Read, write, and delete files directly |
+| 👁️ **Vision Analysis** | Analyze images and generated code from screenshots |
+| 🧠 **RAG Context** | Index entire codebase for accurate answers |
 | 📂 **File System Ops** | Read, write, and delete files directly |
+| ⏮️ **Checkpoint System** | **NEW!** Time-travel file snapshots with `/rewind` and `/checkpoints` |
+| 🔒 **Permission Modes** | **NEW!** 3 control modes: default, auto-edit, plan-only |
+| 📦 **Batch Operations** | **NEW!** Visual file tree with multi-file approval/rejection |
+| 🌿 **Session Forking** | **NEW!** Branch conversations with `/fork` command |
+| 📊 **Context Management** | **NEW!** Smart compaction with `/compact` and `/context` |
 | 🐛 **Intelligent Debugging** | Find and fix bugs systematically using Linter and Auto-Fix |
-| 🔄 **Smart Commit** | **NEW!** Auto-generate conventional commit messages from git diff |
+| 🔄 **Smart Commit** | Auto-generate conventional commit messages from git diff |
 | 🧪 **Test Generation** | Automated unit tests written to disk |
 | 📝 **Documentation** | Auto-generate comprehensive docs |
 | 🔄 **Refactoring** | Improve code quality and structure |
 | 🧠 **Context Awareness** | Auto-detects project type (Node, Python, etc.) |
-| 🏗️ **Project Scaffolding** | **NEW!** Auto-generate Fractal Agent structure with \`/init\` |
-| 🛡️ **Self-Healing** | **NEW!** Autonomous error detection and fixing loop |
-| 📦 **Safe Execution** | **NEW!** Sandboxed execution with blocklist & user confirmation |
-| 🔌 **IDE Integration** | **NEW!** MCP Server & JSON output for VS Code/Cursor |
+| 🏗️ **Project Scaffolding** | Auto-generate Fractal Agent structure with `/init` |
+| 🛡️ **Self-Healing** | Autonomous error detection and fixing loop |
+| 📦 **Safe Execution** | Sandboxed execution with blocklist & user confirmation |
+| 🔌 **IDE Integration** | MCP Server & JSON output for VS Code/Cursor |
 
 ### Advanced Features
 
@@ -73,6 +81,21 @@ With **v2.0**, Antigravity evolves into a fully **Agentic System**. It doesn't j
 - **🛠️ Extensible Skills**: Custom skills for specialized tasks.
 - **🚀 Workflow Automation**: Pre-defined workflows (`/create`, `/debug`, `/test`).
 - **🔐 Secure Storage**: Windows DPAPI encryption for API keys.
+
+### New in v2.2.0 🎉
+
+- **⏮️ Checkpoint System**: Automatic file snapshots before every edit. Rewind to any previous state with `/rewind <checkpoint_id>`. List all checkpoints with `/checkpoints`.
+- **🔒 Permission Modes**: Control AI behavior with 3 modes:
+  - `default`: Ask before each action
+  - `auto-edit`: Automatically apply all changes
+  - `plan-only`: Show plans without executing
+- **📦 Visual File Tree**: Beautiful tree visualization for multi-file operations with status icons (✏️ Modified, ➕ New, ❌ Deleted).
+- **🎯 Batch Operations**: When AI proposes multiple file changes, see them all at once and choose:
+  - `[A] Apply All` - Accept all changes instantly
+  - `[R] Review Each` - Review files one by one
+  - `[C] Cancel` - Reject all changes
+- **🌿 Session Forking**: Branch your conversation with `/fork` to explore different approaches without losing the original context.
+- **📊 Context Management**: Smart context compaction prioritizes important messages. Use `/compact` to optimize and `/context` to view statistics.
 
 ---
 
@@ -181,12 +204,18 @@ cat error.log | ag "Debug this error"
 
 | Command | Description | Example |
 |---------|-------------|---------|
-| `/agent` | **NEW!** Start autonomous agentic workflow | `/agent "Build a todo app"` |
-| `/ui` | **NEW!** Convert screenshot to HTML/CSS code | `/ui mockup.png` |
-| `/see` | **NEW!** Analyze an image | `/see error_screenshot.png` |
-| `/commit` | **NEW!** Smart git commit message generation | `/commit` (auto-detects changes) |
-| `/index` | **NEW!** Index codebase for RAG | `/index` |
-| `/init` | **NEW!** Initialize Fractal Agent scaffolding | `/init my-app` |
+| `/agent` | Start autonomous agentic workflow | `/agent "Build a todo app"` |
+| `/ui` | Convert screenshot to HTML/CSS code | `/ui mockup.png` |
+| `/see` | Analyze an image | `/see error_screenshot.png` |
+| `/commit` | Smart git commit message generation | `/commit` (auto-detects changes) |
+| `/index` | Index codebase for RAG | `/index` |
+| `/init` | Initialize Fractal Agent scaffolding | `/init my-app` |
+| `/rewind` | **NEW!** Revert file to checkpoint | `/rewind abc123` |
+| `/checkpoints` | **NEW!** List recent file checkpoints | `/checkpoints` |
+| `/permission` | **NEW!** Change permission mode | `/permission auto-edit` |
+| `/fork` | **NEW!** Fork current conversation | `/fork` |
+| `/compact` | **NEW!** Compact conversation context | `/compact` |
+| `/context` | **NEW!** Show context statistics | `/context` |
 | `/create` | Create new features/files directly | `/create "snake game in python"` |
 | `/debug` | Debug and fix code issues | `/debug "fix this error"` |
 | `/test` | Generate and save unit tests | `/test "app.js"` |
@@ -427,7 +456,15 @@ antigravity-code/
 - ✅ **Proactive Debugging** (Linting)
 - ✅ **Project Scaffolding** (Fractal Agent /init)
 
-### Version 2.1.0 (Current) ✅
+### Version 2.2.0 (Current) ✅
+- ✅ **Checkpoint System** (File snapshots with `/rewind` and `/checkpoints`)
+- ✅ **Permission Modes** (3 modes: default, auto-edit, plan-only)
+- ✅ **Session Forking** (Branch conversations with `/fork`)
+- ✅ **Context Compaction** (Smart memory management)
+- ✅ **Visual File Tree** (Beautiful tree rendering with status icons)
+- ✅ **Batch Operations** (Multi-file approval with [Apply All] [Review Each] [Cancel])
+
+### Version 2.1.0 ✅
 - ✅ **Autonomous Self-Healing** (Auto-fix errors)
 - ✅ **Safe Execution** (Sandboxing & Blocklist)
 - ✅ **UX Polish** (Colorized Diffs & Confirmations)

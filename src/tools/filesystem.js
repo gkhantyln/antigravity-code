@@ -2,14 +2,16 @@ const fs = require('fs').promises;
 const path = require('path');
 const { logger } = require('../utils/logger');
 const ui = require('../cli/ui');
+const { CheckpointManager } = require('./checkpoint');
 
 /**
  * File System Tools
  * Provides safe file system operations for the AI engine
  */
 class FileSystemTools {
-    constructor(baseDir = process.cwd()) {
+    constructor(baseDir = process.cwd(), database = null) {
         this.baseDir = baseDir;
+        this.checkpointManager = database ? new CheckpointManager(database) : null;
     }
 
     /**
@@ -41,12 +43,23 @@ class FileSystemTools {
     /**
      * Write content to file
      */
-    async writeFile(filePath, content) {
+    async writeFile(filePath, content, skipConfirmation = false) {
         try {
             const fullPath = this._resolvePath(filePath);
 
-            // UX Polish: Show diff and ask confirmation
-            if (!ui.jsonMode) {
+            // Create checkpoint before modifying file
+            let checkpointId = null;
+            if (this.checkpointManager) {
+                try {
+                    checkpointId = await this.checkpointManager.createCheckpoint(fullPath);
+                    logger.debug('Checkpoint created before write', { checkpointId, path: filePath });
+                } catch (error) {
+                    logger.warn('Failed to create checkpoint, continuing anyway', { error: error.message });
+                }
+            }
+
+            // UX Polish: Show diff and ask confirmation (unless skipped for batch)
+            if (!ui.jsonMode && !skipConfirmation) {
                 let oldContent = null;
                 try {
                     oldContent = await fs.readFile(fullPath, 'utf8');
@@ -64,8 +77,13 @@ class FileSystemTools {
 
             await fs.mkdir(path.dirname(fullPath), { recursive: true });
             await fs.writeFile(fullPath, content, 'utf8');
-            logger.info('File written', { path: filePath });
-            return `Successfully wrote to ${filePath}`;
+            logger.info('File written', { path: filePath, checkpointId });
+
+            return {
+                success: true,
+                message: `Successfully wrote to ${filePath}`,
+                checkpointId
+            };
         } catch (error) {
             logger.error('Write file failed', { path: filePath, error: error.message });
             throw new Error(`Failed to write file ${filePath}: ${error.message}`);

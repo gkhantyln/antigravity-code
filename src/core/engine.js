@@ -4,6 +4,8 @@ const { Database } = require('../utils/storage');
 const { configManager } = require('./config');
 const { logger } = require('../utils/logger');
 const { FileSystemTools } = require('../tools/filesystem');
+const { PermissionManager } = require('./permissions');
+const ui = require('../cli/ui');
 
 /**
  * Antigravity Engine
@@ -15,6 +17,7 @@ class AntigravityEngine {
         this.contextManager = null;
         this.apiOrchestrator = null;
         this.fileSystemTools = null;
+        this.permissionManager = null;
         this.initialized = false;
     }
 
@@ -39,8 +42,11 @@ class AntigravityEngine {
         // Initialize context manager
         this.contextManager = new ContextManager(this.database);
 
-        // Initialize file system tools
-        this.fileSystemTools = new FileSystemTools();
+        // Initialize file system tools with database for checkpoints
+        this.fileSystemTools = new FileSystemTools(process.cwd(), this.database);
+
+        // Initialize permission manager
+        this.permissionManager = new PermissionManager(configManager);
 
         // Initialize API orchestrator
         this.apiOrchestrator = new APIOrchestrator(this.database);
@@ -51,7 +57,8 @@ class AntigravityEngine {
         logger.debug('Antigravity Engine initialized', {
             primaryProvider: config.providers.primary,
             dbPath: config.storage.dbPath,
-            toolsInitialized: true
+            toolsInitialized: true,
+            permissionMode: this.permissionManager.getMode()
         });
     }
 
@@ -116,14 +123,26 @@ class AntigravityEngine {
 
         // Check if tool call requested
         if (response.toolCalls && response.toolCalls.length > 0) {
-            for (const toolCall of response.toolCalls) {
-                const result = await this._executeTool(toolCall.name, toolCall.arguments);
+            // Collect write_file operations for batch processing
+            const writeOperations = response.toolCalls.filter(tc => tc.name === 'write_file');
+            const otherOperations = response.toolCalls.filter(tc => tc.name !== 'write_file');
 
-                // Add tool result to context
+            // Execute non-write operations immediately
+            for (const toolCall of otherOperations) {
+                const result = await this._executeTool(toolCall.name, toolCall.arguments);
                 await this.contextManager.addToolResultMessage(toolCall.id, toolCall.name, result);
             }
 
-            // Update context with the new tool results and recurse
+            // Handle write operations in batch if multiple
+            if (writeOperations.length > 1) {
+                await this._executeBatchWrite(writeOperations);
+            } else if (writeOperations.length === 1) {
+                // Single write operation - execute normally
+                const toolCall = writeOperations[0];
+                const result = await this._executeTool(toolCall.name, toolCall.arguments);
+                await this.contextManager.addToolResultMessage(toolCall.id, toolCall.name, result);
+            }
+
             // Update context with the new tool results and recurse
             const updatedContext = await this.contextManager.getContext();
             return this._executeWithTools(null, updatedContext, tools, options);
@@ -158,6 +177,92 @@ class AntigravityEngine {
         } catch (error) {
             logger.error(`Tool execution failed: ${name}`, error);
             return `Error: ${error.message}`;
+        }
+    }
+
+    /**
+     * Execute batch write operations
+     */
+    async _executeBatchWrite(writeOperations) {
+
+        // Prepare file list for UI
+        const files = writeOperations.map(op => ({
+            path: op.arguments.path,
+            status: 'modified',
+            stats: { added: 0, removed: 0 }
+        }));
+
+        // Check permission mode
+        const mode = this.permissionManager.getMode();
+
+        let choice = 'apply_all';
+        if (mode === 'plan-only') {
+            ui.showFileTree(files, 'Proposed Changes (Plan-Only Mode)');
+            ui.warn('Plan-only mode: No files will be modified');
+
+            for (const toolCall of writeOperations) {
+                await this.contextManager.addToolResultMessage(
+                    toolCall.id,
+                    toolCall.name,
+                    'Skipped: Plan-only mode'
+                );
+            }
+            return;
+        }
+
+        if (mode === 'default') {
+            choice = await ui.confirmBatchOperation(files);
+        }
+
+        if (choice === 'cancel') {
+            ui.warn('Batch operation cancelled');
+            for (const toolCall of writeOperations) {
+                await this.contextManager.addToolResultMessage(
+                    toolCall.id,
+                    toolCall.name,
+                    'Cancelled by user'
+                );
+            }
+            return;
+        }
+
+        const results = [];
+
+        if (choice === 'apply_all') {
+            ui.startSpinner(`Applying ${writeOperations.length} file changes...`, 'cyan');
+
+            for (const toolCall of writeOperations) {
+                try {
+                    const result = await this.fileSystemTools.writeFile(
+                        toolCall.arguments.path,
+                        toolCall.arguments.content,
+                        true
+                    );
+
+                    results.push({ path: toolCall.arguments.path, success: true });
+                    await this.contextManager.addToolResultMessage(toolCall.id, toolCall.name, result);
+                } catch (error) {
+                    results.push({ path: toolCall.arguments.path, success: false, error: error.message });
+                    await this.contextManager.addToolResultMessage(toolCall.id, toolCall.name, `Error: ${error.message}`);
+                }
+            }
+
+            ui.stopSpinnerSuccess('Batch operation complete');
+            ui.showBatchResults(results);
+
+        } else if (choice === 'review_each') {
+            for (const toolCall of writeOperations) {
+                try {
+                    const result = await this._executeTool(toolCall.name, toolCall.arguments);
+                    results.push({ path: toolCall.arguments.path, success: true });
+                    await this.contextManager.addToolResultMessage(toolCall.id, toolCall.name, result);
+                } catch (error) {
+                    results.push({ path: toolCall.arguments.path, success: false, error: error.message });
+                    await this.contextManager.addToolResultMessage(toolCall.id, toolCall.name, `Error: ${error.message}`);
+                }
+            }
+
+            ui.showBatchResults(results);
         }
     }
 

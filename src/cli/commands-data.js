@@ -125,6 +125,54 @@ const COMMANDS = [
         details: 'Clears the terminal screen and redraws the dashboard.'
     },
     {
+        name: '/rewind',
+        description: 'Revert file to checkpoint',
+        usage: '/rewind [checkpoint_id]',
+        example: '/rewind 1234567890_abc',
+        category: 'System',
+        details: 'Reverts a file to a previous checkpoint. If no ID is provided, shows recent checkpoints.'
+    },
+    {
+        name: '/checkpoints',
+        description: 'List recent checkpoints',
+        usage: '/checkpoints',
+        example: '/checkpoints',
+        category: 'System',
+        details: 'Displays a list of recent file checkpoints that can be reverted.'
+    },
+    {
+        name: '/permission',
+        description: 'Change permission mode',
+        usage: '/permission <mode>',
+        example: '/permission auto-edit',
+        category: 'System',
+        details: 'Set permission mode: default (ask first), auto-edit (auto file edits), plan-only (read-only). Use Shift+Tab to cycle modes.'
+    },
+    {
+        name: '/fork',
+        description: 'Fork current conversation',
+        usage: '/fork [title]',
+        example: '/fork "Testing new approach"',
+        category: 'System',
+        details: 'Creates a new conversation branch with all messages from the current conversation.'
+    },
+    {
+        name: '/compact',
+        description: 'Compact conversation context',
+        usage: '/compact',
+        example: '/compact',
+        category: 'System',
+        details: 'Removes old tool outputs and compacts context to reduce token usage.'
+    },
+    {
+        name: '/context',
+        description: 'Show context usage',
+        usage: '/context',
+        example: '/context',
+        category: 'System',
+        details: 'Displays current context size and message count.'
+    },
+    {
         name: '/exit',
         description: 'Exit the application',
         usage: '/exit',
