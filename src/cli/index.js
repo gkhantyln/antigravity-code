@@ -34,7 +34,7 @@ async function interactiveMode() {
         const rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
-            prompt: ui.theme.accent('> ') + ' ',
+            prompt: `${ui.theme.accent('> ')} `,
         });
 
         // Main REPL loop
@@ -42,8 +42,8 @@ async function interactiveMode() {
             const trimmed = input.trim();
 
             if (!trimmed) {
-                const provider = engine.getCurrentProvider();
-                ui.printPromptTop({ cwd: process.cwd(), provider });
+                const currentProvider = engine.getCurrentProvider();
+                ui.printPromptTop({ cwd: process.cwd(), provider: currentProvider });
                 rl.prompt();
                 return;
             }
@@ -60,8 +60,8 @@ async function interactiveMode() {
                     ui.error(error.message);
                 }
 
-                const provider = engine.getCurrentProvider();
-                ui.printPromptTop({ cwd: process.cwd(), provider });
+                const currentProvider = engine.getCurrentProvider();
+                ui.printPromptTop({ cwd: process.cwd(), provider: currentProvider });
                 rl.prompt();
                 return;
             }
@@ -86,8 +86,8 @@ async function interactiveMode() {
                 logger.error('Request failed', { error: error.message });
             }
 
-            const provider = engine.getCurrentProvider();
-            ui.printPromptTop({ cwd: process.cwd(), provider });
+            const currentProvider = engine.getCurrentProvider();
+            ui.printPromptTop({ cwd: process.cwd(), provider: currentProvider });
             rl.prompt();
         };
 

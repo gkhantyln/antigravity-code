@@ -2,7 +2,6 @@ const chalk = require('chalk');
 const ora = require('ora');
 const marked = require('marked');
 const { markedTerminal } = require('marked-terminal');
-const diff = require('diff');
 const readline = require('readline');
 const path = require('path');
 const { COMMANDS } = require('./commands-data');
@@ -62,7 +61,7 @@ class UIManager {
         const titleColor = options.titleColor || THEME.box.title;
 
         const hLine = '─'.repeat(width);
-        const emptyLine = ' '.repeat(width);
+        // unused: const emptyLine = ' '.repeat(width);
 
         // Top border
         console.log(borderColor(`┌${hLine}┐`));
@@ -100,6 +99,7 @@ class UIManager {
                 }
 
                 const p = ' '.repeat(padding);
+                // eslint-disable-next-line no-control-regex
                 const extraSpace = width - (padding * 2) - chunk.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '').length; // Rough ansi strip for padding calc
 
                 // If extraSpace is negative (due to ANSI codes messing up length), standard padding usually covers it visually 
@@ -157,10 +157,10 @@ class UIManager {
             '• Type /test to run tests'
         ];
 
-        console.log(border + ' ' + THEME.box.title('Recent Activity / Hints:') + ' '.repeat(width - 25) + border);
+        console.log(`${border} ${THEME.box.title('Recent Activity / Hints:')}${' '.repeat(width - 25)}${border}`);
         hints.forEach(hint => {
             const pad = width - hint.length - 1;
-            console.log(border + ' ' + THEME.dim(hint) + ' '.repeat(Math.max(0, pad)) + border);
+            console.log(`${border} ${THEME.dim(hint)}${' '.repeat(Math.max(0, pad))}${border}`);
         });
 
         console.log(botParams);
@@ -310,7 +310,7 @@ class UIManager {
 
         if (commandName) {
             // Specific command help
-            const cmd = COMMANDS.find(c => c.name === commandName || c.name === '/' + commandName);
+            const cmd = COMMANDS.find(c => c.name === commandName || c.name === `/${commandName}`);
             if (!cmd) {
                 this.error(`Command not found: ${commandName}`);
                 return;
@@ -395,18 +395,20 @@ class UIManager {
         const width = 60;
 
         // Status items
+        // Status items
         const cwd = status.cwd ? path.basename(status.cwd) : 'root';
         const providerName = status.provider ? status.provider.name : 'AI';
-        const modelName = status.provider ? status.provider.model : '';
+        // unused: const modelName = status.provider ? status.provider.model : '';
         const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         // Format labels
-        const labelCwd = `${THEME.accent('📂 ' + cwd)}`;
-        const labelAI = `${THEME.secondary('⚡ ' + providerName)}`;
-        const labelTime = `${THEME.dim('🕒 ' + time)}`;
+        const labelCwd = `${THEME.accent(`📂 ${cwd}`)}`;
+        const labelAI = `${THEME.secondary(`⚡ ${providerName}`)}`;
+        const labelTime = `${THEME.dim(`🕒 ${time}`)}`;
 
         // Calculate spacing
         // We need to estimate visual length (stripping ansi for calculation is best, but we'll approximate)
+        // eslint-disable-next-line no-unused-vars, no-control-regex
         const strip = (s) => s.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '');
 
         const rawCwd = `📂 ${cwd}`;
@@ -424,11 +426,7 @@ class UIManager {
         console.log('');
         // "── 📂 cwd │ ⚡ AI ────── 🕒 time ──" style
 
-        const topParams = THEME.box.border('── ') +
-            labelCwd + sep +
-            labelAI + sep +
-            labelTime + ' ' +
-            line;
+        const topParams = `${THEME.box.border('── ')}${labelCwd}${sep}${labelAI}${sep}${labelTime} ${line}`;
 
         console.log(topParams);
     }
