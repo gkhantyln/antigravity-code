@@ -7,7 +7,8 @@ const chalk = require('chalk');
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const BIN_PATH = path.join(PROJECT_ROOT, 'src', 'cli', 'index.js');
 const AG_BAT_PATH = path.join(PROJECT_ROOT, 'bin', 'ag.bat');
-const AD_BAT_PATH = path.join(PROJECT_ROOT, 'bin', 'antigravity.bat');
+const AD_BAT_PATH = path.join(PROJECT_ROOT, 'bin', 'antigravity-code.bat');
+const OLD_BAT_PATH = path.join(PROJECT_ROOT, 'bin', 'antigravity.bat');
 
 async function main() {
     console.log(chalk.magenta.bold('\n🚀 Antigravity-Code Integration Setup\n'));
@@ -25,8 +26,16 @@ async function main() {
         await fs.writeFile(AG_BAT_PATH, batContent);
         await fs.writeFile(AD_BAT_PATH, batContent);
 
+        // Remove old alias if exists
+        try {
+            await fs.unlink(OLD_BAT_PATH);
+            console.log(chalk.yellow('✔ removed old antigravity.bat (to avoid conflicts)'));
+        } catch (e) {
+            // Ignore if file doesn't exist
+        }
+
         console.log(chalk.green('✔ created ag.bat'));
-        console.log(chalk.green('✔ created antigravity.bat'));
+        console.log(chalk.green('✔ created antigravity-code.bat'));
 
         // 3. Add to PATH (User specific)
         console.log(chalk.cyan('\n🔗 Adding to System PATH...'));
@@ -49,7 +58,7 @@ async function main() {
         console.log(chalk.magenta.bold('\n✨ Integration Complete!'));
         console.log(chalk.white('You can now run:'));
         console.log(chalk.cyan('  ag'));
-        console.log(chalk.cyan('  antigravity'));
+        console.log(chalk.cyan('  antigravity-code'));
 
     } catch (error) {
         console.error(chalk.red('\n✖ Integration failed:'), error.message);
