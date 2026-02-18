@@ -19,7 +19,16 @@ Used for scaffolding new features or files. It prompts the user for requirements
 ag /create "A new authentication middleware"
 ```
 
-### 2. Debugging (`/debug`)
+### 2. Project Scaffolding (`/init`)
+**File:** `.agent/workflows/init.md` (Internal)
+Starts a new project with the Fractal Agent structure, setting up directories, config files, and the agent's identity.
+
+**Usage:**
+```bash
+ag /init "my-new-project"
+```
+
+### 3. Debugging (`/debug`)
 **File:** `.agent/workflows/debug.md`
 A systematic debugging process that analyzes errors, checks logs, and proposes fixes.
 
@@ -27,6 +36,14 @@ A systematic debugging process that analyzes errors, checks logs, and proposes f
 ```bash
 ag /debug "Fix the crash in the login route"
 ```
+
+### 4. CI/CD & Automation
+Antigravity includes GitHub Actions workflows for:
+-   **Testing**: Runs `npm test` on every push.
+-   **Linting**: checks code style.
+-   **Release**: Automates versioning and publishing.
+
+These are defined in `.github/workflows/`.
 
 ## 🛠️ Creating Custom Workflows
 

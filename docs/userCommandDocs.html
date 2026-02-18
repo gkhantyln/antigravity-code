@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="tr" class="dark">
+<html lang="en" class="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Antigravity-Code | Kullanım Kılavuzu</title>
+    <title>Antigravity-Code | User Guide</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
@@ -132,6 +132,47 @@
                 margin-left: 0;
             }
         }
+
+        /* Language Switching */
+        html[lang="en"] .lang-tr {
+            display: none !important;
+        }
+
+        html[lang="tr"] .lang-en {
+            display: none !important;
+        }
+
+        .lang-switch {
+            margin-top: 0.75rem;
+            display: flex;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 3px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+
+        .lang-switch button {
+            flex: 1;
+            text-align: center;
+            font-size: 0.75rem;
+            padding: 5px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #94a3b8;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: none;
+            background: none;
+        }
+
+        .lang-switch button:hover {
+            color: #e2e8f0;
+        }
+
+        .lang-switch button.active {
+            background: #334155;
+            color: #38bdf8;
+        }
     </style>
 </head>
 
@@ -146,61 +187,119 @@
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar bg-dark-sidebar border-r border-dark-border flex flex-col">
         <div class="p-6 border-b border-dark-border">
-            <div class="flex items-center gap-2 mb-6">
+            <div class="flex items-center gap-2 mb-3">
                 <span class="text-2xl">🚀</span>
                 <div>
                     <h1 class="font-bold text-lg leading-none tracking-tight">Antigravity</h1>
-                    <span class="text-xs text-brand-500 font-mono">v2.2.0 Rehber</span>
+                    <span class="text-xs text-brand-500 font-mono">
+                        <span class="lang-en">v2.2.0 Guide</span>
+                        <span class="lang-tr">v2.2.0 Rehber</span>
+                    </span>
                 </div>
             </div>
             <div class="text-xs text-gray-500">
-                Yapay Zeka Destekli Kodlama Asistanı
+                <span class="lang-en">AI-Powered Coding Assistant</span>
+                <span class="lang-tr">Yapay Zeka Destekli Kodlama Asistanı</span>
+            </div>
+
+            <!-- Language Switcher -->
+            <div class="lang-switch">
+                <button onclick="setLang('en')" class="active">English</button>
+                <button onclick="setLang('tr')">Türkçe</button>
             </div>
         </div>
 
         <nav class="flex-1 overflow-y-auto p-6 space-y-8">
             <div>
-                <h5 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Başlangıç</h5>
+                <h5 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">
+                    <span class="lang-en">Getting Started</span>
+                    <span class="lang-tr">Başlangıç</span>
+                </h5>
                 <ul class="space-y-2 text-sm text-gray-400">
                     <li><a href="#init" class="hover:text-brand-500 flex items-center gap-2"><span
-                                class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> /init (Proje Kur)</a></li>
+                                class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                            <span class="lang-en">/init (Setup)</span>
+                            <span class="lang-tr">/init (Proje Kur)</span>
+                        </a></li>
                     <li><a href="#agent" class="hover:text-brand-500 flex items-center gap-2"><span
-                                class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> /agent (Planla & Yap)</a></li>
+                                class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                            <span class="lang-en">/agent (Plan & Act)</span>
+                            <span class="lang-tr">/agent (Planla & Yap)</span>
+                        </a></li>
                 </ul>
             </div>
             <div>
-                <h5 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Üretim</h5>
+                <h5 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">
+                    <span class="lang-en">Generation</span>
+                    <span class="lang-tr">Üretim</span>
+                </h5>
                 <ul class="space-y-2 text-sm text-gray-400">
                     <li><a href="#create" class="hover:text-brand-500 flex items-center gap-2"><span
-                                class="w-1.5 h-1.5 rounded-full bg-purple-500"></span> /create (Kod Yaz)</a></li>
+                                class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                            <span class="lang-en">/create (Write Code)</span>
+                            <span class="lang-tr">/create (Kod Yaz)</span>
+                        </a></li>
                     <li><a href="#ui" class="hover:text-brand-500 flex items-center gap-2"><span
-                                class="w-1.5 h-1.5 rounded-full bg-purple-500"></span> /ui (Görselden Kod)</a></li>
+                                class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                            <span class="lang-en">/ui (Img to Code)</span>
+                            <span class="lang-tr">/ui (Görselden Kod)</span>
+                        </a></li>
                     <li><a href="#see" class="hover:text-brand-500 flex items-center gap-2"><span
-                                class="w-1.5 h-1.5 rounded-full bg-purple-500"></span> /see (Görsel Analiz)</a></li>
+                                class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                            <span class="lang-en">/see (Vision)</span>
+                            <span class="lang-tr">/see (Görsel Analiz)</span>
+                        </a></li>
                 </ul>
             </div>
             <div>
-                <h5 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Kalite & Güvenlik</h5>
+                <h5 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">
+                    <span class="lang-en">Quality & Safety</span>
+                    <span class="lang-tr">Kalite & Güvenlik</span>
+                </h5>
                 <ul class="space-y-2 text-sm text-gray-400">
                     <li><a href="#audit" class="hover:text-brand-500 flex items-center gap-2"><span
-                                class="w-1.5 h-1.5 rounded-full bg-green-500"></span> /audit (Denetle)</a></li>
+                                class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                            <span class="lang-en">/audit (Audit)</span>
+                            <span class="lang-tr">/audit (Denetle)</span>
+                        </a></li>
                     <li><a href="#debug" class="hover:text-brand-500 flex items-center gap-2"><span
-                                class="w-1.5 h-1.5 rounded-full bg-green-500"></span> /debug (Hata Çöz)</a></li>
+                                class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                            <span class="lang-en">/debug (Debug)</span>
+                            <span class="lang-tr">/debug (Hata Çöz)</span>
+                        </a></li>
                     <li><a href="#test" class="hover:text-brand-500 flex items-center gap-2"><span
-                                class="w-1.5 h-1.5 rounded-full bg-green-500"></span> /test (Test Yaz)</a></li>
+                                class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                            <span class="lang-en">/test (Write Tests)</span>
+                            <span class="lang-tr">/test (Test Yaz)</span>
+                        </a></li>
                     <li><a href="#checkpoints" class="hover:text-brand-500 flex items-center gap-2"><span
-                                class="w-1.5 h-1.5 rounded-full bg-green-500"></span> /checkpoints (Yedekler)</a></li>
+                                class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                            <span class="lang-en">/checkpoints (Backups)</span>
+                            <span class="lang-tr">/checkpoints (Yedekler)</span>
+                        </a></li>
                 </ul>
             </div>
             <div>
-                <h5 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Yönetim</h5>
+                <h5 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">
+                    <span class="lang-en">Management</span>
+                    <span class="lang-tr">Yönetim</span>
+                </h5>
                 <ul class="space-y-2 text-sm text-gray-400">
                     <li><a href="#session" class="hover:text-brand-500 flex items-center gap-2"><span
-                                class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> /session (Oturum)</a></li>
+                                class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
+                            <span class="lang-en">/session (Session)</span>
+                            <span class="lang-tr">/session (Oturum)</span>
+                        </a></li>
                     <li><a href="#permission" class="hover:text-brand-500 flex items-center gap-2"><span
-                                class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> /permission (İzin)</a></li>
+                                class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
+                            <span class="lang-en">/permission (Perms)</span>
+                            <span class="lang-tr">/permission (İzin)</span>
+                        </a></li>
                     <li><a href="#compact" class="hover:text-brand-500 flex items-center gap-2"><span
-                                class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> /compact (Hafıza)</a></li>
+                                class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
+                            <span class="lang-en">/compact (Memory)</span>
+                            <span class="lang-tr">/compact (Hafıza)</span>
+                        </a></li>
                 </ul>
             </div>
         </nav>
@@ -214,54 +313,79 @@
             <header class="mb-16 border-b border-dark-border pb-8">
                 <h1
                     class="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-brand-500 to-purple-500">
-                    Antigravity-Code Komut Rehberi
+                    <span class="lang-en">Antigravity-Code Command Guide</span>
+                    <span class="lang-tr">Antigravity-Code Komut Rehberi</span>
                 </h1>
                 <p class="text-xl text-gray-400">
-                    Sıfırdan başlayanlar için Antigravity-Code kullanım kılavuzu.
-                    Kod yazmayı bilmeseniz bile, bırakın yapay zeka sizin yerinize çalışsın.
+                    <span class="lang-en">User manual for Antigravity-Code beginners.
+                        Even if you don't know how to code, let AI do the work for you.</span>
+                    <span class="lang-tr">Sıfırdan başlayanlar için Antigravity-Code kullanım kılavuzu.
+                        Kod yazmayı bilmeseniz bile, bırakın yapay zeka sizin yerinize çalışsın.</span>
                 </p>
             </header>
 
             <!-- 1. START -->
             <section class="mb-16">
                 <h2 class="text-2xl font-bold mb-6 text-blue-400 flex items-center gap-2">
-                    <span class="text-3xl">🏁</span> Başlangıç
+                    <span class="text-3xl">🏁</span>
+                    <span class="lang-en">Getting Started</span>
+                    <span class="lang-tr">Başlangıç</span>
                 </h2>
 
                 <div class="space-y-6">
                     <!-- /init -->
                     <div id="init" class="cmd-card p-6">
                         <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-bold font-mono text-white">/init [dizin]</h3>
-                            <span class="badge badge-core">İlk Adım</span>
+                            <h3 class="text-xl font-bold font-mono text-white">/init [dir]</h3>
+                            <span class="badge badge-core">
+                                <span class="lang-en">First Step</span>
+                                <span class="lang-tr">İlk Adım</span>
+                            </span>
                         </div>
                         <p class="text-gray-300 mb-4">
-                            <strong>"Projeye nereden başlarım?" diyorsanız, cevap burada.</strong><br>
-                            Bu komut, boş bir klasörü profesyonel bir proje yapısına dönüştürür. Yapay zeka ajanlarının
-                            çalışması için gerekli olan kuralları ve klasörleri otomatik oluşturur.
+                            <span class="lang-en"><strong>"Where do I start?" — Here is the answer.</strong><br>
+                                This command transforms an empty folder into a professional project structure. It
+                                automatically creates the rules and folders necessary for AI agents to work.</span>
+                            <span class="lang-tr"><strong>"Projeye nereden başlarım?" diyorsanız, cevap
+                                    burada.</strong><br>
+                                Bu komut, boş bir klasörü profesyonel bir proje yapısına dönüştürür. Yapay zeka
+                                ajanlarının
+                                çalışması için gerekli olan kuralları ve klasörleri otomatik oluşturur.</span>
                         </p>
                         <div class="bg-black/50 p-4 rounded border border-dark-border font-mono text-sm text-gray-400">
-                            <div class="mb-2"><span class="text-gray-500"># Mevcut klasörde kurulum yap:</span></div>
+                            <div class="mb-2"><span class="text-gray-500">#
+                                    <span class="lang-en">Setup in current folder:</span>
+                                    <span class="lang-tr">Mevcut klasörde kurulum yap:</span>
+                                </span></div>
                             <div class="mb-4"><span class="text-brand-500">ag</span> /init</div>
-                            <div class="mb-2"><span class="text-gray-500"># "yeni-projem" adında klasör oluşturup
-                                    kur:</span></div>
-                            <div><span class="text-brand-500">ag</span> /init ./yeni-projem</div>
+                            <div class="mb-2"><span class="text-gray-500">#
+                                    <span class="lang-en">Create and setup "my-new-project":</span>
+                                    <span class="lang-tr">"yeni-projem" adında klasör oluşturup kur:</span>
+                                </span></div>
+                            <div><span class="text-brand-500">ag</span> /init ./my-new-project</div>
                         </div>
                     </div>
 
                     <!-- /agent -->
                     <div id="agent" class="cmd-card p-6">
                         <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-bold font-mono text-white">/agent "istek"</h3>
-                            <span class="badge badge-core">Otonom</span>
+                            <h3 class="text-xl font-bold font-mono text-white">/agent "request"</h3>
+                            <span class="badge badge-core">
+                                <span class="lang-en">Autonomous</span>
+                                <span class="lang-tr">Otonom</span>
+                            </span>
                         </div>
                         <p class="text-gray-300 mb-4">
-                            <strong>"Bana bir Todo uygulaması yap" demeniz yeterli.</strong><br>
-                            Bu komut Antigravity'nin "Ajan Modunu" çalıştırır. Ajanlar kendi aralarında plan yapar, kod
-                            yazar ve kodu kontrol eder. Size sadece onaylamak kalır.
+                            <span class="lang-en"><strong>Just say "Make me a Todo app".</strong><br>
+                                This command runs Antigravity's "Agent Mode". Agents plan, write code, and check code
+                                among themselves. All you have to do is approve.</span>
+                            <span class="lang-tr"><strong>"Bana bir Todo uygulaması yap" demeniz yeterli.</strong><br>
+                                Bu komut Antigravity'nin "Ajan Modunu" çalıştırır. Ajanlar kendi aralarında plan yapar,
+                                kod
+                                yazar ve kodu kontrol eder. Size sadece onaylamak kalır.</span>
                         </p>
                         <div class="bg-black/50 p-4 rounded border border-dark-border font-mono text-sm text-gray-400">
-                            <div><span class="text-brand-500">ag</span> /agent "Python ile yılan oyunu yap"</div>
+                            <div><span class="text-brand-500">ag</span> /agent "Build a snake game with Python"</div>
                         </div>
                     </div>
                 </div>
@@ -270,52 +394,74 @@
             <!-- 2. GENERATION -->
             <section class="mb-16">
                 <h2 class="text-2xl font-bold mb-6 text-purple-400 flex items-center gap-2">
-                    <span class="text-3xl">✨</span> Üretim (Kod Yazma)
+                    <span class="text-3xl">✨</span>
+                    <span class="lang-en">Generation (Coding)</span>
+                    <span class="lang-tr">Üretim (Kod Yazma)</span>
                 </h2>
 
                 <div class="space-y-6">
                     <!-- /create -->
                     <div id="create" class="cmd-card p-6">
                         <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-bold font-mono text-white">/create "istek"</h3>
-                            <span class="badge badge-ai">Manuel</span>
+                            <h3 class="text-xl font-bold font-mono text-white">/create "request"</h3>
+                            <span class="badge badge-ai">
+                                <span class="lang-en">Manual</span>
+                                <span class="lang-tr">Manuel</span>
+                            </span>
                         </div>
                         <p class="text-gray-300 mb-4">
-                            <strong>Tek bir dosya veya özellik yazdırmak için.</strong><br>
-                            Eğer bütün bir proje yerine, sadece bir fonksiyon veya dosya istiyorsanız bunu kullanın.
+                            <span class="lang-en"><strong>To generate a single file or feature.</strong><br>
+                                Use this if you want just a function or file instead of a whole project.</span>
+                            <span class="lang-tr"><strong>Tek bir dosya veya özellik yazdırmak için.</strong><br>
+                                Eğer bütün bir proje yerine, sadece bir fonksiyon veya dosya istiyorsanız bunu
+                                kullanın.</span>
                         </p>
                         <div class="bg-black/50 p-4 rounded border border-dark-border font-mono text-sm text-gray-400">
-                            <div><span class="text-brand-500">ag</span> /create "Bana hava durumunu çeken bir python
-                                scripti yaz"</div>
+                            <div><span class="text-brand-500">ag</span> /create "Write me a python script that fetches
+                                weather data"</div>
                         </div>
                     </div>
 
                     <!-- /ui -->
                     <div id="ui" class="cmd-card p-6">
                         <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-bold font-mono text-white">/ui dosya.png</h3>
-                            <span class="badge badge-pro">Görsel</span>
+                            <h3 class="text-xl font-bold font-mono text-white">/ui file.png</h3>
+                            <span class="badge badge-pro">
+                                <span class="lang-en">Visual</span>
+                                <span class="lang-tr">Görsel</span>
+                            </span>
                         </div>
                         <p class="text-gray-300 mb-4">
-                            <strong>Resmi Koda Çevirir.</strong><br>
-                            Beğendiğiniz bir web sitesinin ekran görüntüsünü veya kağıda çizdiğiniz bir taslağı verin,
-                            size HTML/CSS kodunu versin.
+                            <span class="lang-en"><strong>Converts Image to Code.</strong><br>
+                                Give it a screenshot of a website you like or a sketch on paper, and it will give you
+                                the HTML/CSS code.</span>
+                            <span class="lang-tr"><strong>Resmi Koda Çevirir.</strong><br>
+                                Beğendiğiniz bir web sitesinin ekran görüntüsünü veya kağıda çizdiğiniz bir taslağı
+                                verin,
+                                size HTML/CSS kodunu versin.</span>
                         </p>
                         <div class="bg-black/50 p-4 rounded border border-dark-border font-mono text-sm text-gray-400">
-                            <div><span class="text-brand-500">ag</span> /ui tasarim.png</div>
+                            <div><span class="text-brand-500">ag</span> /ui design.png</div>
                         </div>
                     </div>
 
                     <!-- /see -->
                     <div id="see" class="cmd-card p-6">
                         <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-bold font-mono text-white">/see dosya.png "soru"</h3>
-                            <span class="badge badge-pro">Görsel</span>
+                            <h3 class="text-xl font-bold font-mono text-white">/see file.png "question"</h3>
+                            <span class="badge badge-pro">
+                                <span class="lang-en">Visual</span>
+                                <span class="lang-tr">Görsel</span>
+                            </span>
                         </div>
                         <p class="text-gray-300 mb-4">
-                            <strong>Resimle Sohbet Edin.</strong><br>
-                            Yapay zekaya bir resim gösterin ve soru sorun. Örneğin bir hata mesajının ekran görüntüsünü
-                            atıp "Bu hata nedir?" diyebilirsiniz.
+                            <span class="lang-en"><strong>Chat with Images.</strong><br>
+                                Show the AI an image and ask a question. For example, you can take a screenshot of an
+                                error message and ask "What is this error?".</span>
+                            <span class="lang-tr"><strong>Resimle Sohbet Edin.</strong><br>
+                                Yapay zekaya bir resim gösterin ve soru sorun. Örneğin bir hata mesajının ekran
+                                görüntüsünü
+                                atıp "Bu hata nedir?" diyebilirsiniz.</span>
                         </p>
                     </div>
                 </div>
@@ -324,20 +470,29 @@
             <!-- 3. QUALITY -->
             <section class="mb-16">
                 <h2 class="text-2xl font-bold mb-6 text-green-400 flex items-center gap-2">
-                    <span class="text-3xl">🛡️</span> Kalite ve Güvenlik
+                    <span class="text-3xl">🛡️</span>
+                    <span class="lang-en">Quality and Safety</span>
+                    <span class="lang-tr">Kalite ve Güvenlik</span>
                 </h2>
 
                 <div class="space-y-6">
                     <!-- /audit -->
                     <div id="audit" class="cmd-card p-6">
                         <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-bold font-mono text-white">/audit [dosya]</h3>
-                            <span class="badge badge-warn">Güvenlik</span>
+                            <h3 class="text-xl font-bold font-mono text-white">/audit [file]</h3>
+                            <span class="badge badge-warn">
+                                <span class="lang-en">Security</span>
+                                <span class="lang-tr">Güvenlik</span>
+                            </span>
                         </div>
                         <p class="text-gray-300 mb-4">
-                            <strong>Kodunuzu Denetleyin.</strong><br>
-                            Yazdığınız kodun güvenli olup olmadığını, içinde açık kapı olup olmadığını kontrol eder. Bir
-                            siber güvenlik uzmanı gibi rapor verir.
+                            <span class="lang-en"><strong>Audit Your Code.</strong><br>
+                                Checks if your code is secure and if there are any vulnerabilities. Reports like a
+                                cyber security expert.</span>
+                            <span class="lang-tr"><strong>Kodunuzu Denetleyin.</strong><br>
+                                Yazdığınız kodun güvenli olup olmadığını, içinde açık kapı olup olmadığını kontrol eder.
+                                Bir
+                                siber güvenlik uzmanı gibi rapor verir.</span>
                         </p>
                         <div class="bg-black/50 p-4 rounded border border-dark-border font-mono text-sm text-gray-400">
                             <div><span class="text-brand-500">ag</span> /audit src/server.js</div>
@@ -348,25 +503,39 @@
                     <div id="checkpoints" class="cmd-card p-6">
                         <div class="flex justify-between items-start mb-4">
                             <h3 class="text-xl font-bold font-mono text-white">/checkpoints</h3>
-                            <span class="badge badge-util">Yedek</span>
+                            <span class="badge badge-util">
+                                <span class="lang-en">Backup</span>
+                                <span class="lang-tr">Yedek</span>
+                            </span>
                         </div>
                         <p class="text-gray-300 mb-4">
-                            <strong>Anlık Yedekleme Sistemi.</strong><br>
-                            Yapay zeka bir dosyayı değiştirmeden önce <strong>her zaman</strong> yedeğini alır. Hata
-                            yaparsa <code>/rewind</code> komutu ile eskiye dönebilirsiniz. Bu komut yedekleri listeler.
+                            <span class="lang-en"><strong>Instant Backup System.</strong><br>
+                                AI <strong>always</strong> backs up a file before changing it. If it makes a mistake,
+                                you can revert with <code>/rewind</code>. This command lists backups.</span>
+                            <span class="lang-tr"><strong>Anlık Yedekleme Sistemi.</strong><br>
+                                Yapay zeka bir dosyayı değiştirmeden önce <strong>her zaman</strong> yedeğini alır. Hata
+                                yaparsa <code>/rewind</code> komutu ile eskiye dönebilirsiniz. Bu komut yedekleri
+                                listeler.</span>
                         </p>
                     </div>
 
                     <!-- /debug -->
                     <div id="debug" class="cmd-card p-6">
                         <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-bold font-mono text-white">/debug "hata"</h3>
-                            <span class="badge badge-ai">Tamirci</span>
+                            <h3 class="text-xl font-bold font-mono text-white">/debug "error"</h3>
+                            <span class="badge badge-ai">
+                                <span class="lang-en">Fixer</span>
+                                <span class="lang-tr">Tamirci</span>
+                            </span>
                         </div>
                         <p class="text-gray-300 mb-4">
-                            <strong>Hata Ayıklayıcı.</strong><br>
-                            Programınız çalışmazsa veya hata verirse, hatayı buraya yapıştırın. Yapay zeka dosyalarınızı
-                            okur ve sorunu bulup çözer.
+                            <span class="lang-en"><strong>Debugger.</strong><br>
+                                If your program doesn't work or gives an error, paste the error here. AI reads your
+                                files and finds and fixes the problem.</span>
+                            <span class="lang-tr"><strong>Hata Ayıklayıcı.</strong><br>
+                                Programınız çalışmazsa veya hata verirse, hatayı buraya yapıştırın. Yapay zeka
+                                dosyalarınızı
+                                okur ve sorunu bulup çözer.</span>
                         </p>
                     </div>
                 </div>
@@ -375,42 +544,75 @@
             <!-- 4. MANAGEMENT -->
             <section class="mb-16">
                 <h2 class="text-2xl font-bold mb-6 text-yellow-400 flex items-center gap-2">
-                    <span class="text-3xl">🎛️</span> Yönetim ve Hafıza
+                    <span class="text-3xl">🎛️</span>
+                    <span class="lang-en">Management & Memory</span>
+                    <span class="lang-tr">Yönetim ve Hafıza</span>
                 </h2>
 
                 <div class="space-y-6">
                     <!-- /session -->
                     <div id="session" class="cmd-card p-6">
                         <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-bold font-mono text-white">/session [komut]</h3>
-                            <span class="badge badge-util">Hafıza</span>
+                            <h3 class="text-xl font-bold font-mono text-white">/session [command]</h3>
+                            <span class="badge badge-util">
+                                <span class="lang-en">Memory</span>
+                                <span class="lang-tr">Hafıza</span>
+                            </span>
                         </div>
                         <p class="text-gray-300 mb-4">
-                            <strong>Yaptığınız işleri kaydeder.</strong><br>
-                            Bilgisayar oyunlarındaki "Save" (Kaydet) tuşu gibidir. İstediğiniz zaman eski
-                            konuşmalarınıza dönebilirsiniz.
+                            <span class="lang-en"><strong>Saves your work.</strong><br>
+                                Like the "Save" button in video games. You can return to your old conversations
+                                anytime.</span>
+                            <span class="lang-tr"><strong>Yaptığınız işleri kaydeder.</strong><br>
+                                Bilgisayar oyunlarındaki "Save" (Kaydet) tuşu gibidir. İstediğiniz zaman eski
+                                konuşmalarınıza dönebilirsiniz.</span>
                         </p>
                         <ul class="list-disc list-inside text-sm text-gray-400 space-y-1 ml-2">
-                            <li><code>/session list</code>: Geçmiş işlerinizi listeler.</li>
-                            <li><code>/session save "Proje 1"</code>: Şu anki işi kaydeder.</li>
-                            <li><code>/session load ID</code>: Eski bir işi geri yükler.</li>
-                            <li><code>/session new</code>: Sayfayı temizler, yeni işe başlar.</li>
+                            <li><code>/session list</code>:
+                                <span class="lang-en">Lists your past work.</span>
+                                <span class="lang-tr">Geçmiş işlerinizi listeler.</span>
+                            </li>
+                            <li><code>/session save "Project 1"</code>:
+                                <span class="lang-en">Saves current work.</span>
+                                <span class="lang-tr">Şu anki işi kaydeder.</span>
+                            </li>
+                            <li><code>/session load ID</code>:
+                                <span class="lang-en">Restores old work.</span>
+                                <span class="lang-tr">Eski bir işi geri yükler.</span>
+                            </li>
+                            <li><code>/session new</code>:
+                                <span class="lang-en">Clears page, starts new work.</span>
+                                <span class="lang-tr">Sayfayı temizler, yeni işe başlar.</span>
+                            </li>
                         </ul>
                     </div>
 
                     <!-- /permission -->
                     <div id="permission" class="cmd-card p-6">
                         <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-bold font-mono text-white">/permission [mod]</h3>
-                            <span class="badge badge-warn">Kontrol</span>
+                            <h3 class="text-xl font-bold font-mono text-white">/permission [mode]</h3>
+                            <span class="badge badge-warn">
+                                <span class="lang-en">Control</span>
+                                <span class="lang-tr">Kontrol</span>
+                            </span>
                         </div>
                         <p class="text-gray-300 mb-4">
-                            <strong>Yapay Zeka Yetkilerini Ayarlar.</strong>
+                            <span class="lang-en"><strong>Sets AI Permissions.</strong></span>
+                            <span class="lang-tr"><strong>Yapay Zeka Yetkilerini Ayarlar.</strong></span>
                         </p>
                         <ul class="list-disc list-inside text-sm text-gray-400 space-y-1 ml-2">
-                            <li><code>default</code>: Her değişiklikte size sorar ("Bunu yapayım mı?").</li>
-                            <li><code>auto-edit</code>: Sormadan yapar (Hızlı çalışmak için).</li>
-                            <li><code>plan-only</code>: Sadece plan yapar, koda dokunmaz.</li>
+                            <li><code>default</code>:
+                                <span class="lang-en">Asks you on every change ("Should I do this?").</span>
+                                <span class="lang-tr">Her değişiklikte size sorar ("Bunu yapayım mı?").</span>
+                            </li>
+                            <li><code>auto-edit</code>:
+                                <span class="lang-en">Does it without asking (For speed).</span>
+                                <span class="lang-tr">Sormadan yapar (Hızlı çalışmak için).</span>
+                            </li>
+                            <li><code>plan-only</code>:
+                                <span class="lang-en">Only plans, doesn't touch code.</span>
+                                <span class="lang-tr">Sadece plan yapar, koda dokunmaz.</span>
+                            </li>
                         </ul>
                     </div>
 
@@ -421,9 +623,12 @@
                             <span class="badge badge-ai">Optimize</span>
                         </div>
                         <p class="text-gray-300 mb-4">
-                            <strong>Hafızayı Temizler.</strong><br>
-                            Konuşma çok uzadıysa ve yapay zeka yavaşladıysa bu komutu kullanın. Gereksiz detayları
-                            siler, sadece önemli bilgileri hafızada tutar.
+                            <span class="lang-en"><strong>Clears Memory.</strong><br>
+                                Use this if the conversation gets too long and AI slows down. Deletes unnecessary
+                                details, keeps only important info.</span>
+                            <span class="lang-tr"><strong>Hafızayı Temizler.</strong><br>
+                                Konuşma çok uzadıysa ve yapay zeka yavaşladıysa bu komutu kullanın. Gereksiz detayları
+                                siler, sadece önemli bilgileri hafızada tutar.</span>
                         </p>
                     </div>
                 </div>
@@ -437,6 +642,33 @@
         function toggleMenu() {
             document.getElementById('sidebar').classList.toggle('open');
         }
+
+        function setLang(lang) {
+            document.documentElement.lang = lang;
+
+            // Update active button state
+            document.querySelectorAll('.lang-switch button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Activate the clicked button
+            if (lang === 'en') {
+                document.querySelector('.lang-switch button:first-child').classList.add('active');
+            } else {
+                document.querySelector('.lang-switch button:last-child').classList.add('active');
+            }
+
+            // Update page title
+            document.title = lang === 'en'
+                ? 'Antigravity-Code | User Guide'
+                : 'Antigravity-Code | Kullanım Kılavuzu';
+
+            // Save preference
+            localStorage.setItem('ag-user-lang', lang);
+        }
+
+        // Initialize from saved preference (default: English)
+        const savedLang = localStorage.getItem('ag-user-lang') || 'en';
+        setLang(savedLang);
     </script>
 </body>
 

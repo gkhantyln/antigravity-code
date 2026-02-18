@@ -41,6 +41,12 @@ You will also need an API key from at least one provider if you are not using lo
     npm run integrate
     ```
 
+5.  **Initialize your first Agent**:
+    Create a new project with the Fractal Agent structure:
+    ```bash
+    ag /init "my-first-agent"
+    ```
+
 ### 🐳 Running with Docker
 
 If you prefer not to install Node.js locally, you can use Docker:
@@ -61,6 +67,12 @@ If you prefer not to install Node.js locally, you can use Docker:
 To start the interactive Agentic session, simply run:
 ```bash
 ag
+```
+
+### Initialize a New Project
+Start a fresh project with the recommended structure:
+```bash
+ag /init "my-awesome-project"
 ```
 Or:
 ```bash

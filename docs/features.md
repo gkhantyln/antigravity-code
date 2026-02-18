@@ -68,3 +68,53 @@ You are always in control. Critical actions require your explicit approval:
 -   *Execute command? (Y/n)*
 
 ---
+
+## 5. 🧬 Fractal Agent Scaffolding
+
+Start new projects with a powerful, standardized structure designed for AI collaboration.
+
+### The `/init` Command
+Instantly generate a `Fractal Agent` project structure:
+```bash
+ag /init "my-new-agent"
+```
+
+**What you get:**
+-   **`.agent/`**: Brain of your project.
+-   **`skills/`**: Reusable capabilities for the agent.
+-   **`workflows/`**: Defined processes (like "deploy" or "test").
+-   **`GEMINI.md`**: Pre-configured identity and rules for the Assistant.
+
+---
+
+## 6. 🐚 Deep Shell Integration
+
+Antigravity isn't just a CLI tool; it becomes part of your shell.
+
+### Seamless Workflow
+-   **`ag` Alias**: Run commands quickly (e.g., `ag "fix this"`).
+-   **Context Awareness**: It automatically detects your project type (Node, Python, Rust) and adjusts its behavior.
+-   **Smart PATH**: Accessibility from any directory.
+
+Run `npm run integrate` to set this up automatically.
+
+---
+
+## 7. 🛠️ Enhanced Developer Experience
+
+We've baked in best practices so you don't have to configure them every time.
+
+-   **CI/CD Ready**: GitHub Actions for automated testing and linting.
+-   **Git Hooks**: Husky ensures code quality before every commit.
+-   **Docker Support**: Ready-to-use `Dockerfile` and `docker-compose.yml` for isolated environments.
+
+---
+
+## 8. ❤️ Human-Centric Error Handling
+
+We know API errors can be frustrating. Antigravity translates cryptic technical failures into clear, actionable advice.
+
+-   **Rate Limits**: "You're going too fast. We'll wait a moment and retry."
+-   **Auth Errors**: "It looks like your API key is invalid. Let's fix that."
+-   **Network Issues**: "Connection dropped. Retrying..."
+

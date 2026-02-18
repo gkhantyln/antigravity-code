@@ -26,6 +26,14 @@ Used within the `ag` REPL session.
 | `/help` | - | Show help menu. |
 | `/exit` | - | Exit the application. |
 
+### Global Flags
+
+| Flag | Description |
+|------|-------------|
+| `--json` | Output response in JSON format (useful for IDE integrations). |
+| `--help` | Show help menu. |
+| `--version` | Show version number. |
+
 ## 🧩 Internal API Reference
 
 ### Core Engine (`src/core/engine.js`)
