@@ -14,6 +14,10 @@
 
 **Never lose productivity to API downtime again!**
 
+<div align="center">
+  <img src="antigravity-code.png" alt="Antigravity Code Logo" width="600" />
+</div>
+
 [Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Comparison](COMPARISON.md) • [New in v2.0](#-new-capabilities-v20) • [Documentation](#-documentation)
 
 </div>
@@ -238,6 +242,11 @@ cat error.log | ag "Debug this error"
 ## 🤖 Supported Models
 
 ### Gemini (Primary Provider) - 14 Models
+
+**Gemini 3.1 Series (New Release)**
+- `gemini-3.1-pro` - Latest powerful model
+- `gemini-3.1-flash` - Ultra-fast & efficient
+- `gemini-3.1-pro-image` - Visual capabilities
 
 **Gemini 3 Series (Latest)**
 - `gemini-3-flash` - Fast & fluid multimodal

@@ -32,6 +32,10 @@ class ConfigManager {
         this.config.gemini = {
             defaultModel: process.env.GEMINI_DEFAULT_MODEL || 'gemini-2.5-flash',
             availableModels: [
+                // Gemini 3.1 Series
+                'gemini-3.1-pro',
+                'gemini-3.1-flash',
+                'gemini-3.1-pro-image',
                 // Gemini 3 Series (Latest)
                 'gemini-3-flash',
                 'gemini-3-pro',

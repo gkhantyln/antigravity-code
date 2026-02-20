@@ -17,6 +17,11 @@ class GeminiProvider extends BaseAPIProvider {
 
         // Available Gemini models
         this.availableModels = [
+            // Gemini 3.1 Series (New Release)
+            'gemini-3.1-pro',           // Son sürüm güçlü model
+            'gemini-3.1-flash',         // Son sürüm hızlı model
+            'gemini-3.1-pro-image',     // Son sürüm görsel yetenekli
+
             // Gemini 3 Series (Latest)
             'gemini-3-flash',           // Hız + Akışkan multimodal
             'gemini-3-pro',             // En güçlü genel model

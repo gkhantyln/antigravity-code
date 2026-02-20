@@ -27,6 +27,7 @@ async function interactiveMode() {
 
         // Show connection info
         // Show Dashboard
+        console.clear();
         const provider = engine.getCurrentProvider();
         ui.showDashboard(provider, provider.model);
 

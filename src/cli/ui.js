@@ -4,6 +4,9 @@ const marked = require('marked');
 const { markedTerminal } = require('marked-terminal');
 const readline = require('readline');
 const path = require('path');
+const gradient = require('gradient-string');
+const figlet = require('figlet');
+const boxen = require('boxen');
 const { FileTree } = require('./file-tree');
 const { COMMANDS } = require('./commands-data');
 
@@ -56,65 +59,18 @@ class UIManager {
     drawBox(title, content, options = {}) {
         if (this.jsonMode) return;
 
-        const width = options.width || 60;
-        const padding = options.padding || 1;
-        const borderColor = options.borderColor || THEME.box.border;
-        const titleColor = options.titleColor || THEME.box.title;
-
-        const hLine = '─'.repeat(width);
-        // unused: const emptyLine = ' '.repeat(width);
-
-        // Top border
-        console.log(borderColor(`┌${hLine}┐`));
-
-        // Title (if present)
-        if (title) {
-            const titleText = ` ${title} `;
-            const titleLen = titleText.length;
-            const leftPad = Math.floor((width - titleLen) / 2);
-            const rightPad = width - titleLen - leftPad;
-
-            console.log(borderColor('│') + ' '.repeat(leftPad) + titleColor(titleText) + ' '.repeat(rightPad) + borderColor('│'));
-            console.log(borderColor(`├${hLine}┤`));
-        }
-
-        // Content
-        const contentLines = Array.isArray(content) ? content : content.split('\n');
-
-        contentLines.forEach(line => {
-            // Basic wrapping (naive implementation, but functional for simple lists)
-            const maxContentWidth = width - (padding * 2);
-            let currentLine = line;
-
-            // Handle lines that are too long
-            while (currentLine.length > 0) {
-                // Note: This naive slice doesn't handle ANSI codes correctly for length calculation
-                // For a robust CLI, we'd use 'strip-ansi' and 'wrap-ansi' packages. 
-                // Assuming content here is mostly controlled or short.
-                // We will truncate for now to avoid breaking box alignment if line is super long.
-
-                let chunk = currentLine.substring(0, maxContentWidth);
-                // Check if we split in the middle of a word (simple heuristic)
-                if (currentLine.length > maxContentWidth && chunk.lastIndexOf(' ') > 0) {
-                    chunk = chunk.substring(0, chunk.lastIndexOf(' '));
-                }
-
-                const p = ' '.repeat(padding);
-                // eslint-disable-next-line no-control-regex
-                const extraSpace = width - (padding * 2) - chunk.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '').length; // Rough ansi strip for padding calc
-
-                // If extraSpace is negative (due to ANSI codes messing up length), standard padding usually covers it visually 
-                // but perfect alignment requires stripping ansi.
-                // We will just print simply for now.
-
-                console.log(borderColor('│') + p + chunk + ' '.repeat(Math.max(0, extraSpace)) + p + borderColor('│'));
-
-                currentLine = currentLine.substring(chunk.length).trim();
-            }
-        });
-
-        // Bottom border
-        console.log(borderColor(`└${hLine}┘`));
+        const text = Array.isArray(content) ? content.join('\n') : content;
+        
+        console.log(boxen(text, {
+            title: title,
+            titleAlignment: 'center',
+            padding: 1,
+            margin: 0,
+            borderColor: options.borderColor ? options.borderColor.replace(/\x1B\[[0-9;]*m/g, '') : 'blue', // boxen expects color name or hex
+            borderStyle: 'round',
+            dimBorder: true,
+            float: 'left'
+        }));
     }
 
     /**
@@ -124,51 +80,55 @@ class UIManager {
         if (this.jsonMode) return;
 
         console.clear();
-        console.log('');
-
-        const width = 60;
-        const hLine = '─'.repeat(width);
-        const topParams = THEME.box.border(`┌${hLine}┐`);
-        const midParams = THEME.box.border(`├${hLine}┤`);
-        const botParams = THEME.box.border(`└${hLine}┘`);
-        const border = THEME.box.border('│');
-
-        // Header
-        console.log(topParams);
-        const title = 'Antigravity-Code v2.2.0';
-        const leftPad = Math.floor((width - title.length) / 2);
-        console.log(border + ' '.repeat(leftPad) + THEME.accent.bold(title) + ' '.repeat(width - title.length - leftPad) + border);
-        console.log(midParams);
-
-        // Welcome Msg
-        const welcome = "Welcome back! Ready to code?";
-        console.log(border + ' '.repeat(2) + THEME.primary(welcome) + ' '.repeat(width - welcome.length - 2) + border);
-
-        // Context
-        const context = `${provider.name} • ${model}`;
-        console.log(border + ' '.repeat(2) + THEME.dim(context) + ' '.repeat(width - context.length - 2) + border);
-
-        console.log(midParams);
-
-        const hints = [
-            '• Type /help for all commands',
-            '• Type /init to start project',
-            '• Type /create to generate',
-            '• Type /debug to fix errors',
-            '• Type /audit to analyze security',
-            '• Type /session to manage history',
-            '• Type /test to run tests'
-        ];
-
-        console.log(`${border} ${THEME.box.title('Recent Activity / Hints:')}${' '.repeat(width - 25)}${border}`);
-        hints.forEach(hint => {
-            const pad = width - hint.length - 1;
-            console.log(`${border} ${THEME.dim(hint)}${' '.repeat(Math.max(0, pad))}${border}`);
+        
+        // 1. ASCII Banner with Gradient
+        const bannerText = figlet.textSync('ANTIGRAVITY', {
+            font: 'Standard',
+            horizontalLayout: 'default',
+            verticalLayout: 'default',
         });
+        
+        // Custom cool gradient (Blue -> Purple -> Pink)
+        console.log(gradient.pastel.multiline(bannerText));
+        
+        // 2. Welcome & Status Box using Boxen
+        const welcomeMsg = [
+            chalk.bold.white('Welcome to the Future of Coding.'),
+            chalk.dim('Multi-Model AI Agent with Intelligent Failover'),
+            '',
+            `${chalk.bold.cyan('⚡ Provider:')} ${provider.name}`,
+            `${chalk.bold.magenta('🧠 Model:')}    ${model}`,
+            ''
+        ].join('\n');
 
-        console.log(botParams);
-        console.log(THEME.dim('Type your request below...'));
-        console.log('');
+        console.log(boxen(welcomeMsg, {
+            padding: 1,
+            margin: { top: 1, bottom: 1 },
+            borderStyle: 'round',
+            borderColor: 'cyan',
+            title: ' System Status ',
+            titleAlignment: 'center'
+        }));
+
+        // 3. Hints Box
+        const hints = [
+            `${chalk.green('➜ /help')}   Show commands`,
+            `${chalk.green('➜ /init')}   Start project`,
+            `${chalk.green('➜ /create')} Generate code`,
+            `${chalk.green('➜ /debug')}  Fix errors`,
+            `${chalk.green('➜ /audit')}  Security scan`,
+            ``,
+            chalk.dim('Type your request below...')
+        ].join('\n');
+
+        console.log(boxen(hints, {
+            padding: 1,
+            margin: { bottom: 1 },
+            borderStyle: 'classic',
+            borderColor: 'gray',
+            title: ' Quick Tips ',
+            titleAlignment: 'center'
+        }));
     }
 
     /**
@@ -395,43 +355,21 @@ class UIManager {
      */
     printPromptTop(status = {}) {
         if (this.jsonMode) return;
-        const width = 60;
-
-        // Status items
-        // Status items
+        
+        // Simple, clean status bar similar to Gemini CLI
         const cwd = status.cwd ? path.basename(status.cwd) : 'root';
         const providerName = status.provider ? status.provider.name : 'AI';
-        // unused: const modelName = status.provider ? status.provider.model : '';
-        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-        // Format labels
-        const labelCwd = `${THEME.accent(`📂 ${cwd}`)}`;
-        const labelAI = `${THEME.secondary(`⚡ ${providerName}`)}`;
-        const labelTime = `${THEME.dim(`🕒 ${time}`)}`;
-
-        // Calculate spacing
-        // We need to estimate visual length (stripping ansi for calculation is best, but we'll approximate)
-        // eslint-disable-next-line no-unused-vars, no-control-regex
-        const strip = (s) => s.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '');
-
-        const rawCwd = `📂 ${cwd}`;
-        const rawAI = `⚡ ${providerName}`;
-        const rawTime = `🕒 ${time}`;
-
-        const totalContentLen = rawCwd.length + rawAI.length + rawTime.length + 8; // 8 for separators/spaces
-        const fillerLen = width - totalContentLen - 2; // -2 for corners
-        const safeFillerLen = Math.max(0, fillerLen);
-
-        // Separator
-        const sep = THEME.box.border(' │ ');
-        const line = THEME.box.border('─'.repeat(safeFillerLen));
-
+        
         console.log('');
-        // "── 📂 cwd │ ⚡ AI ────── 🕒 time ──" style
-
-        const topParams = `${THEME.box.border('── ')}${labelCwd}${sep}${labelAI}${sep}${labelTime} ${line}`;
-
-        console.log(topParams);
+        // "📂 project_learn  ⚡ gemini  🕒 12:00"
+        console.log(
+            chalk.cyan.bold(`📂 ${cwd}`) + 
+            chalk.dim(' │ ') + 
+            chalk.magenta.bold(`⚡ ${providerName}`) +
+            chalk.dim(' │ ') +
+            chalk.gray(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))
+        );
+        console.log(chalk.dim('─'.repeat(50)));
     }
 
     /**
