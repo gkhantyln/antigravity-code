@@ -1,59 +1,76 @@
-const { PlannerAgent } = require('./planner');
+const { ArchitectAgent } = require('./architect');
 const { CoderAgent } = require('./coder');
 const { ReviewerAgent } = require('./reviewer');
 const { logger } = require('../../utils/logger');
+const ui = require('../../cli/ui');
 
+/**
+ * Agent Orchestrator
+ * Manages the Swarm: Architect -> Coder -> Reviewer
+ */
 class AgentOrchestrator {
     constructor(engine) {
         this.engine = engine;
-        this.planner = new PlannerAgent(engine);
-        this.coder = new CoderAgent(engine);
-        this.reviewer = new ReviewerAgent(engine);
+        this.agents = {};
+        this.initialized = false;
     }
 
-    async execute(userGoal) {
-        logger.info('Starting Agentic Workflow', { goal: userGoal });
+    /**
+     * Initialize all agents
+     */
+    async initialize() {
+        if (this.initialized) return;
 
-        // 1. Plan
-        console.log('\n🤖 Agent: Planner is thinking...');
-        const plan = await this.planner.act(userGoal);
-        console.log(`📋 Plan created with ${plan.length} steps.`);
+        logger.info('Initializing Agent Swarm...');
 
-        // 2. Execute Plan
-        for (const step of plan) {
-            console.log(`\n👉 Step ${step.id}: ${step.description}`);
+        this.agents.architect = new ArchitectAgent(this.engine);
+        this.agents.coder = new CoderAgent(this.engine);
+        this.agents.reviewer = new ReviewerAgent(this.engine);
 
-            let attempts = 0;
-            let success = false;
+        await Promise.all(Object.values(this.agents).map(a => a.initialize()));
 
-            while (!success && attempts < 3) {
-                attempts++;
+        this.initialized = true;
+        logger.info('Agent Swarm fully initialized');
+    }
 
-                // Execute
-                console.log(`   🔨 Coder is working (Attempt ${attempts})...`);
-                const result = await this.coder.act(step);
+    /**
+     * Run the swarm on a task
+     * @param {string} task - The user's high-level request
+     */
+    async startMission(task) {
+        if (!this.initialized) await this.initialize();
 
-                // Review
-                console.log(`   🧐 Reviewer is checking...`);
-                const review = await this.reviewer.act(result, step);
+        logger.info(`Starting swarm mission: ${task}`);
+        ui.info('🚀 Starting Agent Swarm Mission...');
 
-                if (review.approved) {
-                    console.log(`   ✅ Step Verified: ${review.feedback}`);
-                    success = true;
-                } else {
-                    console.log(`   ❌ Step Rejected: ${review.feedback}`);
-                    // Add feedback to the step details for the next attempt logic (omitted for brevity)
-                    // In a real system, we'd append the feedback to the context for the Coder
-                }
-            }
+        try {
+            // 1. Architect: Logic & Plan
+            ui.drawBox('Step 1: Architect', 'Analyzing requirements and designing system...', { borderColor: 'blue' });
+            const plan = await this.agents.architect.sendMessage(task);
 
-            if (!success) {
-                throw new Error(`Failed to complete step ${step.id} after 3 attempts.`);
-            }
+            // 2. Coder: Implementation
+            ui.drawBox('Step 2: Coder', 'Implementing the plan...', { borderColor: 'green' });
+            // We pass the plan explicitly to ensure focus
+            const code = await this.agents.coder.sendMessage(
+                `Here is the Architect's plan:\n${plan.content}\n\nPlease implement this exactly.`
+            );
+
+            // 3. Reviewer: QA
+            ui.drawBox('Step 3: Reviewer', 'Reviewing implementation...', { borderColor: 'magenta' });
+            const review = await this.agents.reviewer.sendMessage(
+                `Here is the implementation:\n${code.content}\n\nPlease review this against the original plan.`
+            );
+
+            return {
+                plan,
+                code,
+                review
+            };
+
+        } catch (error) {
+            logger.error('Swarm mission failed', { error: error.message });
+            throw error;
         }
-
-        logger.info('Agentic Workflow Completed');
-        return "Workflow completed successfully.";
     }
 }
 

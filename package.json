@@ -69,6 +69,8 @@
         "openai": "^4.28.0",
         "ora": "^5.4.1",
         "sqlite3": "^5.1.7",
+        "uuid": "^13.0.0",
+        "vectra": "^0.12.3",
         "winston": "^3.11.0"
     },
     "devDependencies": {

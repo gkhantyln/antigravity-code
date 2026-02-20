@@ -32,14 +32,20 @@ class CommandHandler {
             prompt = answer.prompt;
         }
 
-        ui.startSpinner('Generating...', 'cyan');
         try {
-            const aiPrompt = `Please create the following: ${prompt}\n\nCRITICAL: You MUST use the 'write_file' function to save the code to a file. Do not just print the code. Call 'write_file' with the 'path' and 'content'.`;
-            const response = await this.engine.processRequest(aiPrompt);
-            ui.stopSpinnerSuccess('Generation Complete');
+            // Use Agent Swarm
+            // ui.startSpinner('Initializing Swarm...', 'cyan'); // Orchestrator handles its own UI
 
-            console.log(ui.formatAIHeader(response.provider, response.model));
-            ui.renderMarkdown(response.content);
+            const result = await this.engine.agentOrchestrator.startMission(prompt);
+
+            ui.success('Swarm Mission Complete');
+
+            // Display Results Summary
+            console.log(ui.formatAIHeader('Swarm', 'Multi-Agent'));
+            ui.renderMarkdown(`### 📐 Architect Plan\n${result.plan.content.substring(0, 200)}...`);
+            ui.renderMarkdown(`### 💻 Generated Code\n${result.code.content.substring(0, 200)}...`);
+            ui.renderMarkdown(`### 🧐 Reviewer Report\n${result.review.content}`);
+
         } catch (error) {
             ui.stopSpinnerFail('Generation Failed');
             ui.error(error.message);

@@ -5,6 +5,7 @@ const { configManager } = require('./config');
 const { logger } = require('../utils/logger');
 const { FileSystemTools } = require('../tools/filesystem');
 const { PermissionManager } = require('./permissions');
+const { AgentOrchestrator } = require('./agents/orchestrator');
 const ui = require('../cli/ui');
 
 /**
@@ -17,7 +18,10 @@ class AntigravityEngine {
         this.contextManager = null;
         this.apiOrchestrator = null;
         this.fileSystemTools = null;
+        this.apiOrchestrator = null;
+        this.fileSystemTools = null;
         this.permissionManager = null;
+        this.agentOrchestrator = null;
         this.initialized = false;
     }
 
@@ -51,6 +55,11 @@ class AntigravityEngine {
         // Initialize API orchestrator
         this.apiOrchestrator = new APIOrchestrator(this.database);
         await this.apiOrchestrator.initialize();
+
+        // Initialize Agent Orchestrator
+        this.agentOrchestrator = new AgentOrchestrator(this);
+        // We don't await initialization here, it's lazy loaded or we can await it
+        // await this.agentOrchestrator.initialize();
 
         this.initialized = true;
 

@@ -1,55 +1,95 @@
+const { EventEmitter } = require('events');
 const { logger } = require('../../utils/logger');
 
 /**
  * Base Agent Class
- * Foundation for all specialized agents
+ * Foundation for all specialized agents in the Swarm
  */
-class BaseAgent {
-    constructor(name, role, engine) {
-        this.name = name;
-        this.role = role;
+class BaseAgent extends EventEmitter {
+    /**
+     * @param {AntigravityEngine} engine - The core AI engine
+     * @param {Object} config - Agent configuration
+     */
+    constructor(engine, config = {}) {
+        super();
         this.engine = engine;
+        this.name = config.name || 'BaseAgent';
+        this.role = config.role || 'Assistant';
+        this.color = config.color || 'cyan'; // For UI usage
+        this.systemPrompt = config.systemPrompt || 'You are a helpful AI assistant.';
+        this.memory = []; // Local message history
+        this.initialized = false;
     }
 
     /**
-     * Think about the task (Internal reasoning)
-     * @param {string} task - The task or goal
-     * @param {object} context - Additional context
+     * Initialize the agent
      */
-    async think(task, _context = {}) {
-        logger.debug(`${this.name} (${this.role}) is thinking...`);
-        // Default implementation just returns the task, subclasses should override
-        return task;
+    async initialize() {
+        if (this.initialized) return;
+
+        logger.info(`Initializing agent: ${this.name} (${this.role})`);
+        this.initialized = true;
+        this.emit('initialized');
     }
 
     /**
-     * Act on the task
-     * @param {string} task - The task to execute
+     * Send a message to the agent
+     * @param {string} message - User input
+     * @param {Object} context - Additional context
      */
-    async act(_task) {
-        throw new Error('Method act() must be implemented by subclasses');
-    }
+    async sendMessage(message, context = {}) {
+        if (!this.initialized) await this.initialize();
 
-    /**
-     * Send a prompt to the AI engine
-     * @param {string} systemPrompt - System instruction for the agent
-     * @param {string} userPrompt - Specific task for the AI
-     * @returns {Promise<object>} - AI response
-     */
-    async callAI(systemPrompt, userPrompt) {
+        // 1. Add to local memory
+        this.memory.push({ role: 'user', content: message });
+
+        this.emit('think_start', { message });
+
         try {
-            // We construct a specific prompt structure for the agent
-            const fullPrompt = `${systemPrompt}\n\nTask:\n${userPrompt}`;
+            // 2. Construct Prompt with Persona
+            // We prepend the system prompt to ensure the AI adopts the correct persona.
+            // In the future, we might pass this as a distinct 'system' parameter if the Engine supports it.
+            const fullPrompt = `[System Instruction: ${this.systemPrompt}]\n\n[User Request: ${message}]`;
 
-            // Re-use the engine's processRequest for now, but in future might need specific agent config
-            // Note: We might want to pass specific history or context here
-            const response = await this.engine.processRequest(fullPrompt);
+            // 3. Call Core Engine
+            // We use the engine to handle the actual LLM call and tool execution.
+            const response = await this.engine.processRequest(fullPrompt, context);
 
-            return response;
+            // 4. Update Memory
+            this.memory.push({
+                role: 'assistant',
+                content: response.content,
+                metadata: response.metadata
+            });
+
+            this.emit('think_end', { response });
+
+            return {
+                content: response.content,
+                metadata: response.metadata || {},
+                intermediateSteps: response.toolCalls || []
+            };
+
         } catch (error) {
-            logger.error(`${this.name} AI call failed`, { error: error.message });
+            logger.error(`Agent ${this.name} failed`, { error: error.message });
+            this.emit('error', error);
             throw error;
         }
+    }
+
+    /**
+     * format the history for display or debugging
+     */
+    getHistory() {
+        return this.memory;
+    }
+
+    /**
+     * Clear agent memory
+     */
+    clearMemory() {
+        this.memory = [];
+        logger.debug(`Memory cleared for agent: ${this.name}`);
     }
 }
 

@@ -58,7 +58,7 @@ With **v2.0**, Antigravity evolves into a fully **Agentic System**. It doesn't j
 | 🤖 **Agentic Mode** | Autonomous planning, coding, and reviewing workflow |
 | 💻 **Code Generation** | Write clean, efficient code in any language |
 | 👁️ **Vision Analysis** | Analyze images and generated code from screenshots |
-| 🧠 **RAG Context** | Index entire codebase for accurate answers |
+| 🧠 **Advanced RAG** | **NEW!** Local Vector DB + Semantic Chunking for deep context |
 | 📂 **File System Ops** | Read, write, and delete files directly |
 | ⏮️ **Checkpoint System** | **NEW!** Time-travel file snapshots with `/rewind` and `/checkpoints` |
 | 🔒 **Permission Modes** | **NEW!** 3 control modes: default, auto-edit, plan-only |
@@ -104,6 +104,9 @@ With **v2.0**, Antigravity evolves into a fully **Agentic System**. It doesn't j
 - **🛡️ Security Audit**: Scan your code for vulnerabilities and quality issues with `/audit`.
 - **🕰️ Session Management**: Save, load, and manage your conversation history with `/session`.
 - **🏗️ Smart Init**: Generate project scaffolding with AI-driven content using `/init`.
+- **🧠 Advanced RAG Engine**: 
+  - **Vector Database**: Embedding-based search using `vectra` (Local & Fast).
+  - **Semantic Chunking**: Intelligent code parsing (Functions/Classes) for better context.
 
 ---
 
