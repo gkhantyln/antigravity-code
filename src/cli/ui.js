@@ -66,6 +66,7 @@ class UIManager {
             titleAlignment: 'center',
             padding: 1,
             margin: 0,
+            // eslint-disable-next-line no-control-regex
             borderColor: options.borderColor ? options.borderColor.replace(/\x1B\[[0-9;]*m/g, '') : 'blue', // boxen expects color name or hex
             borderStyle: 'round',
             dimBorder: true,
