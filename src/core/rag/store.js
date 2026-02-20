@@ -1,5 +1,7 @@
 const path = require('path');
+const fs = require('fs').promises;
 const { LocalIndex } = require('vectra');
+// eslint-disable-next-line import/no-unresolved
 const { v4: uuidv4 } = require('uuid');
 const { logger } = require('../../utils/logger');
 const { configManager } = require('../config');
@@ -71,7 +73,7 @@ class VectorStore {
      * Clear the index (delete from disk)
      */
     async clearIndex() {
-        const fs = require('fs').promises;
+        // const fs = require('fs').promises;
         try {
             if (this.index) {
                 // Vectra doesn't have a clear method, so we delete the folder

@@ -1,4 +1,4 @@
-const { logger } = require('../../utils/logger');
+// const { logger } = require('../../utils/logger');
 
 /**
  * Semantic Chunker
@@ -77,7 +77,7 @@ class SemanticChunker {
                 chunks.push({
                     filePath,
                     startLine: currentChunk.startLine,
-                    endLine: endLine,
+                    endLine,
                     content: currentChunk.content.join('\n')
                 });
 
