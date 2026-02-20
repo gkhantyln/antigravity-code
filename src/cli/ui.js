@@ -60,9 +60,9 @@ class UIManager {
         if (this.jsonMode) return;
 
         const text = Array.isArray(content) ? content.join('\n') : content;
-        
+
         console.log(boxen(text, {
-            title: title,
+            title,
             titleAlignment: 'center',
             padding: 1,
             margin: 0,
@@ -80,17 +80,17 @@ class UIManager {
         if (this.jsonMode) return;
 
         console.clear();
-        
+
         // 1. ASCII Banner with Gradient
         const bannerText = figlet.textSync('ANTIGRAVITY', {
             font: 'Standard',
             horizontalLayout: 'default',
             verticalLayout: 'default',
         });
-        
+
         // Custom cool gradient (Blue -> Purple -> Pink)
         console.log(gradient.pastel.multiline(bannerText));
-        
+
         // 2. Welcome & Status Box using Boxen
         const welcomeMsg = [
             chalk.bold.white('Welcome to the Future of Coding.'),
@@ -355,16 +355,16 @@ class UIManager {
      */
     printPromptTop(status = {}) {
         if (this.jsonMode) return;
-        
+
         // Simple, clean status bar similar to Gemini CLI
         const cwd = status.cwd ? path.basename(status.cwd) : 'root';
         const providerName = status.provider ? status.provider.name : 'AI';
-        
+
         console.log('');
         // "📂 project_learn  ⚡ gemini  🕒 12:00"
         console.log(
-            chalk.cyan.bold(`📂 ${cwd}`) + 
-            chalk.dim(' │ ') + 
+            chalk.cyan.bold(`📂 ${cwd}`) +
+            chalk.dim(' │ ') +
             chalk.magenta.bold(`⚡ ${providerName}`) +
             chalk.dim(' │ ') +
             chalk.gray(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))
