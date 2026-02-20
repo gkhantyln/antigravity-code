@@ -61,7 +61,7 @@
         "dotenv": "^16.4.1",
         "figlet": "^1.10.0",
         "glob": "^13.0.4",
-        "gradient-string": "^3.0.0",
+        "gradient-string": "^2.0.2",
         "inquirer": "^8.2.5",
         "marked": "^15.0.12",
         "marked-terminal": "^7.3.0",
