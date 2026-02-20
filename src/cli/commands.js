@@ -873,9 +873,19 @@ Example format:
             // Auto-navigate to the new directory
             try {
                 process.chdir(fullPath);
+                // Update engine's working directory to match new CWD
+                this.engine.setWorkingDirectory(fullPath);
+
                 ui.success(`Switched working directory to: ${targetDir}`);
+
+                // If a specific project description was provided, automatically trigger code generation
+                if (projectDescription !== 'This project is initialized with the Fractal Agent architecture.') {
+                    ui.info('Triggering automatic project creation based on description...');
+                    // Pass description as argument array
+                    await this.handleCreate([projectDescription]);
+                }
             } catch (err) {
-                ui.warn(`Could not switch directory: ${err.message}`);
+                ui.warn(`Could not switch directory or create project: ${err.message}`);
             }
 
         } catch (error) {

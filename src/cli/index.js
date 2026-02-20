@@ -38,6 +38,9 @@ async function interactiveMode() {
             prompt: `${ui.theme.accent('> ')} `,
         });
 
+        // Share RL with UI manager
+        ui.setRuntimeInterface(rl);
+
         // Main REPL loop
         const processInput = async input => {
             const trimmed = input.trim();
@@ -95,11 +98,20 @@ async function interactiveMode() {
             rl.prompt();
         };
 
-        // Handle input
-        rl.on('line', async input => {
+        // Defined as named function to allow detach/reattach mechanism
+        const handleLine = async (input) => {
+            // Detach listener to prevent interference with inner prompts (via ui.confirmAction)
+            rl.removeListener('line', handleLine);
+
             ui.printPromptBottom();
             await processInput(input);
-        });
+
+            // Re-attach listener for next command
+            rl.on('line', handleLine);
+        };
+
+        // Handle input
+        rl.on('line', handleLine);
 
         // Handle close
         rl.on('close', async () => {

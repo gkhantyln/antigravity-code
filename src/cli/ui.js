@@ -9,6 +9,7 @@ const figlet = require('figlet');
 const boxen = require('boxen');
 const { FileTree } = require('./file-tree');
 const { COMMANDS } = require('./commands-data');
+const diff = require('diff');
 
 // Theme Configuration
 const THEME = {
@@ -51,6 +52,14 @@ class UIManager {
     constructor() {
         this.spinner = null;
         this.jsonMode = process.argv.includes('--json');
+        this.runtimeRl = null; // Store main readline instance
+    }
+
+    /**
+     * Set the runtime readline interface to share input stream
+     */
+    setRuntimeInterface(rl) {
+        this.runtimeRl = rl;
     }
 
     /**
@@ -348,7 +357,11 @@ class UIManager {
      */
     userPrompt() {
         if (this.jsonMode) return;
-        process.stdout.write(THEME.accent.bold('AG> '));
+        if (this.runtimeRl) {
+            this.runtimeRl.prompt();
+        } else {
+            process.stdout.write(THEME.accent.bold('AG> '));
+        }
     }
 
     /**
@@ -386,6 +399,23 @@ class UIManager {
     async confirmAction(message) {
         if (this.jsonMode) return true;
 
+        // Stop spinner if running to prevent visual glitches
+        if (this.spinner) {
+            this.spinner.stop();
+            this.spinner = null;
+        }
+
+        // Use shared runtime RL if available (prevents double input/exit issues)
+        if (this.runtimeRl) {
+            return new Promise(resolve => {
+                this.runtimeRl.question(THEME.warning.bold(`❓ ${message} (Y/n) `), (answer) => {
+                    // Do NOT close the runtime RL, just resolve
+                    resolve(answer.toLowerCase() !== 'n');
+                });
+            });
+        }
+
+        // Fallback for standalone usage (legacy)
         const rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout
@@ -484,6 +514,49 @@ class UIManager {
         const fileTree = new FileTree();
         const lines = fileTree.render(files, title);
         lines.forEach(line => console.log(line));
+    }
+
+    /**
+     * Show file diff
+     */
+    showDiff(oldContent, newContent, filePath) {
+        if (this.jsonMode) return;
+
+        // Stop spinner if running to prevent visual glitches
+        if (this.spinner) {
+            this.spinner.stop();
+            this.spinner = null;
+        }
+
+        console.log('');
+        console.log(THEME.secondary.bold(`📝 Diff for ${filePath}:`));
+        console.log(THEME.dim('─'.repeat(40)));
+
+        if (!oldContent) {
+            console.log(chalk.green('  (New File)'));
+            // Show first few lines of new content
+            const lines = newContent.split('\n');
+            const preview = lines.slice(0, 10);
+            preview.forEach(line => console.log(chalk.green(`+ ${line}`)));
+            if (lines.length > 10) console.log(THEME.dim(`... and ${lines.length - 10} more lines`));
+        } else {
+            const changes = diff.diffLines(oldContent, newContent);
+            changes.forEach(part => {
+                const color = part.added ? chalk.green :
+                    part.removed ? chalk.red : chalk.gray;
+                const prefix = part.added ? '+' : part.removed ? '-' : ' ';
+
+                // Truncate large unchanged blocks
+                if (!part.added && !part.removed && part.count > 5) {
+                    console.log(THEME.dim(`  ... ${part.count} unchanged lines ...`));
+                } else {
+                    part.value.split('\n').forEach(line => {
+                        if (line) console.log(color(`${prefix} ${line}`));
+                    });
+                }
+            });
+        }
+        console.log('');
     }
 }
 

@@ -15,6 +15,14 @@ class FileSystemTools {
     }
 
     /**
+     * Set the base directory for file operations
+     */
+    setBaseDir(baseDir) {
+        this.baseDir = baseDir;
+        logger.debug('File system base directory updated', { baseDir });
+    }
+
+    /**
      * Resolve and validate path to ensure it's within baseDir
      */
     _resolvePath(filePath) {

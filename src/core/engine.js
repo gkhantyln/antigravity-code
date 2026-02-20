@@ -62,6 +62,18 @@ class AntigravityEngine {
         });
     }
 
+
+    /**
+     * Set the working directory for file operations
+     */
+    setWorkingDirectory(dir) {
+        if (!this.fileSystemTools) {
+            throw new Error('File system tools not initialized');
+        }
+        this.fileSystemTools.setBaseDir(dir);
+        logger.info('Engine working directory updated', { dir });
+    }
+
     /**
      * Process a user request
      */
