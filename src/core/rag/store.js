@@ -1,5 +1,10 @@
 const path = require('path');
 const fs = require('fs').promises;
+// Polyfill File for Node < 20 (required by vectra/undici)
+if (!global.File) {
+    const { File } = require('buffer');
+    global.File = File;
+}
 const { LocalIndex } = require('vectra');
 // eslint-disable-next-line import/no-unresolved
 const { v4: uuidv4 } = require('uuid');
