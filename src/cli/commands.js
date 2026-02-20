@@ -800,7 +800,19 @@ ${codeContent.substring(0, 8000)}
 ## 📂 Context
 ${projectDescription}
 `;
-            fs.writeFileSync(path.join(fullPath, 'GEMINI.md'), geminiContent);
+            try {
+                // Use FileSystemTools to write GEMINI.md (safe write with confirmation)
+                await this.engine.fileSystemTools.writeFile(
+                    path.join(fullPath, 'GEMINI.md'),
+                    geminiContent
+                );
+            } catch (err) {
+                if (err.message.includes('cancelled')) {
+                    ui.warn('Skipped GEMINI.md creation.');
+                } else {
+                    throw err;
+                }
+            }
 
             // 3. Generate Content with AI
             ui.stopSpinnerSuccess('Directories Created');
@@ -859,10 +871,19 @@ Example format:
             }
 
             // Write files
-            Object.entries(generatedFiles).forEach(([file, content]) => {
+            // Write files using FileSystemTools for safety
+            for (const [file, content] of Object.entries(generatedFiles)) {
                 const filePath = path.join(fullPath, file);
-                fs.writeFileSync(filePath, content);
-            });
+                try {
+                    await this.engine.fileSystemTools.writeFile(filePath, content);
+                } catch (err) {
+                    if (err.message.includes('cancelled')) {
+                        ui.warn(`Skipped ${file}`);
+                    } else {
+                        ui.error(`Failed to write ${file}: ${err.message}`);
+                    }
+                }
+            }
 
             ui.stopSpinnerSuccess('Project Initialized Successfully');
             ui.info(`Fractal Agent structure created in: ${targetDir}`);

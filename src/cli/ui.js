@@ -7,9 +7,9 @@ const path = require('path');
 const gradient = require('gradient-string');
 const figlet = require('figlet');
 const boxen = require('boxen');
+const diff = require('diff');
 const { FileTree } = require('./file-tree');
 const { COMMANDS } = require('./commands-data');
-const diff = require('diff');
 
 // Theme Configuration
 const THEME = {
@@ -542,9 +542,15 @@ class UIManager {
         } else {
             const changes = diff.diffLines(oldContent, newContent);
             changes.forEach(part => {
-                const color = part.added ? chalk.green :
-                    part.removed ? chalk.red : chalk.gray;
-                const prefix = part.added ? '+' : part.removed ? '-' : ' ';
+                let color = chalk.gray;
+                let prefix = ' ';
+                if (part.added) {
+                    color = chalk.green;
+                    prefix = '+';
+                } else if (part.removed) {
+                    color = chalk.red;
+                    prefix = '-';
+                }
 
                 // Truncate large unchanged blocks
                 if (!part.added && !part.removed && part.count > 5) {
