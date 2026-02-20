@@ -10,10 +10,11 @@
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Docker-blue)](https://www.microsoft.com/windows)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Comparison](https://img.shields.io/badge/VS-Competitors-orange?style=for-the-badge)](COMPARISON.md)
 
 **Never lose productivity to API downtime again!**
 
-[Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [New in v2.0](#-new-capabilities-v20) • [Documentation](#-documentation)
+[Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Comparison](COMPARISON.md) • [New in v2.0](#-new-capabilities-v20) • [Documentation](#-documentation)
 
 </div>
 
@@ -541,6 +542,8 @@ Special thanks to:
 ## 🥊 The Ultimate Showdown: Antigravity vs Claude Code
 
 Why limit yourself to one brain when you can have the entire hive mind? **Antigravity-Code** is engineered to be **Anti-Fragile**, correcting itself and adapting to any situation.
+
+> 📊 **Full Analysis:** Check out the detailed [4-Way Comparison Matrix](COMPARISON.md) (Antigravity vs Gemini vs Claude vs Kimi).
 
 | Feature Strategy | 🚀 **Antigravity-Code** (The Hive Mind) | 🤖 Claude Code (The Solitary Cloud) |
 | :--- | :--- | :--- |
