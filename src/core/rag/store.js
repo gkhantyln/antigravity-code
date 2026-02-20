@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs').promises;
 // Polyfill File for Node < 20 (required by vectra/undici)
 if (!global.File) {
+    // eslint-disable-next-line global-require
     const { File } = require('buffer');
     global.File = File;
 }
